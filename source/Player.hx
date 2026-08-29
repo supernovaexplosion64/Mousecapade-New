@@ -13,12 +13,13 @@ class Player extends FlxSprite
 		super(x, y);
         loadGraphic("assets/images/player.png");
         setGraphicSize(128, 128);
-        drag.x = drag.y = 800;
+		drag.x = drag.y = 80;
 	}
     
     override function update(elapsed:Float)
     {
         updateMovement();
+		updateHitbox();
         super.update(elapsed);
     }
 
