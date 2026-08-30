@@ -10,10 +10,13 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 #if ((desktop || android) && !hl)
 import hxcodec.flixel.FlxVideo;
@@ -37,6 +40,7 @@ class PlayState extends FlxState
 	public var bonusStreak:Int = 0;
 
 	public var itemScore:Int;
+	public var itemHealthIncrease:Int;
 
 	public var time:Float = 120;
 	public var timeText:FlxText;
@@ -47,6 +51,11 @@ class PlayState extends FlxState
 	public var camHUD:FlxCamera;
 
 	var bg:FlxSprite;
+	public var health:Float = 100;
+	public var healthBar:FlxBar;
+	public var healthText:FlxText;
+
+	var healthTweening:Bool = false;
 
 	override public function create()
 	{
@@ -60,6 +69,8 @@ class PlayState extends FlxState
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD, false);
+
+		FlxG.sound.playMusic(Paths.music('welcome-old'), 1, true);
 		
 		player = new Player();
 		add(player);
@@ -79,25 +90,41 @@ class PlayState extends FlxState
 		scoreText = new FlxText();
 		scoreText.size = 48;
 		scoreText.font = "Times New Roman";
-		scoreText.text = "Score: " + Std.string(score);
+		scoreText.text = Std.string(score);
+		scoreText.screenCenter(X);
 		scoreText.cameras = [camHUD];
 		add(scoreText);
 
 		timeText = new FlxText();
 		timeText.size = 48;
 		timeText.font = "Times New Roman";
-		timeText.text = "Time: " + Std.string(time);
-		timeText.y = scoreText.y + timeText.height + 12;
+		timeText.text = Std.string(FlxStringUtil.formatTime(time));
+		timeText.screenCenter(X);
+		timeText.y = scoreText.y + 12;
 		timeText.cameras = [camHUD];
 		add(timeText);
+		healthBar = new FlxBar(0, 0, FlxBarFillDirection.LEFT_TO_RIGHT, 640, 20, this, "health");
+		healthBar.y = FlxG.height;
+		healthBar.cameras = [camHUD];
+		add(healthBar);
+
+		healthText = new FlxText();
+		healthText.size = 24;
+		healthText.font = "Times New Roman";
+		healthText.text = "Health: " + Std.string(health);
+		healthText.y = FlxG.height + healthBar.height + 24;
+		healthText.cameras = [camHUD];
+		add(healthText);
 	}
 
 	override public function update(elapsed:Float)
 	{
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
+		if (health > 100)
+			health = 100;
 		spawnCheese();
 		spawnWega();
-		spawnPhone();
+		// spawnPhone();
 		updateTime();
 		decreasingMultiplier -= 8 * FlxG.elapsed;
 		if (decreasingMultiplier < 2)
@@ -121,7 +148,7 @@ class PlayState extends FlxState
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
 			var positionY = player.y + FlxG.random.int(-720, 720);
 			var cheese = new Item(positionX, positionY);
-			itemScore = Item.value;
+			// itemScore = cheese.value;
 			cheeses.add(cheese);
 			cheese.updateHitbox();
 			itemTimer(cheese);
@@ -162,7 +189,7 @@ class PlayState extends FlxState
 	public function updateTime()
 	{
 		time -= 1 * FlxG.elapsed;
-		timeText.text = "Time: " + Std.string(Std.int(time));
+		timeText.text = Std.string(FlxStringUtil.formatTime(time));
 		timeText.updateHitbox();
 	}
 	public function addScore():Int
@@ -185,14 +212,48 @@ class PlayState extends FlxState
 		if (type == 'add')
 		{
 			score += addScore();
+			decreasingMultiplier = 100 - (2 * wegaTimes);
 			#if debug trace("Score addition: " + Std.string(addScore()) + ", Decreasing Multiplier: " + Std.string(decreasingMultiplier)); #end
 		}
 		if (type == 'take')
 		{
 			score -= takeAwayScore();
 		}
-		scoreText.text = "Score: " + Std.string(score);
-		decreasingMultiplier = 100 - (2 * wegaTimes);
+		scoreText.text = Std.string(score);
+	}
+
+	public function addHealth()
+	{
+		health += itemHealthIncrease;
+		healthText.text = "Health: " + Std.string(health);
+		if (!healthTweening)
+			showHealth();
+	}
+
+	public function takeAwayHealth()
+	{
+		health -= 5;
+		healthText.text = "Health: " + Std.string(health);
+		if (!healthTweening)
+			showHealth();
+	}
+
+	public function showHealth()
+	{
+		healthTweening = true;
+		var timerThing:Float = 3;
+		var tweeningTime:Float = 0.8;
+		FlxTween.tween(healthBar, {y: FlxG.height - healthBar.height}, tweeningTime, {ease: FlxEase.backOut});
+		FlxTween.tween(healthText, {y: FlxG.height - healthBar.height - 36}, tweeningTime, {ease: FlxEase.backOut});
+		new FlxTimer().start(timerThing, function(tmr:FlxTimer)
+		{
+			FlxTween.tween(healthBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
+			FlxTween.tween(healthText, {y: FlxG.height + healthBar.height + 36}, tweeningTime, {ease: FlxEase.backIn});
+			new FlxTimer().start(tweeningTime, function(tmr:FlxTimer)
+			{
+				healthTweening = false;
+			});
+		});
 	}
 
 	function playerTouchItem(player:Player, item:Item)
@@ -200,9 +261,12 @@ class PlayState extends FlxState
 		if (player.alive && player.exists && item.alive && item.exists)
 		{
 			item.kill();
+			itemScore = item.value;
+			itemHealthIncrease = item.healthIncrease;
+			addHealth();
 			updateScore('add');
 			if (popUpEnabled)
-				showPopUp('normal');
+				showPopUp(Normal);
 		}
 	}
 
@@ -212,8 +276,9 @@ class PlayState extends FlxState
 		{
 			item.kill();
 			updateScore('take');
+			takeAwayHealth();
 			if (popUpEnabled)
-				showPopUp('wega');
+				showPopUp(Wega);
 		}
 	}
 
@@ -273,13 +338,10 @@ class PlayState extends FlxState
 		});
 	}
 
-	function showPopUp(type:String)
+	function showPopUp(type:PopUp.PopUpType)
 	{
 		popUp = new PopUp();
-		if (type == 'normal')
-			popUp.getPopUp(Normal);
-		if (type == 'wega')
-			popUp.getPopUp(Wega);
+		popUp.getPopUp(type);
 		popUp.cameras = [camHUD];
 		add(popUp);
 		FlxTween.tween(popUp, {alpha: 0}, 0.3);

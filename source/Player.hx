@@ -13,7 +13,10 @@ class Player extends FlxSprite
 		super(x, y);
         loadGraphic("assets/images/player.png");
         setGraphicSize(128, 128);
-		drag.x = drag.y = 80;
+		// drag.x = drag.y = 80;
+		maxVelocity.set(640, 640);
+		// acceleration.y = 200;
+		// drag.x = maxVelocity.x * 4;
 	}
     
     override function update(elapsed:Float)
@@ -25,6 +28,12 @@ class Player extends FlxSprite
 
     function updateMovement()
     {
+		acceleration.x = 0;
+		acceleration.y = 0;
+
+		velocity.x = 0;
+		velocity.y = 0;
+        
         var up:Bool = false;
         var down:Bool = false;
         var left:Bool = false;
@@ -35,35 +44,43 @@ class Player extends FlxSprite
         left = FlxG.keys.anyPressed([LEFT, A]);
         right = FlxG.keys.anyPressed([RIGHT, D]);
 
-        if (up && down)
+		/*if (up && down)
             up = down = false;
         if (left && right)
-            left = right = false;
+															left = right = false; */
 
         if (up || down || left || right)
         {
             var newAngle:Float = 0;
             if (up)
             {
-                newAngle = -90;
-                if (left)
+				velocity.y = SPEED * -1;
+				// acceleration.y = -maxVelocity.y * 4;
+				/*if (left)
                     newAngle -= 45;
                 else if (right)
-                    newAngle += 45;
+																							newAngle += 45; */
             }
-            else if (down)
+			if (down)
             {
-                newAngle = 90;
-                if (left)
+				velocity.y = SPEED;
+				// acceleration.y = maxVelocity.y * 4;
+				/*if (left)
                     newAngle += 45;
                 else if (right)
-                    newAngle -= 45;
+																							newAngle -= 45; */
             }
-            else if (left)
-                newAngle = 180;
-            else if (right)
-                newAngle = 0;
-            velocity.setPolarDegrees(SPEED, newAngle);
+			if (left)
+			{
+				velocity.x = SPEED * -1;
+				// acceleration.x = -maxVelocity.x * 4;
+			}
+			if (right)
+			{
+				velocity.x = SPEED;
+				// acceleration.x = maxVelocity.x * 4;
+			}
+			// velocity.setPolarDegrees(SPEED, newAngle);
         }
     }
 }

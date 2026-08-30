@@ -6,8 +6,9 @@ import flixel.FlxSprite;
 
 class Item extends FlxSprite
 {
-	public static var value:Int;
+	public var value:Int;
 	public static var speed:Int;
+	public var healthIncrease:Int;
 
 	public function new(x:Float, y:Float) 
 	{
@@ -17,31 +18,34 @@ class Item extends FlxSprite
 			case Default:
 				loadGraphic(Paths.item('cheese'), false);
 				value = 1;
+				healthIncrease = 1;
 			case Blue:
 				loadGraphic(Paths.item('bluecheese'), false);
 				speed = 75;
 				value = 5;
+				healthIncrease = 2;
 			case Red:
 				loadGraphic(Paths.item('redcheese'), false);
 				speed = 200;
 				value = 10;
+				healthIncrease = 4;
 		}
 	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		updateHitbox();
+		// updateHitbox();
 	}
 
 	public function getType():ItemType
 	{
 		var rng:Int = FlxG.random.int(1, 10);
 
-		if (rng >= 4)
-			return Default;
-		if (rng >= 2)
+		if (rng <= 1)
+			return Red;
+		if (rng <= 3)
 			return Blue;
-		return Red;
+		return Default;
 	}
 	function updateMovement()
 	{

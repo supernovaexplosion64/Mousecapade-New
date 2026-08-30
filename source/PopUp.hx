@@ -3,10 +3,13 @@ package;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.sound.FlxSound;
 
 class PopUp extends FlxSprite
 {
     public var popUp:FlxSprite;
+	public var playSound:FlxSound;
+
     var popUps:Array<String> =
     [
         'revenge',
@@ -26,7 +29,7 @@ class PopUp extends FlxSprite
 	{
 		super();
 
-		loadGraphic("assets/images/popups/placeholder.png");
+		loadGraphic(Paths.image('popups/placeholder'), false);
         if (width != 1280 || height != 720)
             setGraphicSize(1280, 720);
 		screenCenter();
@@ -38,12 +41,16 @@ class PopUp extends FlxSprite
 		if (type == Normal)
 		{
 			var popUpNums:Int = popUps.length;
-			loadGraphic('assets/images/popups/${popUps[FlxG.random.int(0, popUpNums - 1)]}');
+			loadGraphic(Paths.image('popups/${popUps[FlxG.random.int(0, popUpNums - 1)]}'));
+			playSound = FlxG.sound.load(Paths.sound("mickey-mouse"));
+			playSound.play();
 		}
 		else if (type == Wega)
 		{
-			loadGraphic("assets/images/popups/scream.png");
+			loadGraphic(Paths.image('popups/scream'));
 			FlxG.camera.shake(0.03, 0.3);
+			playSound = FlxG.sound.load(Paths.sound("scream"));
+			playSound.play();
 		}
     }
 
