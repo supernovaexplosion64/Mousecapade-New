@@ -12,20 +12,17 @@ class Item extends FlxSprite
 	public function new(x:Float, y:Float) 
 	{
 		super(x, y);
-		var switchType = getType();
-		loadGraphic("assets/images/items/cheese.png", false);
-		value = 1;
-		switch (switchType)
+		switch getType()
 		{
 			case Default:
-				loadGraphic("assets/images/items/cheese.png", false);
+				loadGraphic(Paths.item('cheese'), false);
 				value = 1;
 			case Blue:
-				loadGraphic("assets/images/items/bluecheese.png", false);
+				loadGraphic(Paths.item('bluecheese'), false);
 				speed = 75;
 				value = 5;
 			case Red:
-				loadGraphic("assets/images/items/redcheese.png", false);
+				loadGraphic(Paths.item('redcheese'), false);
 				speed = 200;
 				value = 10;
 		}
@@ -36,7 +33,7 @@ class Item extends FlxSprite
 		updateHitbox();
 	}
 
-	public function getType()
+	public function getType():ItemType
 	{
 		var rng:Int = FlxG.random.int(1, 10);
 

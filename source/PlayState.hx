@@ -15,7 +15,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-#if (desktop || android)
+#if ((desktop || android) && !hl)
 import hxcodec.flixel.FlxVideo;
 #end
 
@@ -50,28 +50,24 @@ class PlayState extends FlxState
 
 	override public function create()
 	{
-		score = 0;
-		FlxG.worldBounds.set(0, 0, 1280, 1280);
 		super.create();
-		bg = new FlxSprite();
-		bg.makeGraphic(1280, 720, FlxColor.GRAY);
-		add(bg);
-		// camGame = new FlxCamera();
-		camHUD = new FlxCamera();
-		// camGame.bgColor.alpha = 0;
-		camHUD.bgColor.alpha = 0;
 
+		bg = new FlxSprite();
+		bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.GRAY);
+		bg.scrollFactor.set(0, 0);
+		add(bg);
+
+		camHUD = new FlxCamera();
+		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD, false);
 		
 		player = new Player();
-		// player.cameras = [camGame];
 		add(player);
 
 		FlxG.camera.follow(player, LOCKON, 1);
 		FlxG.camera.zoom = 0.8;
 
 		cheeses = new FlxTypedGroup<Item>();
-		// cheeses.cameras = [camGame];
 		add(cheeses);
 
 		wegas = new FlxTypedGroup<Wega>();
@@ -126,7 +122,6 @@ class PlayState extends FlxState
 			var positionY = player.y + FlxG.random.int(-720, 720);
 			var cheese = new Item(positionX, positionY);
 			itemScore = Item.value;
-			// cheese.cameras = [camGame];
 			cheeses.add(cheese);
 			cheese.updateHitbox();
 			itemTimer(cheese);
@@ -228,7 +223,7 @@ class PlayState extends FlxState
 		{
 			item.kill();
 		}
-		#if (desktop || android)
+		#if ((desktop || android) && !hl)
 		var video:FlxVideo = new FlxVideo();
 		video.play("assets/videos/pick-up-the-phone-new.mp4");
 		/*if (!videoPlaying)

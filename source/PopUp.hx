@@ -38,8 +38,7 @@ class PopUp extends FlxSprite
 		if (type == Normal)
 		{
 			var popUpNums:Int = popUps.length;
-			var getRandom:Int = FlxG.random.int(0, popUpNums - 1);
-			loadGraphic("assets/images/popups/" + popUps[getRandom] + ".png");
+			loadGraphic('assets/images/popups/${popUps[FlxG.random.int(0, popUpNums - 1)]}');
 		}
 		else if (type == Wega)
 		{
