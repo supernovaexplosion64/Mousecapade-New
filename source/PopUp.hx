@@ -26,21 +26,35 @@ class PopUp extends FlxSprite
 	{
 		super();
 
-        loadGraphic("assets/images/popups/" + getPopUp() + ".png");
+		loadGraphic("assets/images/popups/placeholder.png");
         if (width != 1280 || height != 720)
             setGraphicSize(1280, 720);
 		screenCenter();
+		alpha = 0.6;
 	}
 
-    function getPopUp():String
-    {
-        var popUpNums:Int = popUps.length;
-        var getRandom:Int = FlxG.random.int(0, popUpNums - 1);
-        return popUps[getRandom];
+	public function getPopUp(type:PopUpType)
+	{
+		if (type == Normal)
+		{
+			var popUpNums:Int = popUps.length;
+			var getRandom:Int = FlxG.random.int(0, popUpNums - 1);
+			loadGraphic("assets/images/popups/" + popUps[getRandom] + ".png");
+		}
+		else if (type == Wega)
+		{
+			loadGraphic("assets/images/popups/scream.png");
+			FlxG.camera.shake(0.03, 0.3);
+		}
     }
 
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 	}
+}
+enum PopUpType
+{
+	Normal;
+	Wega;
 }
