@@ -4,6 +4,8 @@ import haxe.CallStack.StackItem;
 class Paths {
     static inline function item(k:String):String
         return 'assets/images/items/$k.png';
+	static inline function enemy(k:String):String
+		return 'assets/images/enemies/$k.png';
 	static inline function image(k:String):String
 		return 'assets/images/$k.png';
 

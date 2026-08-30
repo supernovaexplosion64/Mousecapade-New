@@ -28,6 +28,7 @@ class PlayState extends FlxState
 	public var cheeses:FlxTypedGroup<Item>;
 	public var wegas:FlxTypedGroup<Wega>;
 	public var phones:FlxTypedGroup<PickUpThePhone>;
+	public var screweds:FlxTypedGroup<Screwed>;
 	public var popUp:PopUp;
 
 	var randomX = FlxG.random.int(0, 600);
@@ -54,6 +55,9 @@ class PlayState extends FlxState
 	public var health:Float = 100;
 	public var healthBar:FlxBar;
 	public var healthText:FlxText;
+
+	var timerThing:Float = 3;
+	var tweeningTime:Float = 0.8;
 
 	var healthTweening:Bool = false;
 
@@ -86,6 +90,9 @@ class PlayState extends FlxState
 
 		phones = new FlxTypedGroup<PickUpThePhone>();
 		add(phones);
+
+		screweds = new FlxTypedGroup<Screwed>();
+		add(screweds);
 
 		scoreText = new FlxText();
 		scoreText.size = 48;
@@ -126,14 +133,18 @@ class PlayState extends FlxState
 		spawnCheese();
 		spawnWega();
 		// spawnPhone();
+		spawnScrewed();
 		updateTime();
 		decreasingMultiplier -= 8 * FlxG.elapsed;
 		if (decreasingMultiplier < 2)
 			decreasingMultiplier = 2;
+		if (healthTweening)
+			healthEasing();
 		player.updateHitbox();
 		FlxG.overlap(player, cheeses, playerTouchItem);
 		FlxG.overlap(player, wegas, playerTouchWega);
 		FlxG.overlap(player, phones, playerTouchPhone);
+		FlxG.overlap(player, screweds, playerTouchScrewed);
 		super.update(elapsed);
 	}
 
@@ -143,9 +154,6 @@ class PlayState extends FlxState
 		var cheeseAppear:Bool = FlxG.random.bool(randomChanceToAppear);
 		if (cheeseAppear)
 		{
-			var randomXA = FlxG.random.int(0, 1280 - 128);
-			var randomYA = FlxG.random.int(0, 720 - 128);
-
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
 			var positionY = player.y + FlxG.random.int(-720, 720);
 			var cheese = new Item(positionX, positionY);
@@ -187,6 +195,22 @@ class PlayState extends FlxState
 			itemTimer(phone);
 		}
 	}
+	public function spawnScrewed()
+	{
+		var randomChanceToAppear:Float = FlxG.random.float(2, 7);
+		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear);
+		if (screwedAppear)
+		{
+			var positionX = player.x + FlxG.random.int(-1280, 1280);
+			var positionY = player.y + FlxG.random.int(-720, 720);
+			var screwed = new Screwed(positionX, positionY);
+			// cheese.cameras = [camGame];
+			screweds.add(screwed);
+			screwed.updateHitbox();
+			itemTimer(screwed);
+		}
+	}
+
 	public function updateTime()
 	{
 		time -= 1 * FlxG.elapsed;
@@ -243,12 +267,17 @@ class PlayState extends FlxState
 
 	public function showHealth()
 	{
+		timerThing = 3;
 		healthTweening = true;
-		var timerThing:Float = 3;
-		var tweeningTime:Float = 0.8;
 		FlxTween.tween(healthBar, {y: FlxG.height - healthBar.height}, tweeningTime, {ease: FlxEase.backOut});
 		FlxTween.tween(healthText, {y: FlxG.height - healthBar.height - 36}, tweeningTime, {ease: FlxEase.backOut});
-		new FlxTimer().start(timerThing, function(tmr:FlxTimer)
+	}
+
+	public function healthEasing()
+	{
+		timerThing -= 1 * FlxG.elapsed;
+		#if debug trace(timerThing); #end
+		if (timerThing <= 0)
 		{
 			FlxTween.tween(healthBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
 			FlxTween.tween(healthText, {y: FlxG.height + healthBar.height + 36}, tweeningTime, {ease: FlxEase.backIn});
@@ -256,7 +285,7 @@ class PlayState extends FlxState
 			{
 				healthTweening = false;
 			});
-		});
+		};
 	}
 
 	function playerTouchItem(player:Player, item:Item)
@@ -332,6 +361,18 @@ class PlayState extends FlxState
 		}
 		#end
 	}
+	function playerTouchScrewed(player:Player, item:Screwed)
+	{
+		if (player.alive && player.exists && item.alive && item.exists)
+		{
+			item.kill();
+			updateScore('take');
+			takeAwayHealth();
+			// if (popUpEnabled)
+			shatterScreen(item.getType());
+		}
+	}
+
 	function itemTimer(item:FlxBasic)
 	{
 		var timerTime:Float = 6;
@@ -352,5 +393,36 @@ class PlayState extends FlxState
 		{
 			remove(popUp);
 		});
+	}
+	function shatterScreen(type:Screwed.ScrewedType)
+	{
+		var randomX:Int = FlxG.random.int(0, FlxG.width);
+		var randomY:Int = FlxG.random.int(0, FlxG.height);
+		var crack:FlxSprite;
+		crack = new FlxSprite();
+		crack.loadGraphic(Paths.image('crack'));
+		crack.cameras = [camHUD];
+		crack.x = randomX;
+		crack.y = randomY;
+		switch (type)
+		{
+			case Normal:
+				crack.scale.set(0.6, 0.6);
+				crack.alpha = 0.3;
+				FlxG.camera.shake(0.1, 0.1);
+			case Red:
+				crack.scale.set(0.7, 0.7);
+				crack.alpha = 0.5;
+				FlxG.camera.shake(0.15, 0.2);
+			case New:
+				crack.scale.set(0.6, 0.6);
+				crack.alpha = 0.8;
+				FlxG.camera.shake(0.2, 0.25);
+			case Angry:
+				crack.scale.set(1.1, 1.1);
+				crack.alpha = 1;
+				FlxG.camera.shake(0.3, 0.35);
+		}
+		add(crack);
 	}
 }
