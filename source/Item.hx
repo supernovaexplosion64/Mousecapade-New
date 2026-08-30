@@ -7,8 +7,9 @@ import flixel.FlxSprite;
 class Item extends FlxSprite
 {
 	public var value:Int;
-	public static var speed:Int;
 	public var healthIncrease:Int;
+
+	public var SPEED:Float = 0;
 
 	public function new(x:Float, y:Float) 
 	{
@@ -21,12 +22,12 @@ class Item extends FlxSprite
 				healthIncrease = 1;
 			case Blue:
 				loadGraphic(Paths.item('bluecheese'), false);
-				speed = 75;
+				SPEED = 75;
 				value = 5;
 				healthIncrease = 2;
 			case Red:
 				loadGraphic(Paths.item('redcheese'), false);
-				speed = 200;
+				SPEED = 200;
 				value = 10;
 				healthIncrease = 4;
 		}
@@ -34,7 +35,6 @@ class Item extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		// updateHitbox();
 	}
 
 	public function getType():ItemType
@@ -66,28 +66,14 @@ class Item extends FlxSprite
 
 		if (up || down || left || right)
 		{
-			var newAngle:Float = 0;
 			if (up)
-			{
-				newAngle = -90;
-				if (left)
-					newAngle -= 45;
-				else if (right)
-					newAngle += 45;
-			}
-			else if (down)
-			{
-				newAngle = 90;
-				if (left)
-					newAngle += 45;
-				else if (right)
-					newAngle -= 45;
-			}
-			else if (left)
-				newAngle = 180;
-			else if (right)
-				newAngle = 0;
-			velocity.setPolarDegrees(speed, newAngle);
+				velocity.y = SPEED * -1;
+			if (down)
+				velocity.y = SPEED;
+			if (left)
+				velocity.x = SPEED * -1;
+			if (right)
+				velocity.x = SPEED;
 		}
 	}
 }

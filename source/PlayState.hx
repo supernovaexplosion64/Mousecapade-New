@@ -100,7 +100,7 @@ class PlayState extends FlxState
 		timeText.font = "Times New Roman";
 		timeText.text = Std.string(FlxStringUtil.formatTime(time));
 		timeText.screenCenter(X);
-		timeText.y = scoreText.y + 12;
+		timeText.y = scoreText.y + scoreText.height + 12;
 		timeText.cameras = [camHUD];
 		add(timeText);
 		healthBar = new FlxBar(0, 0, FlxBarFillDirection.LEFT_TO_RIGHT, 640, 20, this, "health");
@@ -122,6 +122,7 @@ class PlayState extends FlxState
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
 		if (health > 100)
 			health = 100;
+		healthText.text = "Health: " + Std.string(health);
 		spawnCheese();
 		spawnWega();
 		// spawnPhone();
@@ -190,6 +191,7 @@ class PlayState extends FlxState
 	{
 		time -= 1 * FlxG.elapsed;
 		timeText.text = Std.string(FlxStringUtil.formatTime(time));
+		timeText.screenCenter(X);
 		timeText.updateHitbox();
 	}
 	public function addScore():Int
@@ -220,6 +222,7 @@ class PlayState extends FlxState
 			score -= takeAwayScore();
 		}
 		scoreText.text = Std.string(score);
+		scoreText.screenCenter(X);
 	}
 
 	public function addHealth()
