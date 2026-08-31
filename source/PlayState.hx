@@ -61,8 +61,18 @@ class PlayState extends FlxState
 
 	var healthTweening:Bool = false;
 
+	public var LEVEL:Int = 1;
+	public var levelText:FlxText;
+
+	public static var gameJustStarted:Bool = true;
+
 	override public function create()
 	{
+		if (gameJustStarted)
+		{
+			LEVEL = 1;
+		}
+		gameJustStarted = false;
 		super.create();
 
 		bg = new FlxSprite();
@@ -122,13 +132,40 @@ class PlayState extends FlxState
 		healthText.y = FlxG.height + healthBar.height + 24;
 		healthText.cameras = [camHUD];
 		add(healthText);
+		levelText = new FlxText();
+		levelText.size = 48;
+		levelText.font = "Times New Roman";
+		levelText.text = 'LEVEL ' + Std.string(LEVEL);
+		// levelText.x = 12;
+		// levelText.y = 12;
+		levelText.cameras = [camHUD];
+		add(levelText);
+
+		new FlxTimer().start(2, function(tmr:FlxTimer)
+		{
+			FlxTween.tween(levelText, {y: levelText.y * -1}, 1, {ease: FlxEase.backIn});
+			new FlxTimer().start(1, function(tmr:FlxTimer)
+			{
+				remove(levelText);
+			});
+		});
 	}
 
 	override public function update(elapsed:Float)
 	{
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
+		if (time < 0 && health > 0)
+		{
+			// LEVEL += 1;
+			FlxG.resetState();
+		}
 		if (health > 100)
 			health = 100;
+		/*if (health <= 0)
+			{
+				FlxG.resetGame();
+				LEVEL = 1;
+		}*/
 		healthText.text = "Health: " + Std.string(health);
 		spawnCheese();
 		spawnWega();
@@ -407,19 +444,19 @@ class PlayState extends FlxState
 		switch (type)
 		{
 			case Normal:
-				crack.scale.set(0.6, 0.6);
+				crack.scale.set(0.9, 0.9);
 				crack.alpha = 0.3;
 				FlxG.camera.shake(0.1, 0.1);
 			case Red:
-				crack.scale.set(0.7, 0.7);
+				crack.scale.set(1.2, 1.2);
 				crack.alpha = 0.5;
 				FlxG.camera.shake(0.15, 0.2);
 			case New:
-				crack.scale.set(0.6, 0.6);
+				crack.scale.set(1.6, 1.6);
 				crack.alpha = 0.8;
 				FlxG.camera.shake(0.2, 0.25);
 			case Angry:
-				crack.scale.set(1.1, 1.1);
+				crack.scale.set(2.2, 2.2);
 				crack.alpha = 1;
 				FlxG.camera.shake(0.3, 0.35);
 		}
