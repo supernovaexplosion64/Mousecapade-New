@@ -34,25 +34,17 @@ class Item extends FlxSprite
 	}
 	override function update(elapsed:Float)
 	{
+		updateMovement();
 		super.update(elapsed);
 	}
 
-	public function getType():ItemType
-	{
-		var rng:Int = FlxG.random.int(1, 10);
-
-		if (rng <= 1)
-			return Red;
-		if (rng <= 3)
-			return Blue;
-		return Default;
-	}
 	function updateMovement()
 	{
 		var up:Bool = false;
 		var down:Bool = false;
 		var left:Bool = false;
 		var right:Bool = false;
+		var rSpeed:Float;
 
 		up = FlxG.random.bool(3);
 		down = FlxG.random.bool(3);
@@ -64,17 +56,38 @@ class Item extends FlxSprite
 		if (left && right)
 			left = right = false;
 
+		switch getType()
+		{
+			case Default:
+				rSpeed = 0.8;
+			case Blue:
+				rSpeed = 1.1;
+			case Red:
+				rSpeed = 1.4;
+		}
+
 		if (up || down || left || right)
 		{
 			if (up)
-				velocity.y = SPEED * -1;
+				velocity.y = SPEED * -1 * rSpeed;
 			if (down)
-				velocity.y = SPEED;
+				velocity.y = SPEED * rSpeed;
 			if (left)
-				velocity.x = SPEED * -1;
+				velocity.x = SPEED * -1 * rSpeed;
 			if (right)
-				velocity.x = SPEED;
+				velocity.x = SPEED * rSpeed;
 		}
+	}
+
+	public function getType():ItemType
+	{
+		var rng:Int = FlxG.random.int(1, 10);
+
+		if (rng <= 1)
+			return Red;
+		if (rng <= 3)
+			return Blue;
+		return Default;
 	}
 }
 

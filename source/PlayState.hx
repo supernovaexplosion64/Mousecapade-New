@@ -58,6 +58,7 @@ class PlayState extends FlxState
 
 	var timerThing:Float = 3;
 	var tweeningTime:Float = 0.8;
+	var stopMyTimer:Bool = false;
 
 	var healthTweening:Bool = false;
 
@@ -65,6 +66,8 @@ class PlayState extends FlxState
 	public var levelText:FlxText;
 
 	public static var gameJustStarted:Bool = true;
+
+	public var breakSound:FlxSound;
 
 	override public function create()
 	{
@@ -290,6 +293,7 @@ class PlayState extends FlxState
 	{
 		health += itemHealthIncrease;
 		healthText.text = "Health: " + Std.string(health);
+		timerThing = 3;
 		if (!healthTweening)
 			showHealth();
 	}
@@ -298,13 +302,13 @@ class PlayState extends FlxState
 	{
 		health -= 5;
 		healthText.text = "Health: " + Std.string(health);
+		timerThing = 3;
 		if (!healthTweening)
 			showHealth();
 	}
 
 	public function showHealth()
 	{
-		timerThing = 3;
 		healthTweening = true;
 		FlxTween.tween(healthBar, {y: FlxG.height - healthBar.height}, tweeningTime, {ease: FlxEase.backOut});
 		FlxTween.tween(healthText, {y: FlxG.height - healthBar.height - 36}, tweeningTime, {ease: FlxEase.backOut});
@@ -314,13 +318,15 @@ class PlayState extends FlxState
 	{
 		timerThing -= 1 * FlxG.elapsed;
 		#if debug trace(timerThing); #end
-		if (timerThing <= 0)
+		if (timerThing <= 0 && !stopMyTimer)
 		{
+			stopMyTimer = true;
 			FlxTween.tween(healthBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
 			FlxTween.tween(healthText, {y: FlxG.height + healthBar.height + 36}, tweeningTime, {ease: FlxEase.backIn});
 			new FlxTimer().start(tweeningTime, function(tmr:FlxTimer)
 			{
 				healthTweening = false;
+				stopMyTimer = false;
 			});
 		};
 	}
@@ -433,33 +439,60 @@ class PlayState extends FlxState
 	}
 	function shatterScreen(type:Screwed.ScrewedType)
 	{
+		var daPhone:FlxSprite;
 		var randomX:Int = FlxG.random.int(0, FlxG.width);
 		var randomY:Int = FlxG.random.int(0, FlxG.height);
+		var randomXA:Int = FlxG.random.int(0, FlxG.width);
+		var randomYA:Int = FlxG.random.int(0, FlxG.height);
+		var randomSpeedMulti:Float;
 		var crack:FlxSprite;
+		daPhone = new FlxSprite();
+		daPhone.loadGraphic(Paths.image("phone/phone"));
+		daPhone.cameras = [camHUD];
+
 		crack = new FlxSprite();
-		crack.loadGraphic(Paths.image('crack'));
-		crack.cameras = [camHUD];
-		crack.x = randomX;
-		crack.y = randomY;
 		switch (type)
 		{
 			case Normal:
+				crack.loadGraphic(Paths.image('phone/normal'));
 				crack.scale.set(0.9, 0.9);
 				crack.alpha = 0.3;
 				FlxG.camera.shake(0.1, 0.1);
+				randomSpeedMulti = FlxG.random.float(0.8, 1.2);
 			case Red:
+				crack.loadGraphic(Paths.image('phone/red'));
 				crack.scale.set(1.2, 1.2);
 				crack.alpha = 0.5;
 				FlxG.camera.shake(0.15, 0.2);
+				randomSpeedMulti = FlxG.random.float(1.1, 1.6);
 			case New:
+				crack.loadGraphic(Paths.image('phone/new'));
 				crack.scale.set(1.6, 1.6);
 				crack.alpha = 0.8;
 				FlxG.camera.shake(0.2, 0.25);
+				randomSpeedMulti = FlxG.random.float(1.5, 2.0);
 			case Angry:
+				crack.loadGraphic(Paths.image('phone/angry'));
 				crack.scale.set(2.2, 2.2);
 				crack.alpha = 1;
 				FlxG.camera.shake(0.3, 0.35);
+				randomSpeedMulti = FlxG.random.float(2, 2.5);
 		}
+		// daPhone.angle += 360 * randomSpeedMulti * FlxG.elapsed;
+		crack.cameras = [camHUD];
+		crack.x = randomX;
+		crack.y = randomY;
+		daPhone.angle = FlxG.random.int(0, 360);
+		daPhone.scale.set(randomSpeedMulti * 0.6, randomSpeedMulti * 0.6);
+		daPhone.x = randomX;
+		daPhone.y = randomY;
+		add(daPhone);
+		new FlxTimer().start(3, function(tmr:FlxTimer)
+		{
+			FlxTween.tween(daPhone, {alpha: 0}, 0.6);
+		});
 		add(crack);
+		breakSound = FlxG.sound.load(Paths.sound("phone-break"));
+		breakSound.play();
 	}
 }
