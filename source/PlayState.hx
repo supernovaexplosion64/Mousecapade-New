@@ -29,6 +29,7 @@ class PlayState extends FlxState
 	public var wegas:FlxTypedGroup<Wega>;
 	public var phones:FlxTypedGroup<PickUpThePhone>;
 	public var screweds:FlxTypedGroup<Screwed>;
+	public var windows:FlxTypedGroup<WindowsPopUp>;
 
 	var randomX = FlxG.random.int(0, 600);
 	var randomY = FlxG.random.int(0, 600);
@@ -42,6 +43,12 @@ class PlayState extends FlxState
 	public var itemScore:Int;
 	public var itemHealthIncrease:Int;
 
+	public var screwed_daGraphic:String;
+	public var screwed_daScale:Float;
+	public var screwed_daShake:Float;
+	public var screwed_randomMulti:Float;
+	public var screwed_alphaAlpha:Float;
+
 	public var time:Float = 0;
 	public var timeText:FlxText;
 
@@ -50,6 +57,7 @@ class PlayState extends FlxState
 	// public var camGame:FlxCamera;
 	public var camHUD:FlxCamera;
 	public var camMain:FlxCamera;
+	public var camWindow:FlxCamera;
 
 	var bg:FlxSprite;
 	public var health:Float = 100;
@@ -93,6 +101,10 @@ class PlayState extends FlxState
 		camMain.bgColor.alpha = 0;
 		FlxG.cameras.add(camMain, false);
 
+		camWindow = new FlxCamera();
+		camWindow.bgColor.alpha = 0;
+		FlxG.cameras.add(camWindow, false);
+
 		FlxG.sound.playMusic(Paths.music('welcome-old'), 1, true);
 		
 		player = new Player();
@@ -112,6 +124,9 @@ class PlayState extends FlxState
 
 		screweds = new FlxTypedGroup<Screwed>();
 		add(screweds);
+
+		windows = new FlxTypedGroup<WindowsPopUp>();
+		add(windows);
 
 		scoreText = new FlxText();
 		scoreText.size = 48;
@@ -186,12 +201,14 @@ class PlayState extends FlxState
 		showNewEnemyText(30, "Wegas have started to appear!");
 		showNewEnemyText(60, "Bambis have started to appear!");
 		spawnCheese();
-		if (time >= 15)
-			spawnWega();
-		if (time >= 120)
-			spawnPhone();
-		if (time >= 60)
-			spawnScrewed();
+		// if (time >= 15)
+		spawnWega();
+		// if (time >= 120)
+		spawnPhone();
+		// if (time >= 60)
+		spawnScrewed();
+		spawnWindows();
+		spawnFunny();
 		updateTime();
 		decreasingMultiplier -= 8 * FlxG.elapsed;
 		if (decreasingMultiplier < 2)
@@ -266,6 +283,25 @@ class PlayState extends FlxState
 			screweds.add(screwed);
 			screwed.updateHitbox();
 			itemTimer(screwed);
+		}
+	}
+
+	public function spawnWindows()
+	{
+		var randomChanceToAppear:Float = FlxG.random.float(2, 3);
+		var windowsAppear:Bool = FlxG.random.bool(randomChanceToAppear);
+		if (windowsAppear)
+		{
+			var positionX = FlxG.random.int(0, FlxG.width - 100);
+			var positionY = FlxG.random.int(0, FlxG.height - 100);
+			var window = new WindowsPopUp(positionX - 500, positionY - 300);
+			window.scale.set(0.3, 0.3);
+			window.alpha = 0;
+			window.cameras = [camWindow];
+			window.updateHitbox();
+			windows.add(window);
+			FlxTween.tween(window, {alpha: 1}, 0.3);
+			itemTimer(window);
 		}
 	}
 
@@ -400,10 +436,15 @@ class PlayState extends FlxState
 		if (player.alive && player.exists && item.alive && item.exists)
 		{
 			item.kill();
+			screwed_daGraphic = item.daGraphic;
+			screwed_daScale = item.daScale;
+			screwed_daShake = item.daShake;
+			screwed_randomMulti = item.randomMulti;
+			screwed_alphaAlpha = item.alphaAlpha;
 			updateScore('take');
 			takeAwayHealth();
 			// if (popUpEnabled)
-			shatterScreen(item.getType());
+			shatterScreen();
 		}
 	}
 
@@ -429,7 +470,7 @@ class PlayState extends FlxState
 			popUp.kill();
 		});
 	}
-	function shatterScreen(type:Screwed.ScrewedType)
+	function shatterScreen()
 	{
 		var daPhone:FlxSprite;
 		var randomX:Int = FlxG.random.int(0, FlxG.width);
@@ -443,33 +484,11 @@ class PlayState extends FlxState
 		daPhone.cameras = [camHUD];
 
 		crack = new FlxSprite();
-		switch (type)
-		{
-			case Normal:
-				crack.loadGraphic(Paths.image('phone/normal'));
-				crack.scale.set(0.9, 0.9);
-				crack.alpha = 0.3;
-				FlxG.camera.shake(0.1, 0.1);
-				randomSpeedMulti = FlxG.random.float(0.8, 1.2);
-			case Red:
-				crack.loadGraphic(Paths.image('phone/red'));
-				crack.scale.set(1.2, 1.2);
-				crack.alpha = 0.5;
-				FlxG.camera.shake(0.15, 0.2);
-				randomSpeedMulti = FlxG.random.float(1.1, 1.6);
-			case New:
-				crack.loadGraphic(Paths.image('phone/new'));
-				crack.scale.set(1.6, 1.6);
-				crack.alpha = 0.8;
-				FlxG.camera.shake(0.2, 0.25);
-				randomSpeedMulti = FlxG.random.float(1.5, 2.0);
-			case Angry:
-				crack.loadGraphic(Paths.image('phone/angry'));
-				crack.scale.set(2.2, 2.2);
-				crack.alpha = 1;
-				FlxG.camera.shake(0.3, 0.35);
-				randomSpeedMulti = FlxG.random.float(2, 2.5);
-		}
+		crack.loadGraphic(Paths.image('phone/${screwed_daGraphic}'));
+		crack.scale.set(screwed_daScale, screwed_daScale);
+		crack.alpha = screwed_alphaAlpha;
+		FlxG.camera.shake(screwed_daShake, screwed_daShake);
+		randomSpeedMulti = screwed_randomMulti;
 		// daPhone.angle += 360 * randomSpeedMulti * FlxG.elapsed;
 		crack.cameras = [camHUD];
 		crack.x = randomX;
@@ -500,6 +519,24 @@ class PlayState extends FlxState
 			{
 				FlxTween.tween(newEnemyText, {angle: 45}, 2, {ease: FlxEase.cubeIn});
 				FlxTween.tween(newEnemyText, {y: FlxG.height * 3}, 5, {ease: FlxEase.cubeIn});
+			});
+		}
+	}
+	function spawnFunny()
+	{
+		if (FlxG.random.bool(0.02))
+		{
+			var funny:FlxSprite = new FlxSprite();
+			funny.loadGraphic(Paths.image('dave'));
+			funny.cameras = [camHUD];
+			add(funny);
+
+			var funnySound:FlxSound = new FlxSound();
+			funnySound = FlxG.sound.load(Paths.sound("dave"));
+			funnySound.play();
+			new FlxTimer().start(1.25, function(tmr:FlxTimer)
+			{
+				funny.kill();
 			});
 		}
 	}
