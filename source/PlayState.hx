@@ -79,6 +79,8 @@ class PlayState extends FlxState
 
 	var newEnemyText:FlxText;
 
+	public var theDelta:Float;
+
 	override public function create()
 	{
 		if (gameJustStarted)
@@ -184,6 +186,7 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float)
 	{
+		theDelta = FlxG.elapsed;
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
 		/*if (time < 0 && health > 0)
 		{
@@ -207,7 +210,6 @@ class PlayState extends FlxState
 		spawnPhone();
 		// if (time >= 60)
 		spawnScrewed();
-		spawnWindows();
 		spawnFunny();
 		updateTime();
 		decreasingMultiplier -= 8 * FlxG.elapsed;
@@ -221,12 +223,13 @@ class PlayState extends FlxState
 		FlxG.overlap(player, phones, playerTouchPhone);
 		FlxG.overlap(player, screweds, playerTouchScrewed);
 		super.update(elapsed);
+		spawnWindows();
 	}
 
 	public function spawnCheese()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(4, 12);
-		var cheeseAppear:Bool = FlxG.random.bool(randomChanceToAppear);
+		var cheeseAppear:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
 		if (cheeseAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -242,7 +245,7 @@ class PlayState extends FlxState
 	public function spawnWega()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(1.5, 4.5);
-		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 30));
+		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 30) * theDelta * 60);
 		if (wegaAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -258,7 +261,7 @@ class PlayState extends FlxState
 	public function spawnPhone()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(0.3, 0.75);
-		var phoneAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 75));
+		var phoneAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 75) * theDelta * 60);
 		if (phoneAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -273,7 +276,7 @@ class PlayState extends FlxState
 	public function spawnScrewed()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(2, 7);
-		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120));
+		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120) * theDelta * 60);
 		if (screwedAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -288,8 +291,8 @@ class PlayState extends FlxState
 
 	public function spawnWindows()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(2, 3);
-		var windowsAppear:Bool = FlxG.random.bool(randomChanceToAppear);
+		var randomChanceToAppear:Float = FlxG.random.float(0.2, 0.3);
+		var windowsAppear:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
 		if (windowsAppear)
 		{
 			var positionX = FlxG.random.int(0, FlxG.width - 100);
@@ -524,7 +527,7 @@ class PlayState extends FlxState
 	}
 	function spawnFunny()
 	{
-		if (FlxG.random.bool(0.02))
+		if (FlxG.random.bool(0.02 * theDelta * 60))
 		{
 			var funny:FlxSprite = new FlxSprite();
 			funny.loadGraphic(Paths.image('dave'));
