@@ -7,7 +7,7 @@ class PickUpThePhone extends FlxSprite
 {
 	public function new(x:Float, y:Float)
 	{
-		super();
+		super(x, y);
         loadGraphic("assets/images/enemies/fnati.png");
 	}
 
