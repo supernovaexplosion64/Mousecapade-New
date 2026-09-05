@@ -30,4 +30,6 @@ class Paths {
 		#end
 		return 'assets/sounds/$k' + outputSuffix;
 	}
+	static inline function video(k:String):String
+		return 'assets/videos/$k.png';
 }

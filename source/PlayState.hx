@@ -18,9 +18,6 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
-#if ((desktop || android) && !hl)
-import hxcodec.flixel.FlxVideo;
-#end
 
 class PlayState extends FlxState
 {
@@ -91,6 +88,7 @@ class PlayState extends FlxState
 	var slow_bpm:Float = 130;
 
 	var ateThePizza:Bool = false;
+	public var maxPizzasEaten:Int = 25;
 
 	override public function create()
 	{
@@ -110,13 +108,13 @@ class PlayState extends FlxState
 		camHUD.bgColor.alpha = 0;
 		FlxG.cameras.add(camHUD, false);
 
-		camMain = new FlxCamera();
-		camMain.bgColor.alpha = 0;
-		FlxG.cameras.add(camMain, false);
-
 		camWindow = new FlxCamera();
 		camWindow.bgColor.alpha = 0;
 		FlxG.cameras.add(camWindow, false);
+
+		camMain = new FlxCamera();
+		camMain.bgColor.alpha = 0;
+		FlxG.cameras.add(camMain, false);
 
 		FlxG.sound.playMusic(Paths.music('maintheme/normal'), 1, true);
 		
@@ -242,7 +240,8 @@ class PlayState extends FlxState
 		showNewEnemyText(30, "Wegas have started to appear!");
 		showNewEnemyText(60, "Bambis have started to appear!");
 		spawnCheese();
-		spawnPizza();
+		if (maxPizzasEaten > 0)
+			spawnPizza();
 		// if (time >= 15)
 		spawnWega();
 		// if (time >= 120)
@@ -250,7 +249,12 @@ class PlayState extends FlxState
 		// if (time >= 60)
 		spawnScrewed();
 		spawnFunny();
+		spawnWindows();
 		updateTime();
+		/*if (health <= 100 && theOtherBar.alpha > 0)
+			{
+				FlxTween.tween(theOtherBar, {alpha: 0}, 1 / theOtherBar.alpha);
+		}*/
 		decreasingMultiplier -= 8 * FlxG.elapsed;
 		if (decreasingMultiplier < 2)
 			decreasingMultiplier = 2;
@@ -263,7 +267,6 @@ class PlayState extends FlxState
 		FlxG.overlap(player, phones, playerTouchPhone);
 		FlxG.overlap(player, screweds, playerTouchScrewed);
 		super.update(elapsed);
-		spawnWindows();
 	}
 
 	var stopMusic:Bool = true;
@@ -323,6 +326,7 @@ class PlayState extends FlxState
 		var pizzaAppear:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
 		if (pizzaAppear)
 		{
+			maxPizzasEaten -= 1;
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
 			var positionY = player.y + FlxG.random.int(-720, 720);
 			var pizza = new Pizza(positionX, positionY);
@@ -333,9 +337,19 @@ class PlayState extends FlxState
 		}
 	}
 
+	public function addNewPizza()
+	{
+		var randomChanceToAppear:Float = FlxG.random.float(0.004, 0.012);
+		var chance:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
+		if (chance)
+		{
+			maxPizzasEaten += 1;
+		}
+	}
+
 	public function spawnWega()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(1.5, 4.5);
+		var randomChanceToAppear:Float = FlxG.random.float(2, 5);
 		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 30) * theDelta * 60);
 		if (wegaAppear)
 		{
@@ -351,7 +365,7 @@ class PlayState extends FlxState
 
 	public function spawnPhone()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(0.3, 0.75);
+		var randomChanceToAppear:Float = FlxG.random.float(0.25, 0.65);
 		var phoneAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 75) * theDelta * 60);
 		if (phoneAppear)
 		{
@@ -366,7 +380,7 @@ class PlayState extends FlxState
 	}
 	public function spawnScrewed()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(2, 7);
+		var randomChanceToAppear:Float = FlxG.random.float(1.5, 3.5);
 		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120) * theDelta * 60);
 		if (screwedAppear)
 		{
@@ -382,16 +396,16 @@ class PlayState extends FlxState
 
 	public function spawnWindows()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(0.2, 0.3);
+		var randomChanceToAppear:Float = FlxG.random.float(0.7, 0.8);
 		var windowsAppear:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
 		if (windowsAppear)
 		{
 			var positionX = FlxG.random.int(0, FlxG.width - 100);
 			var positionY = FlxG.random.int(0, FlxG.height - 100);
-			var window = new WindowsPopUp(positionX - 500, positionY - 300);
+			var window = new WindowsPopUp(positionX, positionY);
 			window.scale.set(0.3, 0.3);
 			window.alpha = 0;
-			window.cameras = [camWindow];
+			window.cameras = [camHUD];
 			window.updateHitbox();
 			windows.add(window);
 			FlxTween.tween(window, {alpha: 1}, 0.3);
@@ -523,20 +537,46 @@ class PlayState extends FlxState
 	{
 		if (player.alive && player.exists && item.alive && item.exists)
 		{
-			item.kill();
-			var fnatiJumpscare:FlxSprite;
-			fnatiJumpscare = new FlxSprite();
-			fnatiJumpscare.loadGraphic(Paths.image('fnatijumpscare'), 800, 450);
-			fnatiJumpscare.animation.add("idle", [
-				0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
-			], 24, true);
-			fnatiJumpscare.animation.play("idle");
-			fnatiJumpscare.cameras = [camHUD];
-			add(fnatiJumpscare);
-			new FlxTimer().start(1, function(tmr:FlxTimer)
+			if (FlxG.random.bool(0.5))
 			{
-				fnatiJumpscare.kill();
-			});
+				#if ((desktop || android) && !hl)
+				FlxG.switchState(new PickUpVideoState());
+				#else
+				FlxG.openURL("https://youtu.be/ChnqPMwQIKc");
+				FlxG.switchState(new MainMenuState());
+				#end
+			}
+			else
+			{
+				var pickUpPhone:FlxSound = new FlxSound();
+				pickUpPhone = FlxG.sound.load(Paths.sound("pick-up"));
+				pickUpPhone.play();
+				item.kill();
+				var fnatiPopUp:FlxSprite;
+				fnatiPopUp = new FlxSprite();
+				fnatiPopUp.loadGraphic(Paths.image('popups/phone'));
+				fnatiPopUp.cameras = [camHUD];
+				add(fnatiPopUp);
+				var fnatiJumpscare:FlxSprite;
+				fnatiJumpscare = new FlxSprite();
+				fnatiJumpscare.loadGraphic(Paths.image('fnatijumpscare'), true, 800, 450);
+				fnatiJumpscare.animation.add("idle", [
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+				], 60, true);
+				fnatiJumpscare.scale.set(FlxG.width / 600, FlxG.height / fnatiJumpscare.frameHeight);
+				fnatiJumpscare.cameras = [camHUD];
+				fnatiJumpscare.screenCenter();
+				new FlxTimer().start(1.5, function(tmr:FlxTimer)
+				{
+					add(fnatiJumpscare);
+					fnatiJumpscare.animation.play("idle");
+				});
+				new FlxTimer().start(2.3, function(tmr:FlxTimer)
+				{
+					fnatiPopUp.kill();
+					fnatiJumpscare.kill();
+				});
+			}
 		}
 	}
 	function playerTouchScrewed(player:Player, item:Screwed)
@@ -573,7 +613,10 @@ class PlayState extends FlxState
 		{
 			item.kill();
 			if (health <= 100)
+			{
 				ateThePizza = false;
+				theOtherBar.alpha = 0;
+			}
 		});
 	}
 
@@ -644,7 +687,7 @@ class PlayState extends FlxState
 	}
 	function spawnFunny()
 	{
-		if (FlxG.random.bool(0.02 * theDelta * 60 * (time / 180)))
+		if (FlxG.random.bool(0.025 * theDelta * 60 * (time / 180)))
 		{
 			var funny:FlxSprite = new FlxSprite();
 			funny.loadGraphic(Paths.image('dave'));

@@ -8,7 +8,7 @@ class Wega extends FlxSprite
 	public function new(x:Float, y:Float)
 	{
 		super(x, y);
-        loadGraphic("assets/images/enemies/wega.png");
+		loadGraphic(Paths.enemy("wega"));
 	}
 
 	override public function update(elapsed:Float):Void
