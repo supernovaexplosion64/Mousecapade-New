@@ -30,6 +30,7 @@ class PlayState extends FlxState
 	public var phones:FlxTypedGroup<PickUpThePhone>;
 	public var screweds:FlxTypedGroup<Screwed>;
 	public var windows:FlxTypedGroup<WindowsPopUp>;
+	public var pizzas:FlxTypedGroup<Pizza>;
 
 	var randomX = FlxG.random.int(0, 600);
 	var randomY = FlxG.random.int(0, 600);
@@ -43,6 +44,7 @@ class PlayState extends FlxState
 	public var itemScore:Int;
 	public var itemHealthIncrease:Int;
 
+	public var screwed_healthDecrease:Float;
 	public var screwed_daGraphic:String;
 	public var screwed_daScale:Float;
 	public var screwed_daShake:Float;
@@ -64,6 +66,9 @@ class PlayState extends FlxState
 	public var healthBar:FlxBar;
 	public var healthText:FlxText;
 
+	public var theOtherBar:FlxBar;
+	public var secondaryHealth:Float = 50;
+
 	var timerThing:Float = 3;
 	var tweeningTime:Float = 0.8;
 	var stopMyTimer:Bool = false;
@@ -80,6 +85,12 @@ class PlayState extends FlxState
 	var newEnemyText:FlxText;
 
 	public var theDelta:Float;
+
+	var normal_bpm:Float = 173;
+	var fast_bpm:Float = 200;
+	var slow_bpm:Float = 130;
+
+	var ateThePizza:Bool = false;
 
 	override public function create()
 	{
@@ -107,7 +118,7 @@ class PlayState extends FlxState
 		camWindow.bgColor.alpha = 0;
 		FlxG.cameras.add(camWindow, false);
 
-		FlxG.sound.playMusic(Paths.music('welcome-old'), 1, true);
+		FlxG.sound.playMusic(Paths.music('maintheme/normal'), 1, true);
 		
 		player = new Player();
 		add(player);
@@ -130,6 +141,9 @@ class PlayState extends FlxState
 		windows = new FlxTypedGroup<WindowsPopUp>();
 		add(windows);
 
+		pizzas = new FlxTypedGroup<Pizza>();
+		add(pizzas);
+
 		scoreText = new FlxText();
 		scoreText.size = 48;
 		scoreText.font = "Times New Roman";
@@ -150,6 +164,14 @@ class PlayState extends FlxState
 		healthBar.y = FlxG.height;
 		healthBar.cameras = [camMain];
 		add(healthBar);
+
+		theOtherBar = new FlxBar(0, 0, FlxBarFillDirection.LEFT_TO_RIGHT, 320, 20, this, "secondaryHealth", 0, 50);
+		theOtherBar.createFilledBar(0xFF008080, 0xFF00FFFF);
+		theOtherBar.x = 640;
+		theOtherBar.y = FlxG.height;
+		theOtherBar.alpha = 0;
+		theOtherBar.cameras = [camMain];
+		add(theOtherBar);
 
 		healthText = new FlxText();
 		healthText.size = 24;
@@ -193,8 +215,24 @@ class PlayState extends FlxState
 			// LEVEL += 1;
 			FlxG.resetState();
 		}*/
-		if (health > 100)
+		if (health > 100 && !ateThePizza)
+		{
 			health = 100;
+		}
+		else if (health > 150 && ateThePizza)
+		{
+			health = 150;
+		}
+
+		if (health > 100 && ateThePizza)
+		{
+			theOtherBar.alpha = 1;
+			secondaryHealth = health - 100;
+			if (secondaryHealth > 50)
+				secondaryHealth = 50;
+		}
+
+		changeMusic();
 		/*if (health <= 0)
 			{
 				FlxG.resetGame();
@@ -204,6 +242,7 @@ class PlayState extends FlxState
 		showNewEnemyText(30, "Wegas have started to appear!");
 		showNewEnemyText(60, "Bambis have started to appear!");
 		spawnCheese();
+		spawnPizza();
 		// if (time >= 15)
 		spawnWega();
 		// if (time >= 120)
@@ -219,11 +258,47 @@ class PlayState extends FlxState
 			healthEasing();
 		player.updateHitbox();
 		FlxG.overlap(player, cheeses, playerTouchItem);
+		FlxG.overlap(player, pizzas, playerTouchPizza);
 		FlxG.overlap(player, wegas, playerTouchWega);
 		FlxG.overlap(player, phones, playerTouchPhone);
 		FlxG.overlap(player, screweds, playerTouchScrewed);
 		super.update(elapsed);
 		spawnWindows();
+	}
+
+	var stopMusic:Bool = true;
+	var stopFastMusic:Bool = false;
+	var stopSlowMusic:Bool = false;
+
+	public function changeMusic()
+	{
+		if (health < 20 && !stopFastMusic)
+		{
+			FlxG.sound.playMusic(Paths.music('maintheme/fast'), 1, true);
+			stopFastMusic = !stopFastMusic;
+			if (stopMusic)
+				stopMusic = !stopMusic;
+			if (stopSlowMusic)
+				stopSlowMusic = !stopSlowMusic;
+		}
+		else if (health > 100 && !stopSlowMusic)
+		{
+			FlxG.sound.playMusic(Paths.music('maintheme/slow'), 1, true);
+			stopSlowMusic = !stopSlowMusic;
+			if (stopMusic)
+				stopMusic = !stopMusic;
+			if (stopFastMusic)
+				stopFastMusic = !stopFastMusic;
+		}
+		else if (health >= 20 && health <= 100 && !stopMusic)
+		{
+			FlxG.sound.playMusic(Paths.music('maintheme/normal'), 1, true);
+			stopMusic = !stopMusic;
+			if (stopSlowMusic)
+				stopSlowMusic = !stopSlowMusic;
+			if (stopFastMusic)
+				stopFastMusic = !stopFastMusic;
+		}
 	}
 
 	public function spawnCheese()
@@ -239,6 +314,22 @@ class PlayState extends FlxState
 			cheeses.add(cheese);
 			cheese.updateHitbox();
 			itemTimer(cheese);
+		}
+	}
+
+	public function spawnPizza()
+	{
+		var randomChanceToAppear:Float = FlxG.random.float(0.08, 0.24);
+		var pizzaAppear:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
+		if (pizzaAppear)
+		{
+			var positionX = player.x + FlxG.random.int(-1280, 1280);
+			var positionY = player.y + FlxG.random.int(-720, 720);
+			var pizza = new Pizza(positionX, positionY);
+			// itemScore = cheese.value;
+			pizzas.add(pizza);
+			pizza.updateHitbox();
+			itemTimerPizza(pizza);
 		}
 	}
 
@@ -346,7 +437,7 @@ class PlayState extends FlxState
 		scoreText.screenCenter(X);
 	}
 
-	public function addHealth()
+	public function addHealth(healthGiven:Float = 25)
 	{
 		health += itemHealthIncrease;
 		healthText.text = "Health: " + Std.string(health);
@@ -355,9 +446,9 @@ class PlayState extends FlxState
 			showHealth();
 	}
 
-	public function takeAwayHealth()
+	public function takeAwayHealth(healthTaken:Float = 5)
 	{
-		health -= 5;
+		health -= healthTaken;
 		healthText.text = "Health: " + Std.string(health);
 		timerThing = 3;
 		if (!healthTweening)
@@ -368,6 +459,7 @@ class PlayState extends FlxState
 	{
 		healthTweening = true;
 		FlxTween.tween(healthBar, {y: FlxG.height - healthBar.height}, tweeningTime, {ease: FlxEase.backOut});
+		FlxTween.tween(theOtherBar, {y: FlxG.height - theOtherBar.height}, tweeningTime, {ease: FlxEase.backOut});
 		FlxTween.tween(healthText, {y: FlxG.height - healthBar.height - 36}, tweeningTime, {ease: FlxEase.backOut});
 	}
 
@@ -379,6 +471,7 @@ class PlayState extends FlxState
 		{
 			stopMyTimer = true;
 			FlxTween.tween(healthBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
+			FlxTween.tween(theOtherBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
 			FlxTween.tween(healthText, {y: FlxG.height + healthBar.height + 36}, tweeningTime, {ease: FlxEase.backIn});
 			new FlxTimer().start(tweeningTime, function(tmr:FlxTimer)
 			{
@@ -399,6 +492,18 @@ class PlayState extends FlxState
 			updateScore('add');
 			if (popUpEnabled)
 				showPopUp(Normal);
+		}
+	}
+
+	function playerTouchPizza(player:Player, item:Pizza)
+	{
+		if (player.alive && player.exists && item.alive && item.exists)
+		{
+			ateThePizza = true;
+			item.kill();
+			itemHealthIncrease = 25;
+			addHealth();
+			updateScore('add');
 		}
 	}
 
@@ -439,24 +544,36 @@ class PlayState extends FlxState
 		if (player.alive && player.exists && item.alive && item.exists)
 		{
 			item.kill();
+			screwed_healthDecrease = item.healthDecrease;
 			screwed_daGraphic = item.daGraphic;
 			screwed_daScale = item.daScale;
 			screwed_daShake = item.daShake;
 			screwed_randomMulti = item.randomMulti;
 			screwed_alphaAlpha = item.alphaAlpha;
 			updateScore('take');
-			takeAwayHealth();
+			takeAwayHealth(screwed_healthDecrease);
 			// if (popUpEnabled)
 			shatterScreen();
 		}
 	}
 
-	function itemTimer(item:FlxBasic)
+	function itemTimer(item:FlxBasic, timeTime:Float = 6)
 	{
-		var timerTime:Float = 6;
+		var timerTime:Float = timeTime;
 		new FlxTimer().start(timerTime, function(tmr:FlxTimer)
 		{
 			item.kill();
+		});
+	}
+
+	function itemTimerPizza(item:FlxBasic, timeTime:Float = 30)
+	{
+		var timerTime:Float = timeTime;
+		new FlxTimer().start(timerTime, function(tmr:FlxTimer)
+		{
+			item.kill();
+			if (health <= 100)
+				ateThePizza = false;
 		});
 	}
 
@@ -527,7 +644,7 @@ class PlayState extends FlxState
 	}
 	function spawnFunny()
 	{
-		if (FlxG.random.bool(0.02 * theDelta * 60))
+		if (FlxG.random.bool(0.02 * theDelta * 60 * (time / 180)))
 		{
 			var funny:FlxSprite = new FlxSprite();
 			funny.loadGraphic(Paths.image('dave'));

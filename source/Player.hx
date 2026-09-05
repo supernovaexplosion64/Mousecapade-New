@@ -11,7 +11,7 @@ class Player extends FlxSprite
 	public function new(x:Float = 0, y:Float = 0)
 	{
 		super(x, y);
-        loadGraphic("assets/images/player.png");
+		loadGraphic(Paths.image('player'));
 		setGraphicSize(128, 128);
 		maxVelocity.set(640, 640);
 	}

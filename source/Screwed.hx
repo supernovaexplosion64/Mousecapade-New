@@ -22,7 +22,7 @@ class Screwed extends FlxSprite
 			case Normal:
 				daGraphic = 'normal';
                 SPEED = 75;
-				healthDecrease = 3;
+				healthDecrease = 2;
 				daScale = 0.9;
 				daShake = 0.1;
 				randomMulti = 1.2;
@@ -30,7 +30,7 @@ class Screwed extends FlxSprite
 			case Red:
 				daGraphic = 'red';
 				SPEED = 125;
-				healthDecrease = 15;
+				healthDecrease = 5;
 				daScale = 1.2;
 				daShake = 0.175;
 				randomMulti = 1.6;
@@ -38,7 +38,7 @@ class Screwed extends FlxSprite
 			case New:
 				daGraphic = 'new';
 				SPEED = 150;
-				healthDecrease = 25;
+				healthDecrease = 10;
 				daScale = 1.6;
 				daShake = 0.2;
 				randomMulti = 2;
@@ -46,7 +46,7 @@ class Screwed extends FlxSprite
             case Angry:
 				daGraphic = 'angry';
 				SPEED = 200;
-				healthDecrease = 55;
+				healthDecrease = 25;
 				daScale = 2.2;
 				daShake = 0.3;
 				randomMulti = 2.5;
