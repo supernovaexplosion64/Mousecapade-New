@@ -79,8 +79,6 @@ class PlayState extends FlxState
 
 	public var breakSound:FlxSound;
 
-	var newEnemyText:FlxText;
-
 	public var theDelta:Float;
 
 	var normal_bpm:Float = 173;
@@ -90,11 +88,11 @@ class PlayState extends FlxState
 	var ateThePizza:Bool = false;
 	public var maxPizzasEaten:Int = 25;
 
-	var randomAppear:Int = FlxG.random.int(15, 30);
-	var randomAppear2:Int = FlxG.random.int(30, 60);
-	var randomAppear3:Int = FlxG.random.int(60, 120);
-	var randomAppear4:Int = FlxG.random.int(90, 180);
-	var randomAppear5:Int = FlxG.random.int(120, 240);
+	var randomAppear:Float = FlxG.random.float(15, 30);
+	var randomAppear2:Float = FlxG.random.float(30, 60);
+	var randomAppear3:Float = FlxG.random.float(60, 120);
+	var randomAppear4:Float = FlxG.random.float(90, 180);
+	var randomAppear5:Float = FlxG.random.float(120, 240);
 
 	override public function create()
 	{
@@ -193,14 +191,6 @@ class PlayState extends FlxState
 		levelText.cameras = [camHUD];
 		add(levelText);
 
-		newEnemyText = new FlxText();
-		newEnemyText.size = 24;
-		newEnemyText.font = "Times New Roman";
-		newEnemyText.text = '';
-		newEnemyText.cameras = [camMain];
-		newEnemyText.alpha = 0;
-		add(newEnemyText);
-
 		new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
 			FlxTween.tween(levelText, {y: levelText.y * -1}, 1, {ease: FlxEase.backIn});
@@ -209,6 +199,7 @@ class PlayState extends FlxState
 				remove(levelText);
 			});
 		});
+		showNewEnemyText();
 	}
 
 	override public function update(elapsed:Float)
@@ -244,7 +235,7 @@ class PlayState extends FlxState
 				LEVEL = 1;
 		}*/
 		healthText.text = "Health: " + Std.string(health);
-		showNewEnemyText();
+		// showNewEnemyText();
 		spawnCheese();
 		addNewPizza();
 		if (maxPizzasEaten > 0)
@@ -275,6 +266,8 @@ class PlayState extends FlxState
 		FlxG.overlap(player, wegas, playerTouchWega);
 		FlxG.overlap(player, phones, playerTouchPhone);
 		FlxG.overlap(player, screweds, playerTouchScrewed);
+		windows.forEachAlive(mouseTouchWindows);
+		windows.forEachExists(mouseTouchWindows);
 		super.update(elapsed);
 	}
 
@@ -412,7 +405,7 @@ class PlayState extends FlxState
 			var positionX = FlxG.random.int(0, FlxG.width - 100);
 			var positionY = FlxG.random.int(0, FlxG.height - 100);
 			var window = new WindowsPopUp(positionX, positionY);
-			// window.scale.set(0.3, 0.3);
+			window.scale.set(0.3, 0.3);
 			window.alpha = 0;
 			window.cameras = [camHUD];
 			window.updateHitbox();
@@ -549,6 +542,20 @@ class PlayState extends FlxState
 		}
 	}
 
+	function mouseTouchWindows(item:WindowsPopUp)
+	{
+		if (FlxG.mouse.overlaps(item))
+		{
+			if (FlxG.mouse.justPressed)
+			{
+				if (item.alive && item.exists)
+				{
+					item.kill();
+				}
+			}
+		}
+	}
+
 	function playerTouchPhone(player:Player, item:PickUpThePhone)
 	{
 		if (player.alive && player.exists && item.alive && item.exists)
@@ -643,7 +650,8 @@ class PlayState extends FlxState
 		popUp = new PopUp();
 		popUp.getPopUp(type);
 		popUp.cameras = [camHUD];
-		add(popUp);
+		if (FlxG.save.data.screenShaking)
+			add(popUp);
 		FlxTween.tween(popUp, {alpha: 0}, 0.3);
 		new FlxTimer().start(0.3, function(tmr:FlxTimer)
 		{
@@ -667,7 +675,8 @@ class PlayState extends FlxState
 		crack.loadGraphic(Paths.image('phone/${screwed_daGraphic}'));
 		crack.scale.set(screwed_daScale, screwed_daScale);
 		crack.alpha = screwed_alphaAlpha;
-		FlxG.camera.shake(screwed_daShake, screwed_daShake);
+		if (FlxG.save.data.screenShaking)
+			FlxG.camera.shake(screwed_daShake, screwed_daShake);
 		randomSpeedMulti = screwed_randomMulti;
 		// daPhone.angle += 360 * randomSpeedMulti * FlxG.elapsed;
 		crack.cameras = [camHUD];
@@ -688,30 +697,42 @@ class PlayState extends FlxState
 	}
 	function showNewEnemyText()
 	{
-		var times:Array<Int> = [15, 30, 60, 90, 120];
+		var times:Array<Float> = [randomAppear, randomAppear2, randomAppear3, randomAppear4, randomAppear5];
 		var texts:Array<String> = [
 			'Wegas have appeared!',
-			'The Funny has appeared.',
-			'The screweds have appeared!',
+			'THE FUNNY has appeared.',
+			'Screweds have appeared!',
 			'Window pop-ups have appeared!',
 			'PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE'
 		];
+		var sounds:Array<String> = ['scream', 'dave', 'bambi', 'error', 'phone'];
 		for (k in 0...times.length)
 		{
-			if (time == times[k])
+			new FlxTimer().start(times[k], function(tmr:FlxTimer)
 			{
+				var newEnemyText:FlxText = new FlxText();
+				newEnemyText.size = 40;
+				newEnemyText.font = "Times New Roman";
+				newEnemyText.text = '';
+				newEnemyText.cameras = [camMain];
+				newEnemyText.alpha = 0;
 				newEnemyText.scale.set(0.2, 0.2);
 				newEnemyText.text = texts[k];
 				newEnemyText.x = 0;
 				newEnemyText.y = 0;
+				newEnemyText.angle = 0;
+				add(newEnemyText);
 				FlxTween.tween(newEnemyText, {alpha: 1}, 0.3);
 				FlxTween.tween(newEnemyText.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
 				new FlxTimer().start(3, function(tmr:FlxTimer)
 				{
-					FlxTween.tween(newEnemyText, {angle: 45}, 2, {ease: FlxEase.cubeIn});
-					FlxTween.tween(newEnemyText, {y: FlxG.height * 3}, 5, {ease: FlxEase.cubeIn});
+					FlxTween.tween(newEnemyText, {angle: 3600}, 5, {ease: FlxEase.cubeIn});
+					FlxTween.tween(newEnemyText, {y: FlxG.height * 4}, 5, {ease: FlxEase.cubeIn});
 				});
-			}
+				var appearSound:FlxSound = new FlxSound();
+				appearSound = FlxG.sound.load(Paths.sound('appearing/${sounds[k]}'));
+				appearSound.play();
+			});
 		}
 		
 	}

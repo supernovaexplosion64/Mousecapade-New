@@ -25,9 +25,9 @@ class WindowsPopUp extends FlxSpriteGroup
 
         popUpAdd = new FlxSprite();
         popUpAdd.loadGraphic(Paths.image('popups/placeholder'));
+		popUpAdd.scale.set(1014 / popUpAdd.width, 570 / popUpAdd.height);
         getPopUp();
-        popUpAdd.setGraphicSize(1014, 570);
-        popUpAdd.updateHitbox();
+		// popUpAdd.updateHitbox();
         popUpAdd.x = 5;
         popUpAdd.y = 35;
         add(popUpAdd);

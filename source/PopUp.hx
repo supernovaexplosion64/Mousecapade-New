@@ -48,7 +48,8 @@ class PopUp extends FlxSprite
 		else if (type == Wega)
 		{
 			loadGraphic(Paths.image('popups/scream'));
-			FlxG.camera.shake(0.03, 0.3);
+			if (FlxG.save.data.screenShaking)
+				FlxG.camera.shake(0.03, 0.3);
 			playSound = FlxG.sound.load(Paths.sound("scream"));
 			playSound.play();
 		}
