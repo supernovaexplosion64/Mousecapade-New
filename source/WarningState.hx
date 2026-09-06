@@ -30,26 +30,29 @@ class WarningState extends FlxState
         warningText.text = 'WARNING!';
         warningText.setFormat("Times New Roman", 80, FlxColor.RED, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, 0xFF800000);
         warningText.size = 80;
+		warningText.antialiasing = true;
         warningText.screenCenter(X);
         warningText.y = warningText.height * -1;
         add(warningText);
 
         warningText2 = new FlxText(0, 0, FlxG.width - 12);
-        warningText2.text = 'This game contains flashing lights and bright colors/imagery that may trigger photosensitive epileptic seizures.\nWould like to turn off screen shaking and flashing imagery in this game?';
+		warningText2.text = 'This game contains flashing lights and bright colors/imagery that may trigger photosensitive epileptic seizures.\nWould you like to turn off screen shaking and flashing imagery in this game?';
         warningText2.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
+		warningText2.antialiasing = true;
         warningText2.screenCenter(X);
         warningText2.y = warningText2.height * -1;
         add(warningText2);
 
         button = new FlxSprite();
         button.makeGraphic(400, 150, FlxColor.LIME);
+		button.antialiasing = true;
         button.x = (FlxG.width / 2) - button.width - 12;
-        button.y = (FlxG.height / 2) + 12;
+		button.y = FlxG.height;
         add(button);
 
         button2 = new FlxSprite();
         button2.makeGraphic(400, 150, FlxColor.RED);
-        button2.screenCenter(X);
+		button2.antialiasing = true;
         button2.x = (FlxG.width / 2) + 12;
         button2.y = button.y;
         add(button2);
@@ -57,6 +60,7 @@ class WarningState extends FlxState
         buttonText = new FlxText(0, 0, button.width);
         buttonText.text = 'Yes, turn off screen shaking and flashing lights.';
         buttonText.setFormat("Times New Roman", 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		buttonText.antialiasing = true;
         buttonText.x = button.x + (button.width / 2) - (buttonText.width / 2);
         buttonText.y = button.y + (button.height / 2) - (buttonText.height / 2);
         add(buttonText);
@@ -64,18 +68,18 @@ class WarningState extends FlxState
         buttonText2 = new FlxText(0, 0, button2.width);
         buttonText2.text = 'No, keep screen shaking and flashing lights on.';
         buttonText2.setFormat("Times New Roman", 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		buttonText2.antialiasing = true;
         buttonText2.x = button2.x + (button2.width / 2) - (buttonText2.width / 2);
         buttonText2.y = button2.y + (button2.height / 2) - (buttonText2.height / 2);
         add(buttonText2);
 
         #if desktop
-        delayDelay += 2;
+		delayDelay += 0.6;
         #end
 
         for (j in [button, button2, buttonText, buttonText2])
         {
-            j.alpha = 0;
-            FlxTween.tween(j, {alpha: 1}, 0.6, {ease: FlxEase.cubeOut, startDelay: delayDelay + 6.6});
+			FlxTween.tween(j, {y: j.y - (FlxG.height - (FlxG.height / 2))}, 1.6, {ease: FlxEase.cubeOut, startDelay: delayDelay + 6.6});
         }
 
         FlxTween.tween(warningText, {y: 64}, 1.6, {ease: FlxEase.cubeOut, startDelay: delayDelay});

@@ -10,13 +10,16 @@ import flixel.util.FlxColor;
 class CreditsState extends FlxState
 {
     public var credText:FlxText;
+	public var credText2:FlxText;
     public var specialText:FlxText;
     public var bg:FlxSprite;
+	public var credIcon:FlxSprite;
+	public var credIcon2:FlxSprite;
 
     public var exit:FlxSprite;
     public var exitText:FlxText;
 
-    override public function create():Void
+	override public function create()
     {
     	super.create();
 
@@ -25,19 +28,64 @@ class CreditsState extends FlxState
 		bg.screenCenter();
 		add(bg);
 
+		credIcon = new FlxSprite();
+		credIcon.loadGraphic(Paths.image("credits/rico"));
+		credIcon.setGraphicSize(256, 256);
+		credIcon.updateHitbox();
+		credIcon.x = 12;
+		credIcon.y = 12;
+		add(credIcon);
+
+		credIcon2 = new FlxSprite();
+		credIcon2.loadGraphic(Paths.image("credits/sammie"));
+		credIcon2.setGraphicSize(256, 256);
+		credIcon2.updateHitbox();
+		credIcon2.x = 12;
+		credIcon2.y = (FlxG.height / 2) + 12;
+		add(credIcon2);
+
+		var credTextDev:FlxText = new FlxText(0, 0, 0, "Developers", 32);
+		credTextDev.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credTextDev.antialiasing = true;
+		credTextDev.screenCenter(X);
+		add(credTextDev);
+
+		var credTextCon:FlxText = new FlxText(0, 0, 0, "Contributors", 32);
+		credTextCon.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credTextCon.antialiasing = true;
+		credTextCon.screenCenter(X);
+		credTextCon.y = credIcon.y + credIcon.height + 12;
+		add(credTextCon);
+
+		var credTextDesc1:FlxText = new FlxText(credIcon.x + credIcon.width + 12, credIcon.y, 0, "supernovaexplosion64", 28);
+		credTextDesc1.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credTextDesc1.antialiasing = true;
+		add(credTextDesc1);
+
+		var credTextDesc2:FlxText = new FlxText(credIcon2.x + credIcon2.width + 12, credIcon2.y, 0, "sammieGHA", 28);
+		credTextDesc2.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credTextDesc2.antialiasing = true;
+		add(credTextDesc2);
+
         credText = new FlxText();
-        credText.text = 'game by ME (rico)\nmain menu song by ME (rico)\nwelcome old (play theme) by crisnosensexd';
-        credText.size = 36;
-		credText.font = "Times New Roman";
-        credText.x = 12;
-        credText.y = 12;
+		credText.text = 'Game creator\nMain developer\nComposer';
+		credText.setFormat("Times New Roman", 30, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credText.antialiasing = true;
+		credText.x = credIcon.x + credIcon.width + 12;
+		credText.y = credTextDesc1.y + credTextDesc1.height + 12;
         add(credText);
+		credText2 = new FlxText();
+		credText2.text = 'Helped with some of the code';
+		credText2.setFormat("Times New Roman", 30, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credText2.antialiasing = true;
+		credText2.x = credIcon2.x + credIcon2.width + 12;
+		credText2.y = credTextDesc2.y + credTextDesc2.height + 12;
+		add(credText2);
         
 		specialText = new FlxText();
-        specialText.text = 'special thanks to\nthe ancient mice dev team\nbindu\nand vs mouse: cheesed up';
-        specialText.size = 36;
-        specialText.font = "Times New Roman";
-		specialText.x = 12;
+		specialText.text = "Special Thanks:\nDevelopers of Vs. Mouse\nThe Ancient Mice Dev Team\nVs. Mouse: Cheesed Up!\nCristel";
+		specialText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		specialText.x = FlxG.width - specialText.width - 12;
 		specialText.y = FlxG.height - specialText.height - 12;
 		add(specialText);
 
@@ -70,6 +118,21 @@ class CreditsState extends FlxState
             }
         }
 
+		if (FlxG.mouse.overlaps(credIcon))
+		{
+			if (FlxG.mouse.justPressed)
+			{
+				FlxG.openURL("https://www.youtube.com/@SuperNovaExplosion64");
+			}
+		}
+
+		if (FlxG.mouse.overlaps(credIcon2))
+		{
+			if (FlxG.mouse.justPressed)
+			{
+				FlxG.openURL("https://x.com/defokobreasts");
+			}
+		}
     	super.update(elapsed);
     }
 }

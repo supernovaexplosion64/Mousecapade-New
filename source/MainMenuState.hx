@@ -81,10 +81,10 @@ class MainMenuState extends FlxState
         warning.font = "Times New Roman";
         warning.screenCenter(X);
         warning.y = 500;
-        add(warning);
+		// add(warning);
 
         credits = new FlxText();
-        credits.text = 'Created by Rico W./supernovaexplosion64: 2026-2026';
+		credits.text = 'Created by supernovaexplosion64: 2026-2026';
         credits.font = "Times New Roman";
         credits.size = 24;
         credits.x = 12;

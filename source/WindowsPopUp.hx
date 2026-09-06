@@ -23,11 +23,13 @@ class WindowsPopUp extends FlxSpriteGroup
         window.loadGraphic(Paths.image('window'));
         add(window);
 
+		var popUpNums:Int = popUps.length;
+
         popUpAdd = new FlxSprite();
         popUpAdd.loadGraphic(Paths.image('popups/placeholder'));
 		popUpAdd.scale.set(1014 / popUpAdd.width, 570 / popUpAdd.height);
-        getPopUp();
-		// popUpAdd.updateHitbox();
+		popUpAdd.loadGraphic(Paths.image('popups/window/${popUps[FlxG.random.int(0, popUpNums - 1)]}'));
+		popUpAdd.updateHitbox();
         popUpAdd.x = 5;
         popUpAdd.y = 35;
         add(popUpAdd);
@@ -37,10 +39,4 @@ class WindowsPopUp extends FlxSpriteGroup
 	{
 		super.update(elapsed);
 	}
-
-    public function getPopUp()
-	{
-		var popUpNums:Int = popUps.length;
-		popUpAdd.loadGraphic(Paths.image('popups/window/${popUps[FlxG.random.int(0, popUpNums - 1)]}'));
-    }
 }

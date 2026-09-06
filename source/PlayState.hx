@@ -150,6 +150,7 @@ class PlayState extends FlxState
 		scoreText.size = 48;
 		scoreText.font = "Times New Roman";
 		scoreText.text = Std.string(score);
+		scoreText.antialiasing = true;
 		scoreText.screenCenter(X);
 		scoreText.cameras = [camMain];
 		add(scoreText);
@@ -158,6 +159,7 @@ class PlayState extends FlxState
 		timeText.size = 48;
 		timeText.font = "Times New Roman";
 		timeText.text = Std.string(FlxStringUtil.formatTime(time, true));
+		timeText.antialiasing = true;
 		timeText.screenCenter(X);
 		timeText.y = scoreText.y + scoreText.height + 12;
 		timeText.cameras = [camMain];
@@ -179,6 +181,7 @@ class PlayState extends FlxState
 		healthText.size = 24;
 		healthText.font = "Times New Roman";
 		healthText.text = "Health: " + Std.string(health);
+		healthText.antialiasing = true;
 		healthText.y = FlxG.height + healthBar.height + 24;
 		healthText.cameras = [camMain];
 		add(healthText);
@@ -186,10 +189,11 @@ class PlayState extends FlxState
 		levelText.size = 48;
 		levelText.font = "Times New Roman";
 		levelText.text = 'LEVEL ' + Std.string(LEVEL);
+		levelText.antialiasing = true;
 		// levelText.x = 12;
 		// levelText.y = 12;
 		levelText.cameras = [camHUD];
-		add(levelText);
+		// add(levelText);
 
 		new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
@@ -204,6 +208,7 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float)
 	{
+		updateTime();
 		theDelta = FlxG.elapsed;
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
 		/*if (time < 0 && health > 0)
@@ -211,6 +216,11 @@ class PlayState extends FlxState
 			// LEVEL += 1;
 			FlxG.resetState();
 		}*/
+		if (health <= 0)
+		{
+			FlxG.sound.music.stop();
+			FlxG.switchState(new GameOverState());
+		}
 		if (health > 100 && !ateThePizza)
 		{
 			health = 100;
@@ -229,11 +239,6 @@ class PlayState extends FlxState
 		}
 
 		changeMusic();
-		/*if (health <= 0)
-			{
-				FlxG.resetGame();
-				LEVEL = 1;
-		}*/
 		healthText.text = "Health: " + Std.string(health);
 		// showNewEnemyText();
 		spawnCheese();
@@ -250,7 +255,6 @@ class PlayState extends FlxState
 			spawnFunny();
 		if (time >= randomAppear4)
 			spawnWindows();
-		updateTime();
 		/*if (health <= 100 && theOtherBar.alpha > 0)
 			{
 				FlxTween.tween(theOtherBar, {alpha: 0}, 1 / theOtherBar.alpha);
@@ -405,10 +409,10 @@ class PlayState extends FlxState
 			var positionX = FlxG.random.int(0, FlxG.width - 100);
 			var positionY = FlxG.random.int(0, FlxG.height - 100);
 			var window = new WindowsPopUp(positionX, positionY);
-			window.scale.set(0.3, 0.3);
+			window.setGraphicSize(256, 256);
+			window.updateHitbox();
 			window.alpha = 0;
 			window.cameras = [camHUD];
-			window.updateHitbox();
 			windows.add(window);
 			FlxTween.tween(window, {alpha: 1}, 0.3);
 			itemTimer(window);
@@ -464,7 +468,8 @@ class PlayState extends FlxState
 		health += itemHealthIncrease;
 		healthText.text = "Health: " + Std.string(health);
 		timerThing = 3;
-		iAmRunningOutOfNamesToNameMyFunctions();
+		if ((health <= 100 && !ateThePizza) || (health > 100 && ateThePizza))
+			iAmRunningOutOfNamesToNameMyFunctions();
 	}
 
 	public function takeAwayHealth(healthTaken:Float = 5)
@@ -715,6 +720,7 @@ class PlayState extends FlxState
 				newEnemyText.font = "Times New Roman";
 				newEnemyText.text = '';
 				newEnemyText.cameras = [camMain];
+				newEnemyText.antialiasing = true;
 				newEnemyText.alpha = 0;
 				newEnemyText.scale.set(0.2, 0.2);
 				newEnemyText.text = texts[k];
