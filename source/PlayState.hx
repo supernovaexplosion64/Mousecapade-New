@@ -90,6 +90,12 @@ class PlayState extends FlxState
 	var ateThePizza:Bool = false;
 	public var maxPizzasEaten:Int = 25;
 
+	var randomAppear:Int = FlxG.random.int(15, 30);
+	var randomAppear2:Int = FlxG.random.int(30, 60);
+	var randomAppear3:Int = FlxG.random.int(60, 120);
+	var randomAppear4:Int = FlxG.random.int(90, 180);
+	var randomAppear5:Int = FlxG.random.int(120, 240);
+
 	override public function create()
 	{
 		if (gameJustStarted)
@@ -147,7 +153,7 @@ class PlayState extends FlxState
 		scoreText.font = "Times New Roman";
 		scoreText.text = Std.string(score);
 		scoreText.screenCenter(X);
-		scoreText.cameras = [camHUD];
+		scoreText.cameras = [camMain];
 		add(scoreText);
 
 		timeText = new FlxText();
@@ -156,7 +162,7 @@ class PlayState extends FlxState
 		timeText.text = Std.string(FlxStringUtil.formatTime(time, true));
 		timeText.screenCenter(X);
 		timeText.y = scoreText.y + scoreText.height + 12;
-		timeText.cameras = [camHUD];
+		timeText.cameras = [camMain];
 		add(timeText);
 		healthBar = new FlxBar(0, 0, FlxBarFillDirection.LEFT_TO_RIGHT, 640, 20, this, "health");
 		healthBar.y = FlxG.height;
@@ -191,7 +197,8 @@ class PlayState extends FlxState
 		newEnemyText.size = 24;
 		newEnemyText.font = "Times New Roman";
 		newEnemyText.text = '';
-		newEnemyText.cameras = [camHUD];
+		newEnemyText.cameras = [camMain];
+		newEnemyText.alpha = 0;
 		add(newEnemyText);
 
 		new FlxTimer().start(2, function(tmr:FlxTimer)
@@ -237,19 +244,21 @@ class PlayState extends FlxState
 				LEVEL = 1;
 		}*/
 		healthText.text = "Health: " + Std.string(health);
-		showNewEnemyText(30, "Wegas have started to appear!");
-		showNewEnemyText(60, "Bambis have started to appear!");
+		showNewEnemyText();
 		spawnCheese();
+		addNewPizza();
 		if (maxPizzasEaten > 0)
 			spawnPizza();
-		// if (time >= 15)
-		spawnWega();
-		// if (time >= 120)
-		spawnPhone();
-		// if (time >= 60)
-		spawnScrewed();
-		spawnFunny();
-		spawnWindows();
+		if (time >= randomAppear)
+			spawnWega();
+		if (time >= randomAppear5)
+			spawnPhone();
+		if (time >= randomAppear3)
+			spawnScrewed();
+		if (time >= randomAppear2)
+			spawnFunny();
+		if (time >= randomAppear4)
+			spawnWindows();
 		updateTime();
 		/*if (health <= 100 && theOtherBar.alpha > 0)
 			{
@@ -350,7 +359,7 @@ class PlayState extends FlxState
 	public function spawnWega()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(2, 5);
-		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 30) * theDelta * 60);
+		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 45) * theDelta * 60);
 		if (wegaAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -365,7 +374,7 @@ class PlayState extends FlxState
 
 	public function spawnPhone()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(0.25, 0.65);
+		var randomChanceToAppear:Float = FlxG.random.float(0.4, 0.8);
 		var phoneAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 75) * theDelta * 60);
 		if (phoneAppear)
 		{
@@ -380,8 +389,8 @@ class PlayState extends FlxState
 	}
 	public function spawnScrewed()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(1.5, 3.5);
-		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120) * theDelta * 60);
+		var randomChanceToAppear:Float = FlxG.random.float(3, 5);
+		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 90) * theDelta * 60);
 		if (screwedAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -397,13 +406,13 @@ class PlayState extends FlxState
 	public function spawnWindows()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(0.7, 0.8);
-		var windowsAppear:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
+		var windowsAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120) * theDelta * 60);
 		if (windowsAppear)
 		{
 			var positionX = FlxG.random.int(0, FlxG.width - 100);
 			var positionY = FlxG.random.int(0, FlxG.height - 100);
 			var window = new WindowsPopUp(positionX, positionY);
-			window.scale.set(0.3, 0.3);
+			// window.scale.set(0.3, 0.3);
 			window.alpha = 0;
 			window.cameras = [camHUD];
 			window.updateHitbox();
@@ -431,7 +440,7 @@ class PlayState extends FlxState
 		wegaTimes += 1;
 		if (wegaTimes > 50)
 			wegaTimes = 50;
-		var takeAwayYourScore:Int = 50 * wegaTimes;
+		var takeAwayYourScore:Int = 25 + wegaTimes;
 		return takeAwayYourScore;
 	}
 
@@ -440,8 +449,8 @@ class PlayState extends FlxState
 		if (type == 'add')
 		{
 			score += addScore();
-			decreasingMultiplier = 100 - (2 * wegaTimes);
 			#if debug trace("Score addition: " + Std.string(addScore()) + ", Decreasing Multiplier: " + Std.string(decreasingMultiplier)); #end
+			decreasingMultiplier = 100 - (2 * wegaTimes);
 		}
 		if (type == 'take')
 		{
@@ -451,13 +460,18 @@ class PlayState extends FlxState
 		scoreText.screenCenter(X);
 	}
 
+	public function iAmRunningOutOfNamesToNameMyFunctions()
+	{
+		if (!healthTweening)
+			showHealth();
+	}
+
 	public function addHealth(healthGiven:Float = 25)
 	{
 		health += itemHealthIncrease;
 		healthText.text = "Health: " + Std.string(health);
 		timerThing = 3;
-		if (!healthTweening)
-			showHealth();
+		iAmRunningOutOfNamesToNameMyFunctions();
 	}
 
 	public function takeAwayHealth(healthTaken:Float = 5)
@@ -465,8 +479,7 @@ class PlayState extends FlxState
 		health -= healthTaken;
 		healthText.text = "Health: " + Std.string(health);
 		timerThing = 3;
-		if (!healthTweening)
-			showHealth();
+		iAmRunningOutOfNamesToNameMyFunctions();
 	}
 
 	public function showHealth()
@@ -502,7 +515,10 @@ class PlayState extends FlxState
 			item.kill();
 			itemScore = item.value;
 			itemHealthIncrease = item.healthIncrease;
-			addHealth();
+			if (health < 100)
+				addHealth();
+			else
+				iAmRunningOutOfNamesToNameMyFunctions();
 			updateScore('add');
 			if (popUpEnabled)
 				showPopUp(Normal);
@@ -561,7 +577,8 @@ class PlayState extends FlxState
 				fnatiJumpscare = new FlxSprite();
 				fnatiJumpscare.loadGraphic(Paths.image('fnatijumpscare'), true, 800, 450);
 				fnatiJumpscare.animation.add("idle", [
-					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
+					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 30, 29, 28, 27, 26,
+					25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
 				], 60, true);
 				fnatiJumpscare.scale.set(FlxG.width / 600, FlxG.height / fnatiJumpscare.frameHeight);
 				fnatiJumpscare.cameras = [camHUD];
@@ -669,25 +686,39 @@ class PlayState extends FlxState
 		breakSound = FlxG.sound.load(Paths.sound("phone-break"));
 		breakSound.play();
 	}
-	function showNewEnemyText(daTime:Float, daText:String)
+	function showNewEnemyText()
 	{
-		if (time == daTime)
+		var times:Array<Int> = [15, 30, 60, 90, 120];
+		var texts:Array<String> = [
+			'Wegas have appeared!',
+			'The Funny has appeared.',
+			'The screweds have appeared!',
+			'Window pop-ups have appeared!',
+			'PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE'
+		];
+		for (k in 0...times.length)
 		{
-			newEnemyText.x = 0;
-			newEnemyText.y = 0;
-			newEnemyText.scale.set(0.2, 0.2);
-			newEnemyText.text = daText;
-			FlxTween.tween(newEnemyText.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
-			new FlxTimer().start(3, function(tmr:FlxTimer)
+			if (time == times[k])
 			{
-				FlxTween.tween(newEnemyText, {angle: 45}, 2, {ease: FlxEase.cubeIn});
-				FlxTween.tween(newEnemyText, {y: FlxG.height * 3}, 5, {ease: FlxEase.cubeIn});
-			});
+				newEnemyText.scale.set(0.2, 0.2);
+				newEnemyText.text = texts[k];
+				newEnemyText.x = 0;
+				newEnemyText.y = 0;
+				FlxTween.tween(newEnemyText, {alpha: 1}, 0.3);
+				FlxTween.tween(newEnemyText.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+				new FlxTimer().start(3, function(tmr:FlxTimer)
+				{
+					FlxTween.tween(newEnemyText, {angle: 45}, 2, {ease: FlxEase.cubeIn});
+					FlxTween.tween(newEnemyText, {y: FlxG.height * 3}, 5, {ease: FlxEase.cubeIn});
+				});
+			}
 		}
+		
 	}
 	function spawnFunny()
 	{
-		if (FlxG.random.bool(0.025 * theDelta * 60 * (time / 180)))
+		var daChance:Float = FlxG.random.float(0.025, 0.1);
+		if (FlxG.random.bool(daChance * theDelta * 60 * (time / 120)))
 		{
 			var funny:FlxSprite = new FlxSprite();
 			funny.loadGraphic(Paths.image('dave'));
