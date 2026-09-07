@@ -9,6 +9,7 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
@@ -87,6 +88,8 @@ class PlayState extends FlxState
 
 	var ateThePizza:Bool = false;
 	public var maxPizzasEaten:Int = 25;
+
+	public var paused:Bool = false;
 
 	var randomAppear:Float = FlxG.random.float(15, 30);
 	var randomAppear2:Float = FlxG.random.float(30, 60);
@@ -211,6 +214,15 @@ class PlayState extends FlxState
 		updateTime();
 		theDelta = FlxG.elapsed;
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
+		if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
+		{
+			if (FlxG.sound.music != null)
+			{
+				FlxG.sound.music.pause();
+			}
+			paused = true;
+			openSubState(new PauseSubState());
+		}
 		/*if (time < 0 && health > 0)
 		{
 			// LEVEL += 1;
@@ -629,10 +641,15 @@ class PlayState extends FlxState
 	function itemTimer(item:FlxBasic, timeTime:Float = 6)
 	{
 		var timerTime:Float = timeTime;
-		new FlxTimer().start(timerTime, function(tmr:FlxTimer)
+		var daTimer:FlxTimer = new FlxTimer();
+		if (paused)
+			daTimer.active = false;
+		else
+			daTimer.active = true;
+		daTimer.start(timerTime, function(tmr:FlxTimer)
 		{
 			item.kill();
-		});
+		}, 1);
 	}
 
 	function itemTimerPizza(item:FlxBasic, timeTime:Float = 30)
@@ -760,5 +777,64 @@ class PlayState extends FlxState
 				funny.kill();
 			});
 		}
+	}
+}
+
+class PauseSubState extends FlxSubState
+{
+	public function new()
+	{
+		super();
+	}
+
+	override function create()
+	{
+		super.create();
+
+		var box = new FlxSprite();
+		box = new FlxSprite();
+		box.makeGraphic(FlxG.width, FlxG.height, 0x80000000);
+		box.scrollFactor.set(0, 0);
+		add(box);
+
+		var text = new FlxText(0, 0, 0, "Game Paused");
+		text.setFormat("Times New Roman", 80);
+		text.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		text.scrollFactor.set(0, 0);
+		text.screenCenter(X);
+		text.y = FlxG.height * 0.35;
+		text.alpha = 0;
+		add(text);
+
+		var text2 = new FlxText(0, 0, 0, "Press Enter or Space to resume game\nPress Escape or Backspace to exit to menu");
+		text2.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.CENTER);
+		text2.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		text2.scrollFactor.set(0, 0);
+		text2.screenCenter(X);
+		text2.y = FlxG.height * 0.5;
+		text2.alpha = 0;
+		add(text2);
+
+		FlxTween.tween(text, {alpha: 1}, 0.6);
+		FlxTween.tween(text2, {alpha: 1}, 0.6, {startDelay: 1.2});
+	}
+
+	override public function update(elapsed:Float)
+	{
+		if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
+		{
+			FlxG.sound.music.resume();
+			closeSub();
+		}
+
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+	}
+
+	private function closeSub()
+	{
+		close();
 	}
 }
