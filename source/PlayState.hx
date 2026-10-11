@@ -33,7 +33,7 @@ class PlayState extends FlxState
 	var randomX = FlxG.random.int(0, 600);
 	var randomY = FlxG.random.int(0, 600);
 
-	public var score:Int = 0;
+	public static var score:Int = 0;
 	public var wegaTimes:Int = 0;
 	public var scoreText:FlxText;
 	public var decreasingMultiplier:Float = 100;
@@ -231,7 +231,7 @@ class PlayState extends FlxState
 		if (health <= 0)
 		{
 			FlxG.sound.music.stop();
-			FlxG.switchState(new GameOverState());
+			openSubState(new GameOverState());
 		}
 		if (health > 100 && !ateThePizza)
 		{

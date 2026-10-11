@@ -83,7 +83,7 @@ class CreditsState extends FlxState
 		add(credText2);
         
 		specialText = new FlxText();
-		specialText.text = "Special Thanks:\nDevelopers of Vs. Mouse\nThe Ancient Mice Dev Team\nVs. Mouse: Cheesed Up!\nCristel";
+		specialText.text = "Special Thanks:\nDevelopers of Vs. Mouse\nThe Ancient Mice Dev Team\nVs. Mouse: Cheesed Up!";
 		specialText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		specialText.x = FlxG.width - specialText.width - 12;
 		specialText.y = FlxG.height - specialText.height - 12;
