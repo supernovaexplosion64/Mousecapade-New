@@ -141,5 +141,11 @@ class WarningState extends FlxState
                 }
             }
         }
+		#if debug
+		if (FlxG.keys.justPressed.SEVEN)
+		{
+			FlxG.switchState(new InfoState());
+		}
+		#end
     }
 }

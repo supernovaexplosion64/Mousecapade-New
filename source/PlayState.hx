@@ -1,8 +1,5 @@
 package;
 
-#if desktop
-import Sys;
-#end
 import Item;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -14,11 +11,17 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween.FlxTweenManager;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
+import flixel.util.FlxTimer.FlxTimerManager;
 import flixel.util.FlxTimer;
+import haxe.io.Eof;
+#if desktop
+import Sys;
+#end
 
 class PlayState extends FlxState
 {
@@ -29,6 +32,9 @@ class PlayState extends FlxState
 	public var screweds:FlxTypedGroup<Screwed>;
 	public var windows:FlxTypedGroup<WindowsPopUp>;
 	public var pizzas:FlxTypedGroup<Pizza>;
+
+	public var timers:FlxTimerManager;
+	public var tweens:FlxTweenManager;
 
 	var randomX = FlxG.random.int(0, 600);
 	var randomY = FlxG.random.int(0, 600);
@@ -89,7 +95,9 @@ class PlayState extends FlxState
 	var ateThePizza:Bool = false;
 	public var maxPizzasEaten:Int = 25;
 
-	public var paused:Bool = false;
+	public static var paused:Bool = false;
+
+	public var blackScreen:FlxSprite;
 
 	var randomAppear:Float = FlxG.random.float(15, 30);
 	var randomAppear2:Float = FlxG.random.float(30, 60);
@@ -149,19 +157,23 @@ class PlayState extends FlxState
 		pizzas = new FlxTypedGroup<Pizza>();
 		add(pizzas);
 
+		timers = new FlxTimerManager();
+		add(timers);
+
+		tweens = new FlxTweenManager();
+		add(tweens);
+
 		scoreText = new FlxText();
-		scoreText.size = 48;
-		scoreText.font = "Times New Roman";
 		scoreText.text = Std.string(score);
+		scoreText.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreText.antialiasing = true;
 		scoreText.screenCenter(X);
 		scoreText.cameras = [camMain];
 		add(scoreText);
 
 		timeText = new FlxText();
-		timeText.size = 48;
-		timeText.font = "Times New Roman";
 		timeText.text = Std.string(FlxStringUtil.formatTime(time, true));
+		timeText.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		timeText.antialiasing = true;
 		timeText.screenCenter(X);
 		timeText.y = scoreText.y + scoreText.height + 12;
@@ -181,9 +193,8 @@ class PlayState extends FlxState
 		add(theOtherBar);
 
 		healthText = new FlxText();
-		healthText.size = 24;
-		healthText.font = "Times New Roman";
 		healthText.text = "Health: " + Std.string(health);
+		healthText.setFormat("Times New Roman", 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		healthText.antialiasing = true;
 		healthText.y = FlxG.height + healthBar.height + 24;
 		healthText.cameras = [camMain];
@@ -198,6 +209,14 @@ class PlayState extends FlxState
 		levelText.cameras = [camHUD];
 		// add(levelText);
 
+		blackScreen = new FlxSprite();
+		blackScreen.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		blackScreen.scrollFactor.set(0, 0);
+		blackScreen.alpha = 1;
+		blackScreen.cameras = [camWindow];
+		add(blackScreen);
+		FlxTween.tween(blackScreen, {alpha: 0}, 1);
+
 		new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
 			FlxTween.tween(levelText, {y: levelText.y * -1}, 1, {ease: FlxEase.backIn});
@@ -211,6 +230,27 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float)
 	{
+		/*cheeses.forEachAlive(function(cheese:Item)
+			{
+				cheese.scale.set(2, 2);
+		});*/
+		if (paused)
+		{
+			timers.forEach(function(tmr:FlxTimer)
+			{
+				if (tmr.active == true)
+					tmr.active = false;
+			});
+		}
+
+		if (!paused)
+		{
+			timers.forEach(function(tmr:FlxTimer)
+			{
+				if (tmr.active == false)
+					tmr.active = true;
+			});
+		}
 		updateTime();
 		theDelta = FlxG.elapsed;
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
@@ -220,7 +260,7 @@ class PlayState extends FlxState
 			{
 				FlxG.sound.music.pause();
 			}
-			paused = true;
+			paused = !paused;
 			openSubState(new PauseSubState());
 		}
 		/*if (time < 0 && health > 0)
@@ -231,6 +271,7 @@ class PlayState extends FlxState
 		if (health <= 0)
 		{
 			FlxG.sound.music.stop();
+			// checkFinalScore();
 			openSubState(new GameOverState());
 		}
 		if (health > 100 && !ateThePizza)
@@ -285,7 +326,13 @@ class PlayState extends FlxState
 		#if debug
 		if (FlxG.keys.justPressed.SEVEN)
 		{
+			FlxG.sound.music.stop();
 			FlxG.switchState(new SecretDeathState());
+		}
+		if (FlxG.keys.justPressed.TWO)
+		{
+			// checkFinalScore();
+			openSubState(new GameOverState());
 		}
 		#end
 		windows.forEachAlive(mouseTouchWindows);
@@ -613,12 +660,14 @@ class PlayState extends FlxState
 				fnatiJumpscare.scale.set(FlxG.width / 600, FlxG.height / fnatiJumpscare.frameHeight);
 				fnatiJumpscare.cameras = [camHUD];
 				fnatiJumpscare.screenCenter();
-				new FlxTimer().start(1.5, function(tmr:FlxTimer)
+				var fnatiTimer:FlxTimer = new FlxTimer(timers);
+				fnatiTimer.start(1.5, function(tmr:FlxTimer)
 				{
 					add(fnatiJumpscare);
 					fnatiJumpscare.animation.play("idle");
 				});
-				new FlxTimer().start(2.3, function(tmr:FlxTimer)
+				var fnatiTimer2:FlxTimer = new FlxTimer(timers);
+				fnatiTimer2.start(2.3, function(tmr:FlxTimer)
 				{
 					fnatiPopUp.kill();
 					fnatiJumpscare.kill();
@@ -647,11 +696,11 @@ class PlayState extends FlxState
 	function itemTimer(item:FlxBasic, timeTime:Float = 6)
 	{
 		var timerTime:Float = timeTime;
-		var daTimer:FlxTimer = new FlxTimer();
-		if (paused)
+		var daTimer:FlxTimer = new FlxTimer(timers);
+		/*if (paused)
 			daTimer.active = false;
 		else
-			daTimer.active = true;
+																															daTimer.active = true; */
 		daTimer.start(timerTime, function(tmr:FlxTimer)
 		{
 			item.kill();
@@ -661,7 +710,8 @@ class PlayState extends FlxState
 	function itemTimerPizza(item:FlxBasic, timeTime:Float = 30)
 	{
 		var timerTime:Float = timeTime;
-		new FlxTimer().start(timerTime, function(tmr:FlxTimer)
+		var daTimer:FlxTimer = new FlxTimer(timers);
+		daTimer.start(timerTime, function(tmr:FlxTimer)
 		{
 			item.kill();
 			if (health <= 100)
@@ -681,7 +731,8 @@ class PlayState extends FlxState
 		if (FlxG.save.data.screenShaking)
 			add(popUp);
 		FlxTween.tween(popUp, {alpha: 0}, 0.3);
-		new FlxTimer().start(0.3, function(tmr:FlxTimer)
+		var popUpTimer:FlxTimer = new FlxTimer(timers);
+		popUpTimer.start(0.3, function(tmr:FlxTimer)
 		{
 			popUp.kill();
 		});
@@ -715,7 +766,8 @@ class PlayState extends FlxState
 		daPhone.x = randomX;
 		daPhone.y = randomY;
 		add(daPhone);
-		new FlxTimer().start(3, function(tmr:FlxTimer)
+		var daPhoneTimer:FlxTimer = new FlxTimer(timers);
+		daPhoneTimer.start(3, function(tmr:FlxTimer)
 		{
 			FlxTween.tween(daPhone, {alpha: 0}, 0.6);
 		});
@@ -736,7 +788,8 @@ class PlayState extends FlxState
 		var sounds:Array<String> = ['scream', 'dave', 'bambi', 'error', 'phone'];
 		for (k in 0...times.length)
 		{
-			new FlxTimer().start(times[k], function(tmr:FlxTimer)
+			var enemyTimer:FlxTimer = new FlxTimer(timers);
+			enemyTimer.start(times[k], function(tmr:FlxTimer)
 			{
 				var newEnemyText:FlxText = new FlxText();
 				newEnemyText.size = 40;
@@ -753,7 +806,8 @@ class PlayState extends FlxState
 				add(newEnemyText);
 				FlxTween.tween(newEnemyText, {alpha: 1}, 0.3);
 				FlxTween.tween(newEnemyText.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
-				new FlxTimer().start(3, function(tmr:FlxTimer)
+				var enemyTextTween:FlxTimer = new FlxTimer(timers);
+				enemyTextTween.start(3, function(tmr:FlxTimer)
 				{
 					FlxTween.tween(newEnemyText, {angle: 3600}, 5, {ease: FlxEase.cubeIn});
 					FlxTween.tween(newEnemyText, {y: FlxG.height * 4}, 5, {ease: FlxEase.cubeIn});
@@ -778,10 +832,19 @@ class PlayState extends FlxState
 			var funnySound:FlxSound = new FlxSound();
 			funnySound = FlxG.sound.load(Paths.sound("dave"));
 			funnySound.play();
-			new FlxTimer().start(1.25, function(tmr:FlxTimer)
+			var funnyTimer:FlxTimer = new FlxTimer(timers);
+			funnyTimer.start(1.25, function(tmr:FlxTimer)
 			{
 				funny.kill();
 			});
+		}
+	}
+	function checkFinalScore()
+	{
+		if ((FlxG.save.data.finalScore == null) || (score > FlxG.save.data.finalScore))
+		{
+			FlxG.save.data.finalScore = score;
+			trace("NEW HIGH SCORE: " + score);
 		}
 	}
 }
@@ -829,6 +892,7 @@ class PauseSubState extends FlxSubState
 	{
 		if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
 		{
+			PlayState.paused = !PlayState.paused;
 			FlxG.sound.music.resume();
 			closeSub();
 		}

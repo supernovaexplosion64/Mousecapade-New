@@ -131,5 +131,11 @@ class InfoState extends FlxState
                 }
             }
         }
+		#if debug
+		if (FlxG.keys.justPressed.SEVEN)
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+		#end
     }
 }
