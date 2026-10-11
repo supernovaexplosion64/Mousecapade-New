@@ -22,7 +22,8 @@ class PopUp extends FlxSprite
         'billy',
         'skinny',
         'madness',
-        'alpha'
+		'alpha',
+		'ost'
     ];
 
 	public function new()

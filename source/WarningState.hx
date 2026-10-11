@@ -99,8 +99,10 @@ class WarningState extends FlxState
 
             if (FlxG.mouse.justPressed)
             {
+				if (!FlxG.save.data.shakingUnderstood)
+					FlxG.save.data.shakingUnderstood = true;
                 FlxG.save.data.screenShaking = false;
-                FlxG.switchState(new MainMenuState());
+				FlxG.switchState(new InfoState());
             }
         }
         else
@@ -123,8 +125,10 @@ class WarningState extends FlxState
 
             if (FlxG.mouse.justPressed)
             {
+				if (!FlxG.save.data.shakingUnderstood)
+					FlxG.save.data.shakingUnderstood = true;
                 FlxG.save.data.screenShaking = true;
-                FlxG.switchState(new MainMenuState());
+				FlxG.switchState(new InfoState());
             }
         }
         else

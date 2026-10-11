@@ -282,6 +282,12 @@ class PlayState extends FlxState
 		FlxG.overlap(player, wegas, playerTouchWega);
 		FlxG.overlap(player, phones, playerTouchPhone);
 		FlxG.overlap(player, screweds, playerTouchScrewed);
+		#if debug
+		if (FlxG.keys.justPressed.SEVEN)
+		{
+			FlxG.switchState(new SecretDeathState());
+		}
+		#end
 		windows.forEachAlive(mouseTouchWindows);
 		windows.forEachExists(mouseTouchWindows);
 		super.update(elapsed);
