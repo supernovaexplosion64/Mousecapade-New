@@ -520,10 +520,30 @@ class PlayState extends FlxState
 			var positionX = FlxG.random.int(0, FlxG.width - 100);
 			var positionY = FlxG.random.int(0, FlxG.height - 100);
 			var redBar = new FlxSprite(positionX, positionY);
-			redBar.makeGraphic(FlxG.width, Std.int(player.height + 50), FlxColor.RED);
+			redBar.makeGraphic(FlxG.width, 64, FlxColor.RED);
+			redBar.alpha = 0.5;
+			redBar.active = false;
+			FlxTween.tween(redBar, {alpha: 1}, 1.5, {ease: FlxEase.cubeIn});
+			FlxTween.tween(redBar.scale, {y: 2.2}, 1.5, {ease: FlxEase.cubeIn});
+			var redBarTimer:FlxTimer = new FlxTimer(timers);
+			var redBarTimer2:FlxTimer = new FlxTimer(timers);
+			var redBarTimer3:FlxTimer = new FlxTimer(timers);
+			redBarTimer.start(1.5, function(tmr:FlxTimer)
+			{
+				FlxTween.tween(redBar.scale, {y: 1.5}, 0.6, {ease: FlxEase.cubeOut});
+				redBar.active = true;
+			});
+			redBarTimer2.start(4.5, function(tmr:FlxTimer)
+			{
+				FlxTween.tween(redBar.scale, {y: 0}, 2, {ease: FlxEase.cubeIn});
+			});
+			redBarTimer3.start(6.5, function(tmr:FlxTimer)
+			{
+				redBar.active = false;
+			});
 			redBar.updateHitbox();
 			redBars.add(redBar);
-			itemTimer(redBar);
+			itemTimer(redBar, 6.5);
 		}
 	}
 
@@ -748,9 +768,13 @@ class PlayState extends FlxState
 			screwed_randomMulti = item.randomMulti;
 			screwed_alphaAlpha = item.alphaAlpha;
 			updateScore('take');
-			takeAwayHealth(screwed_healthDecrease);
 			// if (popUpEnabled)
 			shatterScreen();
+			var waitTimer:FlxTimer = new FlxTimer(timers);
+			waitTimer.start(0.6, function(tmr:FlxTimer)
+			{
+				takeAwayHealth(screwed_healthDecrease);
+			});
 		}
 	}
 
@@ -823,29 +847,35 @@ class PlayState extends FlxState
 		crack.loadGraphic(Paths.image('phone/${screwed_daGraphic}'));
 		crack.scale.set(screwed_daScale, screwed_daScale);
 		crack.alpha = screwed_alphaAlpha;
-		if (FlxG.save.data.screenShaking)
-			FlxG.camera.shake(screwed_daShake, screwed_daShake);
 		randomSpeedMulti = screwed_randomMulti;
 		// daPhone.angle += 360 * randomSpeedMulti * FlxG.elapsed;
 		crack.cameras = [camHUD];
 		crack.x = randomX;
 		crack.y = randomY;
 		daPhone.angle = FlxG.random.int(0, 360);
-		daPhone.scale.set(randomSpeedMulti * 0.6, randomSpeedMulti * 0.6);
+		daPhone.scale.set(0.1, 0.1);
 		daPhone.x = randomX;
 		daPhone.y = randomY;
 		add(daPhone);
 		var daPhoneTimer:FlxTimer = new FlxTimer(timers);
+		var daPhoneTimer2:FlxTimer = new FlxTimer(timers);
 		var randomTurn = FlxG.random.int(0, 90);
-		FlxTween.tween(daPhone, {y: daPhone.y + 600}, 4, {ease: FlxEase.cubeIn});
-		FlxTween.tween(daPhone, {angle: daPhone.angle + randomTurn}, 4, {ease: FlxEase.cubeIn});
-		daPhoneTimer.start(3, function(tmr:FlxTimer)
+		breakSound = FlxG.sound.load(Paths.sound("phone-break"));
+		FlxTween.tween(daPhone.scale, {x: randomSpeedMulti * 0.6, y: randomSpeedMulti * 0.6}, 0.6, {ease: FlxEase.cubeIn});
+		FlxTween.tween(daPhone, {angle: daPhone.angle + 1440}, 0.6, {ease: FlxEase.quadIn});
+		daPhoneTimer.start(0.6, function(tmr:FlxTimer)
+		{
+			add(crack);
+			breakSound.play();
+			if (FlxG.save.data.screenShaking)
+				FlxG.camera.shake(screwed_daShake, screwed_daShake);
+			FlxTween.tween(daPhone, {y: daPhone.y + (FlxG.height - daPhone.y)}, 4, {ease: FlxEase.cubeIn});
+			FlxTween.tween(daPhone, {angle: daPhone.angle + randomTurn}, 4, {ease: FlxEase.cubeIn});
+		});
+		daPhoneTimer2.start(4, function(tmr:FlxTimer)
 		{
 			FlxTween.tween(daPhone, {alpha: 0}, 0.6);
 		});
-		add(crack);
-		breakSound = FlxG.sound.load(Paths.sound("phone-break"));
-		breakSound.play();
 	}
 	function showNewEnemyText()
 	{
@@ -853,7 +883,7 @@ class PlayState extends FlxState
 		var texts:Array<String> = [
 			'Wegas have appeared!',
 			'THE FUNNY has appeared.',
-			'Screweds have appeared!',
+			'Screwedians have appeared!',
 			'Window pop-ups have appeared!',
 			'PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE'
 		];
@@ -905,9 +935,11 @@ class PlayState extends FlxState
 			var funnySound:FlxSound = new FlxSound();
 			funnySound = FlxG.sound.load(Paths.sound("dave"));
 			funnySound.play();
+			FlxTween.tween(funny, {alpha: 0}, 0, {startDelay: 1.25});
 			var funnyTimer:FlxTimer = new FlxTimer(timers);
 			funnyTimer.start(1.25, function(tmr:FlxTimer)
 			{
+				funny.alpha = 0;
 				funny.kill();
 			});
 		}
