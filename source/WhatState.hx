@@ -4,7 +4,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -36,5 +35,11 @@ class WhatState extends FlxState
 
     override public function update(elapsed:Float)
     {
+		#if debug
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		{
+			FlxG.switchState(new WarningState());
+		}
+		#end
     }
 }

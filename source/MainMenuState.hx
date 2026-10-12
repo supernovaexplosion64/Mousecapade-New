@@ -3,7 +3,9 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 
@@ -97,6 +99,40 @@ class MainMenuState extends FlxState
     override public function update(elapsed:Float)
     {
     	super.update(elapsed);
+
+		if (FlxG.keys.justPressed.SIX && FlxG.save.data.speedUnlocked && FlxG.save.data.speedMode)
+		{
+			FlxG.save.data.speedMode = false;
+
+			var routeText:FlxText = new FlxText();
+			routeText.text = "Speed Mode disabled";
+			routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			routeText.screenCenter(X);
+			routeText.y = 12;
+			routeText.alpha = 0;
+			add(routeText);
+
+			FlxTween.tween(routeText, {alpha: 1}, 0.6);
+			FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
+		}
+
+		if (FlxG.keys.justPressed.SEVEN && FlxG.save.data.speedUnlocked && !FlxG.save.data.speedMode)
+		{
+			FlxG.save.data.speedMode = true;
+			var weirdSoundJingle:FlxSound = new FlxSound();
+			weirdSoundJingle = FlxG.sound.load(Paths.sound('weird-route-jingle'));
+			weirdSoundJingle.play();
+
+			var routeText:FlxText = new FlxText();
+			routeText.text = "Speed Mode enabled";
+			routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			routeText.screenCenter(X);
+			routeText.y = routeText.height * -1;
+			add(routeText);
+
+			FlxTween.tween(routeText, {y: 12}, 0.6, {ease: FlxEase.cubeOut});
+			FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
+		}
 
         if (FlxG.mouse.overlaps(button))
         {

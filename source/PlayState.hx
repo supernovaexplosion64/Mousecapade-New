@@ -32,6 +32,7 @@ class PlayState extends FlxState
 	public var screweds:FlxTypedGroup<Screwed>;
 	public var windows:FlxTypedGroup<WindowsPopUp>;
 	public var pizzas:FlxTypedGroup<Pizza>;
+	public var redBars:FlxTypedGroup<FlxSprite>;
 
 	public var timers:FlxTimerManager;
 	public var tweens:FlxTweenManager;
@@ -107,6 +108,7 @@ class PlayState extends FlxState
 
 	override public function create()
 	{
+		score = 0;
 		if (gameJustStarted)
 		{
 			LEVEL = 1;
@@ -156,6 +158,9 @@ class PlayState extends FlxState
 
 		pizzas = new FlxTypedGroup<Pizza>();
 		add(pizzas);
+
+		redBars = new FlxTypedGroup<FlxSprite>();
+		add(redBars);
 
 		timers = new FlxTimerManager();
 		add(timers);
@@ -272,7 +277,13 @@ class PlayState extends FlxState
 		{
 			FlxG.sound.music.stop();
 			// checkFinalScore();
-			openSubState(new GameOverState());
+			if (score >= 85000 && !FlxG.save.data.speedUnlocked)
+				FlxG.switchState(new UnlockCharacterState());
+
+			if (FlxG.save.data.speedMode)
+				FlxG.switchState(new SecretDeathState());
+			else
+				openSubState(new GameOverState());
 		}
 		if (health > 100 && !ateThePizza)
 		{
@@ -308,6 +319,7 @@ class PlayState extends FlxState
 			spawnFunny();
 		if (time >= randomAppear4)
 			spawnWindows();
+		spawnRedBars();
 		/*if (health <= 100 && theOtherBar.alpha > 0)
 			{
 				FlxTween.tween(theOtherBar, {alpha: 0}, 1 / theOtherBar.alpha);
@@ -323,6 +335,7 @@ class PlayState extends FlxState
 		FlxG.overlap(player, wegas, playerTouchWega);
 		FlxG.overlap(player, phones, playerTouchPhone);
 		FlxG.overlap(player, screweds, playerTouchScrewed);
+		FlxG.overlap(player, redBars, playerTouchRedBar);
 		#if debug
 		if (FlxG.keys.justPressed.SEVEN)
 		{
@@ -333,6 +346,20 @@ class PlayState extends FlxState
 		{
 			// checkFinalScore();
 			openSubState(new GameOverState());
+		}
+		if (FlxG.keys.justPressed.SIX)
+		{
+			FlxG.sound.music.stop();
+			FlxG.switchState(new UnlockCharacterState());
+		}
+		if (FlxG.keys.justPressed.THREE && !FlxG.save.data.speedUnlocked)
+		{
+			FlxG.save.data.speedUnlocked = true;
+		}
+		if (FlxG.keys.justPressed.R)
+		{
+			score = 0;
+			FlxG.resetState();
 		}
 		#end
 		windows.forEachAlive(mouseTouchWindows);
@@ -484,6 +511,22 @@ class PlayState extends FlxState
 		}
 	}
 
+	public function spawnRedBars()
+	{
+		var randomChanceToAppear:Float = FlxG.random.float(0.7, 0.8);
+		var redBarAppear:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
+		if (redBarAppear)
+		{
+			var positionX = FlxG.random.int(0, FlxG.width - 100);
+			var positionY = FlxG.random.int(0, FlxG.height - 100);
+			var redBar = new FlxSprite(positionX, positionY);
+			redBar.makeGraphic(FlxG.width, Std.int(player.height + 50), FlxColor.RED);
+			redBar.updateHitbox();
+			redBars.add(redBar);
+			itemTimer(redBar);
+		}
+	}
+
 	public function updateTime()
 	{
 		time += 1 * FlxG.elapsed;
@@ -493,7 +536,7 @@ class PlayState extends FlxState
 	}
 	public function addScore():Int
 	{
-		var addYourScore:Int = Std.int((100 * itemScore) + decreasingMultiplier + (bonusStreak * 75));
+		var addYourScore:Int = Std.int(((100 + (bonusStreak * 2)) * itemScore) + decreasingMultiplier);
 		return addYourScore;
 	}
 
@@ -510,12 +553,30 @@ class PlayState extends FlxState
 	{
 		if (type == 'add')
 		{
+			bonusStreak += 1;
 			score += addScore();
+			var comboText:FlxText = new FlxText(0, 0, 0, "Combo: " + bonusStreak, 20);
+			comboText.cameras = [camHUD];
+			comboText.font = "Times New Roman";
+			comboText.x = scoreText.x + scoreText.width + 24;
+			comboText.y = scoreText.y;
+			add(comboText);
+
+			var comboAddText:FlxText = new FlxText(0, 0, 0, "+" + addScore(), 20);
+			comboAddText.cameras = [camHUD];
+			comboAddText.font = "Times New Roman";
+			comboAddText.x = scoreText.x + scoreText.width + 24;
+			comboAddText.y = comboText.y + comboText.height + 12;
+			add(comboAddText);
+			FlxTween.tween(comboText, {alpha: 0}, 0.6);
+			FlxTween.tween(comboAddText, {alpha: 0}, 0.6);
+
 			#if debug trace("Score addition: " + Std.string(addScore()) + ", Decreasing Multiplier: " + Std.string(decreasingMultiplier)); #end
 			decreasingMultiplier = 100 - (2 * wegaTimes);
 		}
 		if (type == 'take')
 		{
+			bonusStreak = 0;
 			score -= takeAwayScore();
 		}
 		scoreText.text = Std.string(score);
@@ -655,7 +716,7 @@ class PlayState extends FlxState
 				fnatiJumpscare.loadGraphic(Paths.image('fnatijumpscare'), true, 800, 450);
 				fnatiJumpscare.animation.add("idle", [
 					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 30, 29, 28, 27, 26,
-					25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
+					25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
 				], 60, true);
 				fnatiJumpscare.scale.set(FlxG.width / 600, FlxG.height / fnatiJumpscare.frameHeight);
 				fnatiJumpscare.cameras = [camHUD];
@@ -690,6 +751,14 @@ class PlayState extends FlxState
 			takeAwayHealth(screwed_healthDecrease);
 			// if (popUpEnabled)
 			shatterScreen();
+		}
+	}
+
+	function playerTouchRedBar(player:Player, item:FlxSprite)
+	{
+		if (player.alive && player.exists && item.alive && item.exists)
+		{
+			health -= 3 * FlxG.elapsed;
 		}
 	}
 
@@ -767,6 +836,9 @@ class PlayState extends FlxState
 		daPhone.y = randomY;
 		add(daPhone);
 		var daPhoneTimer:FlxTimer = new FlxTimer(timers);
+		var randomTurn = FlxG.random.int(0, 90);
+		FlxTween.tween(daPhone, {y: daPhone.y + 600}, 4, {ease: FlxEase.cubeIn});
+		FlxTween.tween(daPhone, {angle: daPhone.angle + randomTurn}, 4, {ease: FlxEase.cubeIn});
 		daPhoneTimer.start(3, function(tmr:FlxTimer)
 		{
 			FlxTween.tween(daPhone, {alpha: 0}, 0.6);
@@ -814,7 +886,8 @@ class PlayState extends FlxState
 				});
 				var appearSound:FlxSound = new FlxSound();
 				appearSound = FlxG.sound.load(Paths.sound('appearing/${sounds[k]}'));
-				appearSound.play();
+				if (sounds[k] != '')
+					appearSound.play();
 			});
 		}
 		

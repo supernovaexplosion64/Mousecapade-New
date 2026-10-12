@@ -30,6 +30,10 @@ class Item extends FlxSprite
 				SPEED = 200;
 				value = 10;
 				healthIncrease = 4;
+			case Lunchly:
+				loadGraphic(Paths.item('lunchly'), false);
+				value = 2;
+				healthIncrease = 2;
 		}
 	}
 	override function update(elapsed:Float)
@@ -58,7 +62,7 @@ class Item extends FlxSprite
 
 		switch getType()
 		{
-			case Default:
+			case Default | Lunchly:
 				rSpeed = 0.8;
 			case Blue:
 				rSpeed = 1.1;
@@ -81,6 +85,8 @@ class Item extends FlxSprite
 
 	public function getType():ItemType
 	{
+		if (FlxG.save.data.speedMode)
+			return Lunchly;
 		var rng:Int = FlxG.random.int(1, 10);
 
 		if (rng <= 1)
@@ -96,4 +102,5 @@ enum ItemType
 	Default;
 	Blue;
 	Red;
+	Lunchly;
 }

@@ -23,16 +23,19 @@ class PopUp extends FlxSprite
         'skinny',
         'madness',
 		'alpha',
-		'ost'
-    ];
+		'ost',
+		'dead'
+	];
+
+	var popUpsSpeed:Array<String> = ['ksi', 'bambi'];
 
 	public function new()
 	{
 		super();
 
 		loadGraphic(Paths.image('popups/placeholder'), false);
-        if (width != 1280 || height != 720)
-            setGraphicSize(1280, 720);
+		if (width != FlxG.width || height != FlxG.height)
+			setGraphicSize(FlxG.width, FlxG.height);
 		screenCenter();
 		alpha = 0.6;
 	}
@@ -42,8 +45,15 @@ class PopUp extends FlxSprite
 		if (type == Normal)
 		{
 			var popUpNums:Int = popUps.length;
-			loadGraphic(Paths.image('popups/${popUps[FlxG.random.int(0, popUpNums - 1)]}'));
+			var pathString:String = 'popups/${popUps[FlxG.random.int(0, popUpNums - 1)]}';
 			playSound = FlxG.sound.load(Paths.sound("mickey-mouse"));
+			if (FlxG.save.data.speedMode)
+			{
+				playSound = FlxG.sound.load(Paths.sound("bark"));
+				popUpNums = popUpsSpeed.length;
+				pathString = 'popups/speed/${popUpsSpeed[FlxG.random.int(0, popUpNums - 1)]}';
+			}
+			loadGraphic(Paths.image(pathString));
 			playSound.play();
 		}
 		else if (type == Wega)

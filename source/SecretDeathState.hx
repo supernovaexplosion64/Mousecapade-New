@@ -32,7 +32,9 @@ class SecretDeathState extends FlxState
 		"What kind of person names their game 'untitled markus game'? Is everyone THAT unoriginal now?",
 		"StanleyMOV ain't got nothing on this dude!",
 		"My IShowers have been Speeded",
-		"HIS NAME IS ISHOWERSPEED NOT ISHOWSPEED"
+		"HIS NAME IS ISHOWERSPEED NOT ISHOWSPEED",
+		"Pick up the phone",
+		"Back in my day, FNF modding was purely hardcoded!"
 	];
 
     override public function create()
@@ -74,7 +76,7 @@ class SecretDeathState extends FlxState
 		var quoteNums:Int = quotes.length;
 
 		quoteText = new FlxText();
-		quoteText.text = quotes[FlxG.random.int(0, quoteNums - 1)];
+		quoteText.text = '"' + quotes[FlxG.random.int(0, quoteNums - 1)] + '"';
 		quoteText.font = "Times New Roman";
 		quoteText.antialiasing = true;
 		quoteText.size = 40;
@@ -93,5 +95,9 @@ class SecretDeathState extends FlxState
 
     override public function update(elapsed:Float)
     {
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		{
+			FlxG.switchState(new MainMenuState());
+		}
     }
 }

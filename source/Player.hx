@@ -11,7 +11,13 @@ class Player extends FlxSprite
 	public function new(x:Float = 0, y:Float = 0)
 	{
 		super(x, y);
-		loadGraphic(Paths.image('player'));
+		switch (getType())
+		{
+			case Normal:
+				loadGraphic(Paths.image('player'));
+			case IShowerSpeed:
+				loadGraphic(Paths.image('speed'));
+		}
 		setGraphicSize(128, 128);
 		maxVelocity.set(640, 640);
 	}
@@ -50,4 +56,18 @@ class Player extends FlxSprite
 				velocity.x = SPEED;
         }
     }
+	function getType():PlayerType
+	{
+		if (FlxG.save.data.speedMode)
+		{
+			return IShowerSpeed;
+		}
+		return Normal;
+	}
+}
+
+enum PlayerType
+{
+	Normal;
+	IShowerSpeed;
 }
