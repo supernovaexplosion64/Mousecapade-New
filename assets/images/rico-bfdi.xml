@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="rico-bfdi.png">
+	<!-- Created with Adobe Animate version 24.0.9.74 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="block instance 10000" x="0" y="0" width="65" height="59"/>
+	<SubTexture name="block instance 10001" x="65" y="0" width="65" height="59"/>
+	<SubTexture name="block instance 10002" x="130" y="0" width="65" height="59"/>
+	<SubTexture name="block instance 10003" x="0" y="59" width="65" height="59"/>
+	<SubTexture name="block instance 10004" x="65" y="59" width="65" height="59"/>
+	<SubTexture name="block instance 10005" x="130" y="59" width="65" height="59"/>
+	<SubTexture name="block instance 10006" x="0" y="118" width="65" height="59"/>
+	<SubTexture name="block instance 10007" x="65" y="118" width="65" height="59"/>
+</TextureAtlas>

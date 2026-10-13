@@ -34,11 +34,13 @@ class UnlockCharacterState extends FlxState
         sprite = new FlxSprite();
 	    sprite.makeGraphic(Std.int(FlxG.width * 0.7), Std.int(FlxG.height * 0.12), FlxColor.BLUE);
 		sprite.screenCenter();
+		sprite.alpha = 0;
 		add(sprite);
 
         text = new FlxText(0, 0, sprite.width, 16);
         text.text = "You can now play as: " + daString;
         text.screenCenter();
+		text.alpha = 0;
         add(text);
 
         characterImage = new FlxSprite();
@@ -46,7 +48,12 @@ class UnlockCharacterState extends FlxState
         characterImage.setGraphicSize(64, 64);
         characterImage.x = text.x + text.width;
         characterImage.y = text.y;
+		characterImage.alpha = 0;
         add(characterImage);
+		for (e in [sprite, text, characterImage])
+		{
+			FlxTween.tween(e, {alpha: 1}, 0.6);
+		}
     }
 
     override public function update(elapsed:Float):Void
