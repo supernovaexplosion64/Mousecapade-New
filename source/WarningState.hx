@@ -109,7 +109,8 @@ class WarningState extends FlxState
 				FlxTween.tween(e, {alpha: 0.6}, e.alpha - 0.6);
             }
 
-			FlxTween.tween(altWarningText, {alpha: 1}, 1 - altWarningText.alpha);
+			if (altWarningText.alpha < 1)
+				FlxTween.tween(altWarningText, {alpha: 1}, 1 - altWarningText.alpha);
 
             if (FlxG.mouse.justPressed)
             {
@@ -128,7 +129,8 @@ class WarningState extends FlxState
 					FlxTween.tween(e, {alpha: 1}, 1 - e.alpha);
                 }
             }
-			FlxTween.tween(altWarningText, {alpha: 0}, altWarningText.alpha);
+			if (altWarningText.alpha > 0)
+				FlxTween.tween(altWarningText, {alpha: 0}, altWarningText.alpha);
         }
 
         if (FlxG.mouse.overlaps(button2))

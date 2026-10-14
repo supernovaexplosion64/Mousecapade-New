@@ -58,7 +58,7 @@ class PlayState extends FlxState
 	public var screwed_randomMulti:Float;
 	public var screwed_alphaAlpha:Float;
 
-	public var time:Float = 0;
+	public var time:Float = 600;
 	public var timeText:FlxText;
 
 	var popUpEnabled:Bool = true;
@@ -87,8 +87,6 @@ class PlayState extends FlxState
 
 	public static var gameJustStarted:Bool = true;
 
-	public var breakSound:FlxSound;
-
 	public var theDelta:Float;
 
 	var normal_bpm:Float = 173;
@@ -111,6 +109,8 @@ class PlayState extends FlxState
 	override public function create()
 	{
 		score = 0;
+		blackScreen = new FlxSprite();
+		blackScreen.alpha = 0;
 		if (gameJustStarted)
 		{
 			LEVEL = 1;
@@ -216,7 +216,6 @@ class PlayState extends FlxState
 		levelText.cameras = [camHUD];
 		// add(levelText);
 
-		blackScreen = new FlxSprite();
 		blackScreen.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		blackScreen.scrollFactor.set(0, 0);
 		blackScreen.alpha = 1;
@@ -251,11 +250,8 @@ class PlayState extends FlxState
 				if (tmr.active == true)
 					tmr.active = false;
 			});
-			FlxTween.globalManager.forEach((tween:FlxTween) ->
-			{
-				if (tween.active == true)
-					tween.active = false;
-			});
+			if (FlxTween.globalManager.active == true)
+				FlxTween.globalManager.active = false;
 		}
 
 		if (!paused)
@@ -265,11 +261,8 @@ class PlayState extends FlxState
 				if (tmr.active == false)
 					tmr.active = true;
 			});
-			FlxTween.globalManager.forEach((tween:FlxTween) ->
-			{
-				if (tween.active == false)
-					tween.active = true;
-			});
+			if (FlxTween.globalManager.active == false)
+				FlxTween.globalManager.active = true;
 		}
 		updateTime();
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
@@ -332,8 +325,8 @@ class PlayState extends FlxState
 		if (time >= randomAppear2)
 			spawnFunny();
 		if (time >= randomAppear4)
-			spawnWindows();
-		spawnRedBars();
+			spawnBFDI();
+		// spawnRedBars();
 		/*if (health <= 100 && theOtherBar.alpha > 0)
 			{
 				FlxTween.tween(theOtherBar, {alpha: 0}, 1 / theOtherBar.alpha);
@@ -559,6 +552,50 @@ class PlayState extends FlxState
 			redBar.updateHitbox();
 			redBars.add(redBar);
 			itemTimer(redBar, 6.5);
+		}
+	}
+
+	function spawnBFDI()
+	{
+		var randomChanceToAppear:Float = FlxG.random.float(1, 1.3);
+		if (FlxG.save.data.speedMode)
+			randomChanceToAppear = FlxG.random.float(1.2, 1.5);
+		var bfdiAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120) * theDelta * 60);
+		if (bfdiAppear)
+		{
+			var bfdiPopUp:FlxSprite;
+			bfdiPopUp = new FlxSprite();
+			var daString:String;
+			if (FlxG.save.data.speedMode)
+			{
+				bfdiPopUp.loadGraphic(Paths.image('speed-bfdi'), true, 922, 484);
+				bfdiPopUp.animation.add("idle", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 24, true);
+			}
+			else
+			{
+				bfdiPopUp.loadGraphic(Paths.image('rico-bfdi'), true, 259, 213);
+				bfdiPopUp.animation.add("idle", [0, 1, 2, 3, 4, 5, 6, 7], 24, true);
+			}
+			bfdiPopUp.scale.set(0.6, 0.6);
+			if (FlxG.save.data.speedMode)
+				bfdiPopUp.scale.set(0.4, 0.4);
+			bfdiPopUp.updateHitbox();
+			bfdiPopUp.cameras = [camHUD];
+			bfdiPopUp.x = FlxG.width;
+			bfdiPopUp.y = FlxG.random.int(0, FlxG.height - bfdiPopUp.frameHeight);
+			add(bfdiPopUp);
+			bfdiPopUp.animation.play("idle");
+			if (FlxG.save.data.speedMode)
+			{
+				bfdiPopUp.x = bfdiPopUp.frameWidth * -1;
+				bfdiPopUp.velocity.x = 220;
+			}
+			else
+			{
+				bfdiPopUp.velocity.x = -220;
+			}
+
+			itemTimer(bfdiPopUp, 10);
 		}
 	}
 
@@ -871,6 +908,7 @@ class PlayState extends FlxState
 		var daPhoneTimer:FlxTimer = new FlxTimer(timers);
 		var daPhoneTimer2:FlxTimer = new FlxTimer(timers);
 		var randomTurn = FlxG.random.int(0, 90);
+		var breakSound:FlxSound = new FlxSound();
 		breakSound = FlxG.sound.load(Paths.sound("phone-break"));
 		FlxTween.tween(daPhone.scale, {x: randomSpeedMulti * 0.6, y: randomSpeedMulti * 0.6}, 0.6, {ease: FlxEase.cubeIn});
 		FlxTween.tween(daPhone, {angle: daPhone.angle + 1440}, 0.6, {ease: FlxEase.quadIn});
@@ -895,10 +933,10 @@ class PlayState extends FlxState
 			'Wegas have appeared!',
 			'THE FUNNY has appeared.',
 			'Screwedians have appeared!',
-			'Window pop-ups have appeared!',
+			'BFDI-lings have appeared!',
 			'PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE'
 		];
-		var sounds:Array<String> = ['scream', 'dave', 'bambi', 'error', 'phone'];
+		var sounds:Array<String> = ['scream', 'dave', 'bambi', 'bfdi-scream', 'phone'];
 		for (k in 0...times.length)
 		{
 			var enemyTimer:FlxTimer = new FlxTimer(timers);
@@ -928,6 +966,12 @@ class PlayState extends FlxState
 				appearSound = FlxG.sound.load(Paths.sound('appearing/${sounds[k]}'));
 				if (sounds[k] != '')
 					appearSound.play();
+				var killText:FlxTimer = new FlxTimer(timers);
+				killText.start(8, function(tmr:FlxTimer)
+				{
+					if (newEnemyText.exists)
+						newEnemyText.kill();
+				});
 			});
 		}
 		

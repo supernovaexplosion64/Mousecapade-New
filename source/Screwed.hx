@@ -13,6 +13,7 @@ class Screwed extends FlxSprite
 	public var daShake:Float;
 	public var randomMulti:Float;
 	public var alphaAlpha:Float;
+	public var prefix:String = '';
     // make function that causes screen to break
 	public function new(x:Float, y:Float)
 	{
@@ -20,6 +21,7 @@ class Screwed extends FlxSprite
         switch getType()
 		{
 			case Normal:
+				prefix = 'screwed/';
 				daGraphic = 'normal';
                 SPEED = 75;
 				healthDecrease = 2;
@@ -28,6 +30,7 @@ class Screwed extends FlxSprite
 				randomMulti = 1.2;
 				alphaAlpha = 0.3;
 			case Red:
+				prefix = 'screwed/';
 				daGraphic = 'red';
 				SPEED = 125;
 				healthDecrease = 5;
@@ -36,6 +39,7 @@ class Screwed extends FlxSprite
 				randomMulti = 1.6;
 				alphaAlpha = 0.5;
 			case New:
+				prefix = 'screwed/';
 				daGraphic = 'new';
 				SPEED = 150;
 				healthDecrease = 10;
@@ -44,6 +48,7 @@ class Screwed extends FlxSprite
 				randomMulti = 2;
 				alphaAlpha = 0.8;
             case Angry:
+				prefix = 'screwed/';
 				daGraphic = 'angry';
 				SPEED = 200;
 				healthDecrease = 25;
@@ -51,8 +56,16 @@ class Screwed extends FlxSprite
 				daShake = 0.3;
 				randomMulti = 2.5;
 				alphaAlpha = 1;
+			case Ksi:
+				daGraphic = 'ksi';
+				SPEED = 100;
+				healthDecrease = 7;
+				daScale = 1.4;
+				daShake = 0.18;
+				randomMulti = 1.8;
+				alphaAlpha = 0.6;
 		}
-		loadGraphic(Paths.enemy('screwed/${daGraphic}'), false);
+		loadGraphic(Paths.enemy('${prefix}' + '${daGraphic}'), false);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -63,6 +76,8 @@ class Screwed extends FlxSprite
 
     public function getType():ScrewedType
     {
+		if (FlxG.save.data.speedMode)
+			return Ksi;
         var rng:Int = FlxG.random.int(1, 50);
 
         if (rng <= 1)
@@ -81,4 +96,5 @@ enum ScrewedType
     Red;
     Angry;
     New;
+	Ksi;
 }
