@@ -713,12 +713,8 @@ class PlayState extends FlxState
 		{
 			if (FlxG.random.bool(0.5))
 			{
-				#if ((desktop || android) && !hl)
-				FlxG.switchState(new PickUpVideoState());
-				#else
 				FlxG.openURL("https://youtu.be/ChnqPMwQIKc");
 				FlxG.switchState(new MainMenuState());
-				#end
 			}
 			else
 			{

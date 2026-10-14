@@ -9,6 +9,13 @@ class Wega extends FlxSprite
 	{
 		super(x, y);
 		loadGraphic(Paths.enemy("wega"));
+		switch getType()
+		{
+			case Default:
+				loadGraphic(Paths.enemy("wega"));
+			case Ninja:
+				loadGraphic(Paths.enemy("ninja"));
+		}
 	}
 
 	override public function update(elapsed:Float):Void
@@ -16,4 +23,16 @@ class Wega extends FlxSprite
 		super.update(elapsed);
         updateHitbox();
 	}
+	public function getType():EnemyType
+	{
+		if (FlxG.save.data.speedMode)
+			return Ninja;
+		return Default;
+	}
+}
+
+enum EnemyType
+{
+	Default;
+	Ninja;
 }

@@ -3,6 +3,8 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxBackdrop;
+import flixel.addons.effects.FlxTrail;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -11,6 +13,9 @@ import flixel.util.FlxColor;
 
 class MainMenuState extends FlxState
 {
+	public var logo:FlxSprite;
+	public var logoDemo:FlxSprite;
+	public var trail:FlxTrail;
     public var button:FlxSprite;
     public var instruct:FlxSprite;
     public var buttonText:FlxText;
@@ -25,6 +30,10 @@ class MainMenuState extends FlxState
 	public var credButton:FlxSprite;
 	public var credText:FlxText;
 
+	public var backdrop:FlxBackdrop;
+
+	var logoMaxAngle:Float = 20;
+
     override public function create()
     {
     	super.create();
@@ -34,21 +43,43 @@ class MainMenuState extends FlxState
 		bg.screenCenter();
 		add(bg);
 
+		backdrop = new FlxBackdrop(Paths.image('checker'));
+		add(backdrop);
+
+		logo = new FlxSprite(Paths.image('menu/logo'));
+		logo.x = -12;
+		logo.y = -12;
+		add(logo);
+
+		logoDemo = new FlxSprite(Paths.image('menu/demo'));
+		logoDemo.x = logo.x + (logo.width * 0.8);
+		logoDemo.y = logo.y + (logo.height * 0.45);
+		logoDemo.angle = logoMaxAngle * -1;
+
+		trail = new FlxTrail(logo, Paths.image('menu/logo'), 8, 2, 0.6, 0.14);
+		add(trail);
+
+		add(logoDemo);
+
+		FlxTween.tween(logo, {y: logo.y + 24}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
+		FlxTween.tween(logoDemo, {y: logoDemo.y + 24}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
+		FlxTween.tween(logoDemo, {angle: logoDemo.angle + (logoMaxAngle * 2)}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
+
         button = new FlxSprite();
         button.makeGraphic(400, 150, FlxColor.LIME);
-        button.screenCenter(X);
-        button.y = 12;
+		button.x = 12;
+		button.y = 120;
         add(button);
 
         instruct = new FlxSprite();
         instruct.makeGraphic(400, 150, FlxColor.LIME);
-        instruct.screenCenter(X);
+		instruct.x = button.x;
         instruct.y = button.y + button.height + 12;
         add(instruct);
 
 		credButton = new FlxSprite();
 		credButton.makeGraphic(400, 150, FlxColor.LIME);
-		credButton.screenCenter(X);
+		credButton.x = button.x;
 		credButton.y = instruct.y + instruct.height + 12;
 		add(credButton);
 
@@ -86,7 +117,7 @@ class MainMenuState extends FlxState
 		// add(warning);
 
         credits = new FlxText();
-		credits.text = 'Created by supernovaexplosion64: 2026-2026';
+		credits.text = 'Game created by Rico W./"supernovaexplosion64"';
         credits.font = "Times New Roman";
         credits.size = 24;
         credits.x = 12;
@@ -99,6 +130,9 @@ class MainMenuState extends FlxState
     override public function update(elapsed:Float)
     {
     	super.update(elapsed);
+
+		backdrop.velocity.x = 50;
+		backdrop.velocity.y = 50;
 
 		if (FlxG.keys.justPressed.SIX && FlxG.save.data.speedUnlocked && FlxG.save.data.speedMode)
 		{
@@ -130,7 +164,7 @@ class MainMenuState extends FlxState
 			routeText.y = routeText.height * -1;
 			add(routeText);
 
-			FlxTween.tween(routeText, {y: 12}, 0.6, {ease: FlxEase.cubeOut});
+			FlxTween.tween(routeText, {y: 12}, 0.6, {ease: FlxEase.backOut});
 			FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
 		}
 

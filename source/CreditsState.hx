@@ -3,6 +3,8 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxBackdrop;
+import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -12,7 +14,7 @@ class CreditsState extends FlxState
     public var credText:FlxText;
 	public var credText2:FlxText;
     public var specialText:FlxText;
-    public var bg:FlxSprite;
+	public var bg:FlxBackdrop;
 	public var credIcon:FlxSprite;
 	public var credIcon2:FlxSprite;
 
@@ -23,8 +25,8 @@ class CreditsState extends FlxState
     {
     	super.create();
 
-        bg = new FlxSprite();
-		bg.loadGraphic(Paths.image("bg-misery"));
+		bg = new FlxBackdrop(Paths.image("bg-misery"));
+		bg.alpha = 0;
 		bg.screenCenter();
 		add(bg);
 
@@ -105,6 +107,18 @@ class CreditsState extends FlxState
 
     override public function update(elapsed:Float):Void
     {
+		if (FlxG.camera.y < 0)
+			FlxG.camera.y = 0;
+		if (FlxG.keys.anyPressed([W, UP]))
+		{
+			FlxG.camera.y -= 360 * FlxG.elapsed;
+		}
+
+		if (FlxG.keys.anyPressed([S, DOWN]))
+		{
+			FlxG.camera.y += 360 * FlxG.elapsed;
+		}
+
         if (FlxG.mouse.overlaps(exit))
         {
             for (e in [exit, exitText])
