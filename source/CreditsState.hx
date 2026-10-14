@@ -13,6 +13,7 @@ import flixel.util.FlxColor;
 class CreditsState extends FlxState
 {
 	public var camMain:FlxCamera;
+	public var thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason:FlxCamera;
     public var credText:FlxText;
 	public var credText2:FlxText;
     public var specialText:FlxText;
@@ -24,6 +25,17 @@ class CreditsState extends FlxState
     public var exit:FlxSprite;
     public var exitText:FlxText;
 
+	public var playtesters:Array<String> = ['Place the holder'];
+	public var specialThanks:Array<String> = [
+		'Developers of Vs. Mouse',
+		'Developers of Vs. Mouse ULTIMATE',
+		'Developers of Vs. Mouse: Cheesed Up',
+		'The Ancient Mice Dev Team',
+		'Battle for Dream Island',
+		'SammieGHA',
+		'Your mom'
+	];
+
 	override public function create()
     {
     	super.create();
@@ -31,6 +43,10 @@ class CreditsState extends FlxState
 		camMain = new FlxCamera();
 		camMain.bgColor.alpha = 0;
 		FlxG.cameras.add(camMain, false);
+
+		thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason = new FlxCamera();
+		thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason.bgColor.alpha = 0;
+		FlxG.cameras.add(thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason, false);
 
 		bg = new FlxSprite();
 		bg.loadGraphic(Paths.image("bg-misery"));
@@ -51,7 +67,7 @@ class CreditsState extends FlxState
 		credIcon.setGraphicSize(256, 256);
 		credIcon.updateHitbox();
 		credIcon.x = 12;
-		credIcon.y = 12;
+		credIcon.y = 36;
 		add(credIcon);
 
 		credIcon2 = new FlxSprite();
@@ -59,29 +75,36 @@ class CreditsState extends FlxState
 		credIcon2.setGraphicSize(256, 256);
 		credIcon2.updateHitbox();
 		credIcon2.x = 12;
-		credIcon2.y = (FlxG.height / 2) + 12;
+		credIcon2.y = credIcon.y + (credIcon.height * 1.5);
 		add(credIcon2);
 
-		var credTextDev:FlxText = new FlxText(0, 0, 0, "Developers", 32);
-		credTextDev.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var credTextDev:FlxText = new FlxText(0, 0, 0, "Developers", 56);
+		credTextDev.setFormat("Times New Roman", 56, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextDev.antialiasing = true;
 		credTextDev.screenCenter(X);
 		add(credTextDev);
 
-		var credTextCon:FlxText = new FlxText(0, 0, 0, "Contributors", 32);
-		credTextCon.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var credTextCon:FlxText = new FlxText(0, 0, 0, "Contributors", 56);
+		credTextCon.setFormat("Times New Roman", 56, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextCon.antialiasing = true;
 		credTextCon.screenCenter(X);
 		credTextCon.y = credIcon.y + credIcon.height + 12;
 		add(credTextCon);
 
-		var credTextDesc1:FlxText = new FlxText(credIcon.x + credIcon.width + 12, credIcon.y, 0, "supernovaexplosion64", 28);
-		credTextDesc1.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var credTextThanks:FlxText = new FlxText(0, 0, 0, "Special Thanks", 56);
+		credTextThanks.setFormat("Times New Roman", 56, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credTextThanks.antialiasing = true;
+		credTextThanks.screenCenter(X);
+		credTextThanks.y = credIcon2.y + credIcon2.height + 12;
+		add(credTextThanks);
+
+		var credTextDesc1:FlxText = new FlxText(credIcon.x + credIcon.width + 12, credIcon.y, 0, "supernovaexplosion64", 40);
+		credTextDesc1.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextDesc1.antialiasing = true;
 		add(credTextDesc1);
 
-		var credTextDesc2:FlxText = new FlxText(credIcon2.x + credIcon2.width + 12, credIcon2.y, 0, "sammieGHA", 28);
-		credTextDesc2.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		var credTextDesc2:FlxText = new FlxText(credIcon2.x + credIcon2.width + 12, credIcon2.y, 0, "sammieGHA", 40);
+		credTextDesc2.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextDesc2.antialiasing = true;
 		add(credTextDesc2);
 
@@ -101,16 +124,25 @@ class CreditsState extends FlxState
 		add(credText2);
         
 		specialText = new FlxText();
-		specialText.text = "Special Thanks:\nDevelopers of Vs. Mouse\nThe Ancient Mice Dev Team\nVs. Mouse: Cheesed Up!";
-		specialText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		specialText.x = FlxG.width - specialText.width - 12;
-		specialText.y = FlxG.height - specialText.height - 12;
+		specialText.text = "Special Thanks:";
+		for (i in 0...specialThanks.length)
+		{
+			if (i == 0)
+				specialText.text += specialThanks[i];
+			else
+				specialText.text += '\n' + specialThanks[i];
+		}
+
+		specialText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		specialText.screenCenter(X);
+		specialText.y = credTextThanks.y + credTextThanks.height + 12;
 		add(specialText);
 
         exit = new FlxSprite();
         exit.makeGraphic(72, 72, FlxColor.RED);
         exit.x = FlxG.width - exit.width - 12;
         exit.y = 12;
+		exit.cameras = [thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason];
         add(exit);
 
         exitText = new FlxText();
@@ -118,24 +150,25 @@ class CreditsState extends FlxState
         exitText.size = 18;
         exitText.x = exit.x + (exit.width / 2) - (exitText.width / 2);
         exitText.y = exit.y + (exit.height / 2) - (exitText.height / 2);
+		exitText.cameras = [thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason];
         add(exitText);
 		for (e in [
 			credIcon,
 			credIcon2,
 			credTextDev,
 			credTextCon,
+			credTextThanks,
 			credTextDesc1,
 			credTextDesc2,
 			credText,
 			credText2,
-			specialText,
-			exit,
-			exitText
+			specialText
 		])
 		{
 			e.cameras = [camMain];
 		}
 		// FlxG.watch.add(camMain, "y");
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height * 3);
     }
 
     override public function update(elapsed:Float):Void

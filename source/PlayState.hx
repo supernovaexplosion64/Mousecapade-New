@@ -231,6 +231,10 @@ class PlayState extends FlxState
 				remove(levelText);
 			});
 		});
+		new FlxTimer().start(1, function(tmr:FlxTimer)
+		{
+			blackScreen.kill();
+		});
 		showNewEnemyText();
 		// FlxG.watch.add(player, "x");
 		// FlxG.watch.add(player, "y");
