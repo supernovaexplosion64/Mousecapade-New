@@ -237,7 +237,7 @@ class MainMenuState extends FlxState
         {
             for (e in [button, buttonText])
             {
-                FlxTween.tween(e, {alpha: 0.6}, 0.6);
+				FlxTween.tween(e, {alpha: 0.6}, e.alpha - 0.6);
             }
 
             if (FlxG.mouse.justPressed)
@@ -251,7 +251,7 @@ class MainMenuState extends FlxState
             {
                 for (e in [button, buttonText])
                 {
-                    FlxTween.tween(e, {alpha: 1}, 0.6);
+					FlxTween.tween(e, {alpha: 1}, 1 - e.alpha);
                 }
             }
         }
@@ -260,7 +260,7 @@ class MainMenuState extends FlxState
         {
             for (e in [instruct, instructText])
             {
-                FlxTween.tween(e, {alpha: 0.6}, 0.6);
+				FlxTween.tween(e, {alpha: 0.6}, e.alpha - 0.6);
             }
 
             if (FlxG.mouse.justPressed)
@@ -274,7 +274,7 @@ class MainMenuState extends FlxState
             {
                 for (e in [instruct, instructText])
                 {
-                    FlxTween.tween(e, {alpha: 1}, 0.6);
+					FlxTween.tween(e, {alpha: 1}, 1 - e.alpha);
                 }
             }
         }
@@ -282,7 +282,7 @@ class MainMenuState extends FlxState
 		{
 			for (e in [credButton, credText])
 			{
-				FlxTween.tween(e, {alpha: 0.6}, 0.6);
+				FlxTween.tween(e, {alpha: 0.6}, e.alpha - 0.6);
 			}
 
 			if (FlxG.mouse.justPressed)
@@ -296,7 +296,7 @@ class MainMenuState extends FlxState
 			{
 				for (e in [credButton, credText])
 				{
-					FlxTween.tween(e, {alpha: 1}, 0.6);
+					FlxTween.tween(e, {alpha: 1}, 1 - e.alpha);
 				}
 			}
 		}

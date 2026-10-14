@@ -58,7 +58,7 @@ class PlayState extends FlxState
 	public var screwed_randomMulti:Float;
 	public var screwed_alphaAlpha:Float;
 
-	public var time:Float = 600;
+	public var time:Float = 0;
 	public var timeText:FlxText;
 
 	var popUpEnabled:Bool = true;
@@ -314,7 +314,7 @@ class PlayState extends FlxState
 		// showNewEnemyText();
 		spawnCheese();
 		addNewPizza();
-		if (maxPizzasEaten > 0)
+		if (maxPizzasEaten > 0 && health <= 50)
 			spawnPizza();
 		if (time >= randomAppear)
 			spawnWega();
@@ -369,8 +369,8 @@ class PlayState extends FlxState
 			FlxG.resetState();
 		}
 		#end
-		windows.forEachAlive(mouseTouchWindows);
-		windows.forEachExists(mouseTouchWindows);
+		// windows.forEachAlive(mouseTouchWindows);
+		// windows.forEachExists(mouseTouchWindows);
 		super.update(elapsed);
 	}
 

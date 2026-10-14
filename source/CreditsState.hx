@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -11,10 +12,12 @@ import flixel.util.FlxColor;
 
 class CreditsState extends FlxState
 {
+	public var camMain:FlxCamera;
     public var credText:FlxText;
 	public var credText2:FlxText;
     public var specialText:FlxText;
-	public var bg:FlxBackdrop;
+	public var bg:FlxSprite;
+	public var backdrop:FlxBackdrop;
 	public var credIcon:FlxSprite;
 	public var credIcon2:FlxSprite;
 
@@ -25,10 +28,23 @@ class CreditsState extends FlxState
     {
     	super.create();
 
-		bg = new FlxBackdrop(Paths.image("bg-misery"));
-		bg.alpha = 0;
+		camMain = new FlxCamera();
+		camMain.bgColor.alpha = 0;
+		FlxG.cameras.add(camMain, false);
+
+		bg = new FlxSprite();
+		bg.loadGraphic(Paths.image("bg-misery"));
+		// bg.alpha = 0;
 		bg.screenCenter();
+		bg.scrollFactor.set(0, 0);
 		add(bg);
+
+		backdrop = new FlxBackdrop(Paths.image("menu/credit-backdrop"));
+		backdrop.alpha = 0.5;
+		backdrop.velocity.x = 50;
+		backdrop.velocity.y = 50;
+		backdrop.cameras = [camMain];
+		add(backdrop);
 
 		credIcon = new FlxSprite();
 		credIcon.loadGraphic(Paths.image("credits/rico"));
@@ -103,28 +119,44 @@ class CreditsState extends FlxState
         exitText.x = exit.x + (exit.width / 2) - (exitText.width / 2);
         exitText.y = exit.y + (exit.height / 2) - (exitText.height / 2);
         add(exitText);
-		// FlxG.watch.add(FlxG.camera, "y");
+		for (e in [
+			credIcon,
+			credIcon2,
+			credTextDev,
+			credTextCon,
+			credTextDesc1,
+			credTextDesc2,
+			credText,
+			credText2,
+			specialText,
+			exit,
+			exitText
+		])
+		{
+			e.cameras = [camMain];
+		}
+		// FlxG.watch.add(camMain, "y");
     }
 
     override public function update(elapsed:Float):Void
     {
-		if (FlxG.camera.y < 0)
-			FlxG.camera.y = 0;
+		if (camMain.y > 0)
+			camMain.y = 0;
 		if (FlxG.keys.anyPressed([W, UP]))
 		{
-			FlxG.camera.y -= 360 * FlxG.elapsed;
+			camMain.y += 360 * FlxG.elapsed;
 		}
 
 		if (FlxG.keys.anyPressed([S, DOWN]))
 		{
-			FlxG.camera.y += 360 * FlxG.elapsed;
+			camMain.y -= 360 * FlxG.elapsed;
 		}
 
         if (FlxG.mouse.overlaps(exit))
         {
             for (e in [exit, exitText])
             {
-                FlxTween.tween(e, {alpha: 0.6}, 0.6);
+				FlxTween.tween(e, {alpha: 0.6}, e.alpha - 0.6);
             }
 
             if (FlxG.mouse.justPressed)
@@ -132,6 +164,16 @@ class CreditsState extends FlxState
                 FlxG.switchState(new MainMenuState());
             }
         }
+		else
+		{
+			if (exit.alpha < 1)
+			{
+				for (e in [exit, exitText])
+				{
+					FlxTween.tween(e, {alpha: 1}, 1 - e.alpha);
+				}
+			}
+		}
 
 		if (FlxG.mouse.overlaps(credIcon))
 		{
