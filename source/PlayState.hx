@@ -7,6 +7,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
@@ -14,6 +15,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween.FlxTweenManager;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxBar;
+import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer.FlxTimerManager;
@@ -32,7 +34,7 @@ class PlayState extends FlxState
 	public var screweds:FlxTypedGroup<Screwed>;
 	public var windows:FlxTypedGroup<WindowsPopUp>;
 	public var pizzas:FlxTypedGroup<Pizza>;
-	public var redBars:FlxTypedGroup<FlxSprite>;
+	public var redBars:FlxTypedGroup<FlxBackdrop>;
 
 	public var timers:FlxTimerManager;
 	public var tweens:FlxTweenManager;
@@ -159,7 +161,7 @@ class PlayState extends FlxState
 		pizzas = new FlxTypedGroup<Pizza>();
 		add(pizzas);
 
-		redBars = new FlxTypedGroup<FlxSprite>();
+		redBars = new FlxTypedGroup<FlxBackdrop>();
 		add(redBars);
 
 		timers = new FlxTimerManager();
@@ -231,6 +233,8 @@ class PlayState extends FlxState
 			});
 		});
 		showNewEnemyText();
+		// FlxG.watch.add(player, "x");
+		// FlxG.watch.add(player, "y");
 	}
 
 	override public function update(elapsed:Float)
@@ -239,12 +243,18 @@ class PlayState extends FlxState
 			{
 				cheese.scale.set(2, 2);
 		});*/
+		theDelta = FlxG.elapsed;
 		if (paused)
 		{
 			timers.forEach(function(tmr:FlxTimer)
 			{
 				if (tmr.active == true)
 					tmr.active = false;
+			});
+			FlxTween.globalManager.forEach((tween:FlxTween) ->
+			{
+				if (tween.active == true)
+					tween.active = false;
 			});
 		}
 
@@ -255,9 +265,13 @@ class PlayState extends FlxState
 				if (tmr.active == false)
 					tmr.active = true;
 			});
+			FlxTween.globalManager.forEach((tween:FlxTween) ->
+			{
+				if (tween.active == false)
+					tween.active = true;
+			});
 		}
 		updateTime();
-		theDelta = FlxG.elapsed;
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
 		if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
 		{
@@ -519,8 +533,9 @@ class PlayState extends FlxState
 		{
 			var positionX = FlxG.random.int(0, FlxG.width - 100);
 			var positionY = FlxG.random.int(0, FlxG.height - 100);
-			var redBar = new FlxSprite(positionX, positionY);
-			redBar.makeGraphic(FlxG.width, 64, FlxColor.RED);
+			var redBar = new FlxBackdrop(Paths.image('redbox'), FlxAxes.X);
+			// redBar.x = positionX;
+			redBar.y = positionY;
 			redBar.alpha = 0.5;
 			redBar.active = false;
 			FlxTween.tween(redBar, {alpha: 1}, 1.5, {ease: FlxEase.cubeIn});
@@ -846,12 +861,12 @@ class PlayState extends FlxState
 		randomSpeedMulti = screwed_randomMulti;
 		// daPhone.angle += 360 * randomSpeedMulti * FlxG.elapsed;
 		crack.cameras = [camHUD];
-		crack.x = randomX;
-		crack.y = randomY;
+		crack.x = FlxG.random.int(Std.int(crack.width / 2), Std.int(FlxG.width - (crack.width / 2)));
+		crack.y = FlxG.random.int(Std.int(crack.height / 2), Std.int(FlxG.height - (crack.height / 2)));
 		daPhone.angle = FlxG.random.int(0, 360);
 		daPhone.scale.set(0.1, 0.1);
-		daPhone.x = randomX;
-		daPhone.y = randomY;
+		daPhone.x = crack.x + ((crack.width / 2) - (daPhone.width / 2));
+		daPhone.y = crack.y + ((crack.height / 2) - (daPhone.height / 2));
 		add(daPhone);
 		var daPhoneTimer:FlxTimer = new FlxTimer(timers);
 		var daPhoneTimer2:FlxTimer = new FlxTimer(timers);
@@ -890,16 +905,15 @@ class PlayState extends FlxState
 			enemyTimer.start(times[k], function(tmr:FlxTimer)
 			{
 				var newEnemyText:FlxText = new FlxText();
-				newEnemyText.size = 40;
-				newEnemyText.font = "Times New Roman";
 				newEnemyText.text = '';
+				newEnemyText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				newEnemyText.cameras = [camMain];
 				newEnemyText.antialiasing = true;
 				newEnemyText.alpha = 0;
 				newEnemyText.scale.set(0.2, 0.2);
 				newEnemyText.text = texts[k];
-				newEnemyText.x = 0;
-				newEnemyText.y = 0;
+				newEnemyText.x = 12;
+				newEnemyText.y = 12;
 				newEnemyText.angle = 0;
 				add(newEnemyText);
 				FlxTween.tween(newEnemyText, {alpha: 1}, 0.3);

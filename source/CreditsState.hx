@@ -103,6 +103,7 @@ class CreditsState extends FlxState
         exitText.x = exit.x + (exit.width / 2) - (exitText.width / 2);
         exitText.y = exit.y + (exit.height / 2) - (exitText.height / 2);
         add(exitText);
+		// FlxG.watch.add(FlxG.camera, "y");
     }
 
     override public function update(elapsed:Float):Void

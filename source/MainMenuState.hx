@@ -30,9 +30,30 @@ class MainMenuState extends FlxState
 	public var credButton:FlxSprite;
 	public var credText:FlxText;
 
+	public var noteText:FlxText;
+	public var noteText2:FlxText;
+	public var noteText3:FlxText;
+
 	public var backdrop:FlxBackdrop;
 
 	var logoMaxAngle:Float = 20;
+
+	var randomPopUpNotes:Array<String> = [
+		"hello boy what are you doing here",
+		"you want to play but i don't it hurts",
+		"go play vs. mouse ultimate",
+		"go play vs. mouse: cheesed up",
+		"No generative AI was used during the development of this game.",
+		"IShowerSpeed collab when?",
+		"This game is better than Lobotomy Clicker",
+		"It was all started with a mouse",
+		"Hi Ruvim",
+		"I'm gonna break my phone",
+		"Kill all Friday Night Funkin' fans",
+		"StanleyMOV would have a FEAST playing this game"
+	];
+
+	var popUpText:FlxText;
 
     override public function create()
     {
@@ -61,9 +82,9 @@ class MainMenuState extends FlxState
 
 		add(logoDemo);
 
-		FlxTween.tween(logo, {y: logo.y + 24}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
-		FlxTween.tween(logoDemo, {y: logoDemo.y + 24}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
-		FlxTween.tween(logoDemo, {angle: logoDemo.angle + (logoMaxAngle * 2)}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
+		FlxTween.tween(logo, {y: logo.y + 24}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG});
+		FlxTween.tween(logoDemo, {y: logoDemo.y + 24}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG});
+		FlxTween.tween(logoDemo, {angle: logoDemo.angle + (logoMaxAngle * 2)}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG});
 
         button = new FlxSprite();
         button.makeGraphic(400, 150, FlxColor.LIME);
@@ -84,28 +105,60 @@ class MainMenuState extends FlxState
 		add(credButton);
 
         buttonText = new FlxText();
-        buttonText.text = 'PLAY MY GAME';
-        buttonText.size = 32;
-        buttonText.font = "Times New Roman";
+		buttonText.text = 'Play';
+		buttonText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         buttonText.x = button.x + (button.width / 2) - (buttonText.width / 2);
         buttonText.y = button.y + (button.height / 2) - (buttonText.height / 2);
         add(buttonText);
 
         instructText = new FlxText();
-        instructText.text = 'instructions';
-        instructText.size = 32;
-        instructText.font = "Times New Roman";
+		instructText.text = 'Instructions';
+		instructText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         instructText.x = instruct.x + (instruct.width / 2) - (instructText.width / 2);
         instructText.y = instruct.y + (instruct.height / 2) - (instructText.height / 2);
         add(instructText);
 
 		credText = new FlxText();
 		credText.text = 'Credits';
-		credText.size = 32;
-		credText.font = "Times New Roman";
+		credText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credText.x = credButton.x + (credButton.width / 2) - (credText.width / 2);
 		credText.y = credButton.y + (credButton.height / 2) - (credText.height / 2);
 		add(credText);
+
+		var randomAngle:Float = FlxG.random.int(1, 15);
+		var randomAngle2:Float = FlxG.random.int(1, 15);
+		var randomAngle3:Float = FlxG.random.int(1, 15);
+
+		noteText = new FlxText();
+		noteText.text = 'Play the game.';
+		noteText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		noteText.x = button.x + button.width + 24;
+		noteText.y = button.y + (button.height / 2) - (noteText.height / 2);
+		noteText.angle = randomAngle * -1;
+		add(noteText);
+
+		noteText2 = new FlxText();
+		noteText2.text = 'Instructions of the game.';
+		noteText2.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		noteText2.x = instruct.x + instruct.width + 24;
+		noteText2.y = instruct.y + (instruct.height / 2) - (noteText2.height / 2);
+		noteText2.angle = randomAngle2 * -1;
+		add(noteText2);
+
+		noteText3 = new FlxText();
+		noteText3.text = 'People who worked on the game.';
+		noteText3.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		noteText3.x = credButton.x + credButton.width + 24;
+		noteText3.y = credButton.y + (credButton.height / 2) - (noteText3.height / 2);
+		noteText3.angle = randomAngle3 * -1;
+		add(noteText3);
+
+		FlxTween.tween(noteText, {angle: noteText.angle + (randomAngle * 2)}, 1.1,
+			{ease: FlxEase.quadInOut, type: PINGPONG, startDelay: FlxG.random.float(0, 0.6)});
+		FlxTween.tween(noteText2, {angle: noteText2.angle + (randomAngle2 * 2)}, 1.1,
+			{ease: FlxEase.quadInOut, type: PINGPONG, startDelay: FlxG.random.float(0, 0.6)});
+		FlxTween.tween(noteText3, {angle: noteText3.angle + (randomAngle3 * 2)}, 1.1,
+			{ease: FlxEase.quadInOut, type: PINGPONG, startDelay: FlxG.random.float(0, 0.6)});
 
         warning = new FlxText();
         warning.text = 'Please DO NOT play this game if you are a person with epilepsy and/or prone to seizures.';
@@ -118,11 +171,23 @@ class MainMenuState extends FlxState
 
         credits = new FlxText();
 		credits.text = 'Game created by Rico W./"supernovaexplosion64"';
-        credits.font = "Times New Roman";
-        credits.size = 24;
-        credits.x = 12;
-        credits.y = FlxG.height - credits.height - 12;
+		credits.setFormat("Times New Roman", 24, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credits.x = FlxG.width - credits.width - 12;
+		credits.y = 12;
         add(credits);
+
+		var randomPopUpLength = randomPopUpNotes.length;
+		var randomPopUpAngle:Float = FlxG.random.int(1, 10);
+
+		popUpText = new FlxText();
+		popUpText.text = randomPopUpNotes[FlxG.random.int(0, randomPopUpLength - 1)];
+		popUpText.setFormat("Times New Roman", 32, FlxColor.YELLOW, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, 0xFF808000);
+		popUpText.x = 12;
+		popUpText.y = FlxG.height - popUpText.height - 12;
+		popUpText.angle = randomPopUpAngle * -1;
+		add(popUpText);
+
+		FlxTween.tween(popUpText, {angle: popUpText.angle + (randomPopUpAngle * 2)}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG});
 
 		FlxG.sound.playMusic(Paths.music("mainmenu"), 1, true);
     }

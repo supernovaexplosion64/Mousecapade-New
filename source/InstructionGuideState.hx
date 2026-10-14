@@ -11,6 +11,8 @@ class InstructionGuideState extends FlxState
 {
     public var text:FlxText;
 
+	public var moreText:FlxText;
+
     public var exit:FlxSprite;
     public var exitText:FlxText;
 
@@ -18,6 +20,10 @@ class InstructionGuideState extends FlxState
     public var enemyExample2:FlxSprite;
 
     public var bg:FlxSprite;
+
+	public var types:Array<String> = ['cheeses', 'pizza'];
+
+	public var typesAlt:Array<String> = ['Lunchlies', 'KSI', 'DanTDM'];
 
     override public function create()
     {
@@ -29,12 +35,18 @@ class InstructionGuideState extends FlxState
 		add(bg);
 
         text = new FlxText();
-		text.text = 'how 2 play\ntuoch da cheses\ndogde teh bad gyus\nget hgih scroe adn win';
-        text.font = 'Times New Roman';
-        text.size = 48;
+		text.text = 'How to play:';
+		text.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         text.x = 12;
         text.y = 12;
         add(text);
+
+		moreText = new FlxText(0, 0, FlxG.width - 12);
+		moreText.text = "Grab the cheeses to earn points, grab the pizza to gain health, dodge everything else";
+		moreText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		moreText.screenCenter(X);
+		moreText.y = text.y + text.height + 12;
+		add(moreText);
 
         exit = new FlxSprite();
         exit.makeGraphic(72, 72, FlxColor.RED);
@@ -53,13 +65,13 @@ class InstructionGuideState extends FlxState
         enemyExample.loadGraphic(Paths.enemy("wega"));
         enemyExample.x = text.x + 480;
         enemyExample.y = text.y + 72 + 12;
-        add(enemyExample);
+		// add(enemyExample);
 
         enemyExample2 = new FlxSprite();
         enemyExample2.loadGraphic(Paths.enemy("fnati"));
         enemyExample2.x = enemyExample.x + enemyExample.width + 12;
         enemyExample2.y = enemyExample.y;
-        add(enemyExample2);
+		// add(enemyExample2);
 
         if (FlxG.sound.music == null) // don't restart the music if it's already playing BLUD
 		{
@@ -81,6 +93,11 @@ class InstructionGuideState extends FlxState
                 FlxG.switchState(new MainMenuState());
             }
         }
+
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		{
+			FlxG.switchState(new MainMenuState());
+		}
 
     	super.update(elapsed);
     }

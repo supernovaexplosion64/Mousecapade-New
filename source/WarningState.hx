@@ -15,12 +15,15 @@ class WarningState extends FlxState
     var warningText2:FlxText;
     var warningText3:FlxText;
 
+	var altWarningText:FlxText;
+
     var button:FlxSprite;
     var button2:FlxSprite;
     var buttonText:FlxText;
     var buttonText2:FlxText;
 
     var delayDelay:Float = 0.6;
+	var buttonAlphaing:Bool = false;
 
     override public function create()
     {
@@ -73,6 +76,15 @@ class WarningState extends FlxState
         buttonText2.y = button2.y + (button2.height / 2) - (buttonText2.height / 2);
         add(buttonText2);
 
+		altWarningText = new FlxText(0, 0, button.width);
+		altWarningText.text = "Note: This will still keep on pop ups or mechanics that are fundamental to the game's design.";
+		altWarningText.setFormat("Times New Roman", 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
+		altWarningText.antialiasing = true;
+		altWarningText.x = button.x;
+		altWarningText.y = button.y + button.height + 24;
+		altWarningText.alpha = 0;
+		add(altWarningText);
+
         #if desktop
 		delayDelay += 0.6;
         #end
@@ -94,8 +106,10 @@ class WarningState extends FlxState
         {
             for (e in [button, buttonText])
             {
-                FlxTween.tween(e, {alpha: 0.6}, 0.6);
+				FlxTween.tween(e, {alpha: 0.6}, e.alpha - 0.6);
             }
+
+			FlxTween.tween(altWarningText, {alpha: 1}, 1 - altWarningText.alpha);
 
             if (FlxG.mouse.justPressed)
             {
@@ -111,16 +125,17 @@ class WarningState extends FlxState
             {
                 for (e in [button, buttonText])
                 {
-                    FlxTween.tween(e, {alpha: 1}, 0.6);
+					FlxTween.tween(e, {alpha: 1}, 1 - e.alpha);
                 }
             }
+			FlxTween.tween(altWarningText, {alpha: 0}, altWarningText.alpha);
         }
 
         if (FlxG.mouse.overlaps(button2))
         {
             for (e in [button2, buttonText2])
             {
-                FlxTween.tween(e, {alpha: 0.6}, 0.6);
+				FlxTween.tween(e, {alpha: 0.6}, e.alpha - 0.6);
             }
 
             if (FlxG.mouse.justPressed)
@@ -137,11 +152,15 @@ class WarningState extends FlxState
             {
                 for (e in [button2, buttonText2])
                 {
-                    FlxTween.tween(e, {alpha: 1}, 0.6);
+					FlxTween.tween(e, {alpha: 1}, 1 - e.alpha);
                 }
             }
         }
 		#if debug
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		{
+			FlxG.switchState(new MainMenuState());
+		}
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			FlxG.switchState(new InfoState());
