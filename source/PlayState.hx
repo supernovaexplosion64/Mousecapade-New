@@ -106,11 +106,16 @@ class PlayState extends FlxState
 	var randomAppear4:Float = FlxG.random.float(90, 180);
 	var randomAppear5:Float = FlxG.random.float(120, 240);
 
+	var stopCloning:Bool = false;
+	var numClones:Int = 0;
+
 	override public function create()
 	{
 		score = 0;
 		blackScreen = new FlxSprite();
 		blackScreen.alpha = 0;
+		FlxTween.globalManager.active = true;
+		paused = false;
 		if (gameJustStarted)
 		{
 			LEVEL = 1;
@@ -586,7 +591,7 @@ class PlayState extends FlxState
 			bfdiPopUp.updateHitbox();
 			bfdiPopUp.cameras = [camHUD];
 			bfdiPopUp.x = FlxG.width;
-			bfdiPopUp.y = FlxG.random.int(0, FlxG.height - bfdiPopUp.frameHeight);
+			bfdiPopUp.y = FlxG.random.int(0, Std.int((FlxG.height - bfdiPopUp.frameHeight) * (1 / bfdiPopUp.scale.y)));
 			add(bfdiPopUp);
 			bfdiPopUp.animation.play("idle");
 			if (FlxG.save.data.speedMode)
@@ -767,44 +772,86 @@ class PlayState extends FlxState
 	{
 		if (player.alive && player.exists && item.alive && item.exists)
 		{
-			if (FlxG.random.bool(0.5))
+			if (FlxG.save.data.speedMode && !stopCloning)
 			{
-				FlxG.openURL("https://youtu.be/ChnqPMwQIKc");
-				FlxG.switchState(new MainMenuState());
+				item.kill();
+				numClones += 1;
+				if (numClones >= 25)
+					stopCloning = true;
+				var randomSpawned:Int = FlxG.random.int(1, 25);
+				for (i in 0...randomSpawned)
+				{
+					var callingTimer:FlxTimer = new FlxTimer(timers);
+					callingTimer.start(i * 0.125, function(tmr:FlxTimer)
+					{
+						var johnPorkIsCalling:FlxSprite = new FlxSprite();
+						johnPorkIsCalling.loadGraphic(Paths.image('calling'));
+						johnPorkIsCalling.cameras = [camHUD];
+						johnPorkIsCalling.x = FlxG.random.int(0, Std.int(FlxG.width - johnPorkIsCalling.width));
+						johnPorkIsCalling.y = FlxG.random.int(0, Std.int(FlxG.height - johnPorkIsCalling.height));
+						add(johnPorkIsCalling);
+						var callingSound:FlxSound = new FlxSound();
+						callingSound = FlxG.sound.load(Paths.sound('calling'), 0.4);
+						callingSound.play();
+						var callingTimer2:FlxTimer = new FlxTimer(timers);
+						callingTimer2.start(3, function(tmr:FlxTimer)
+						{
+							FlxTween.tween(johnPorkIsCalling, {alpha: 0}, 0.6);
+							var callingTimer3:FlxTimer = new FlxTimer(timers);
+							callingTimer3.start(0.6, function(tmr:FlxTimer)
+							{
+								johnPorkIsCalling.kill(); // BAD CODING BY IDIOT LOSER RICO
+								numClones -= 1;
+								if (numClones >= 25)
+									stopCloning = true;
+								else
+									stopCloning = false;
+							});
+						});
+					});
+				}
 			}
 			else
 			{
-				var pickUpPhone:FlxSound = new FlxSound();
-				pickUpPhone = FlxG.sound.load(Paths.sound("pick-up"));
-				pickUpPhone.play();
-				item.kill();
-				var fnatiPopUp:FlxSprite;
-				fnatiPopUp = new FlxSprite();
-				fnatiPopUp.loadGraphic(Paths.image('popups/phone'));
-				fnatiPopUp.cameras = [camHUD];
-				add(fnatiPopUp);
-				var fnatiJumpscare:FlxSprite;
-				fnatiJumpscare = new FlxSprite();
-				fnatiJumpscare.loadGraphic(Paths.image('fnatijumpscare'), true, 800, 450);
-				fnatiJumpscare.animation.add("idle", [
-					0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 30, 29, 28, 27, 26,
-					25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
-				], 60, true);
-				fnatiJumpscare.scale.set(FlxG.width / 600, FlxG.height / fnatiJumpscare.frameHeight);
-				fnatiJumpscare.cameras = [camHUD];
-				fnatiJumpscare.screenCenter();
-				var fnatiTimer:FlxTimer = new FlxTimer(timers);
-				fnatiTimer.start(1.5, function(tmr:FlxTimer)
+				if (FlxG.random.bool(0.5))
 				{
-					add(fnatiJumpscare);
-					fnatiJumpscare.animation.play("idle");
-				});
-				var fnatiTimer2:FlxTimer = new FlxTimer(timers);
-				fnatiTimer2.start(2.3, function(tmr:FlxTimer)
+					FlxG.openURL("https://youtu.be/ChnqPMwQIKc");
+					FlxG.switchState(new MainMenuState());
+				}
+				else
 				{
-					fnatiPopUp.kill();
-					fnatiJumpscare.kill();
-				});
+					var pickUpPhone:FlxSound = new FlxSound();
+					pickUpPhone = FlxG.sound.load(Paths.sound("pick-up"));
+					pickUpPhone.play();
+					item.kill();
+					var fnatiPopUp:FlxSprite;
+					fnatiPopUp = new FlxSprite();
+					fnatiPopUp.loadGraphic(Paths.image('popups/phone'));
+					fnatiPopUp.cameras = [camHUD];
+					add(fnatiPopUp);
+					var fnatiJumpscare:FlxSprite;
+					fnatiJumpscare = new FlxSprite();
+					fnatiJumpscare.loadGraphic(Paths.image('fnatijumpscare'), true, 800, 450);
+					fnatiJumpscare.animation.add("idle", [
+						0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 30, 29, 28, 27,
+						26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
+					], 60, true);
+					fnatiJumpscare.scale.set(FlxG.width / 600, FlxG.height / fnatiJumpscare.frameHeight);
+					fnatiJumpscare.cameras = [camHUD];
+					fnatiJumpscare.screenCenter();
+					var fnatiTimer:FlxTimer = new FlxTimer(timers);
+					fnatiTimer.start(1.5, function(tmr:FlxTimer)
+					{
+						add(fnatiJumpscare);
+						fnatiJumpscare.animation.play("idle");
+					});
+					var fnatiTimer2:FlxTimer = new FlxTimer(timers);
+					fnatiTimer2.start(2.3, function(tmr:FlxTimer)
+					{
+						fnatiPopUp.kill();
+						fnatiJumpscare.kill();
+					});
+				}
 			}
 		}
 	}
@@ -869,13 +916,16 @@ class PlayState extends FlxState
 
 	function showPopUp(type:PopUp.PopUpType)
 	{
+		var fallTime:Float = 0.3;
+		if (FlxG.save.data.speedMode)
+			fallTime += 0.15;
 		var popUp:PopUp;
 		popUp = new PopUp();
 		popUp.getPopUp(type);
 		popUp.cameras = [camHUD];
 		if (FlxG.save.data.screenShaking)
 			add(popUp);
-		FlxTween.tween(popUp, {alpha: 0}, 0.3);
+		FlxTween.tween(popUp, {alpha: 0}, fallTime);
 		var popUpTimer:FlxTimer = new FlxTimer(timers);
 		popUpTimer.start(0.3, function(tmr:FlxTimer)
 		{
@@ -940,7 +990,15 @@ class PlayState extends FlxState
 			'BFDI-lings have appeared!',
 			'PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE PICK UP THE PHONE'
 		];
+		var textsAlt:Array<String> = [
+			'Ninjas have appeared!',
+			'BEN has appeared.',
+			'KSIs have appeared!',
+			'IShowerSpeed-lings have appeared!',
+			'JOHN PORK IS CALLING JOHN PORK IS CALLING JOHN PORK IS CALLING JOHN PORK IS CALLING'
+		];
 		var sounds:Array<String> = ['scream', 'dave', 'bambi', 'bfdi-scream', 'phone'];
+		var soundsAlt:Array<String> = ['ninja', 'ben', 'ksi', 'sparta', 'calling'];
 		for (k in 0...times.length)
 		{
 			var enemyTimer:FlxTimer = new FlxTimer(timers);
@@ -953,9 +1011,12 @@ class PlayState extends FlxState
 				newEnemyText.antialiasing = true;
 				newEnemyText.alpha = 0;
 				newEnemyText.scale.set(0.2, 0.2);
-				newEnemyText.text = texts[k];
-				newEnemyText.x = 12;
-				newEnemyText.y = 12;
+				if (FlxG.save.data.speedMode)
+					newEnemyText.text = textsAlt[k];
+				else
+					newEnemyText.text = texts[k];
+				newEnemyText.x = 0;
+				newEnemyText.y = 0;
 				newEnemyText.angle = 0;
 				add(newEnemyText);
 				FlxTween.tween(newEnemyText, {alpha: 1}, 0.3);
@@ -967,8 +1028,11 @@ class PlayState extends FlxState
 					FlxTween.tween(newEnemyText, {y: FlxG.height * 4}, 5, {ease: FlxEase.cubeIn});
 				});
 				var appearSound:FlxSound = new FlxSound();
-				appearSound = FlxG.sound.load(Paths.sound('appearing/${sounds[k]}'));
-				if (sounds[k] != '')
+				if (FlxG.save.data.speedMode)
+					appearSound = FlxG.sound.load(Paths.sound('appearing/${soundsAlt[k]}'));
+				else
+					appearSound = FlxG.sound.load(Paths.sound('appearing/${sounds[k]}')); // Is this inefficient? Yes. I'm only doing this because I have two more days until this game releases and I'm a lazy dude
+				if (!(FlxG.save.data.speedMode) && sounds[k] != '' || FlxG.save.data.speedMode && soundsAlt[k] != '')
 					appearSound.play();
 				var killText:FlxTimer = new FlxTimer(timers);
 				killText.start(8, function(tmr:FlxTimer)
@@ -983,15 +1047,22 @@ class PlayState extends FlxState
 	function spawnFunny()
 	{
 		var daChance:Float = FlxG.random.float(0.025, 0.1);
+		var thingThing:String = 'dave';
+		var thingThingSound:String = 'dave';
+		if (FlxG.save.data.speedMode)
+		{
+			thingThing = 'popups/speed/ben';
+			thingThingSound = 'ben';
+		}
 		if (FlxG.random.bool(daChance * theDelta * 60 * (time / 120)))
 		{
 			var funny:FlxSprite = new FlxSprite();
-			funny.loadGraphic(Paths.image('dave'));
+			funny.loadGraphic(Paths.image(thingThing));
 			funny.cameras = [camHUD];
 			add(funny);
 
 			var funnySound:FlxSound = new FlxSound();
-			funnySound = FlxG.sound.load(Paths.sound("dave"));
+			funnySound = FlxG.sound.load(Paths.sound(thingThingSound));
 			funnySound.play();
 			FlxTween.tween(funny, {alpha: 0}, 0, {startDelay: 1.25});
 			var funnyTimer:FlxTimer = new FlxTimer(timers);
@@ -1014,6 +1085,8 @@ class PlayState extends FlxState
 
 class PauseSubState extends FlxSubState
 {
+	public var camPause:FlxCamera;
+
 	public function new()
 	{
 		super();
@@ -1021,12 +1094,17 @@ class PauseSubState extends FlxSubState
 
 	override function create()
 	{
+		camPause = new FlxCamera();
+		camPause.bgColor.alpha = 0;
+		FlxG.cameras.add(camPause, false);
+
 		super.create();
 
 		var box = new FlxSprite();
 		box = new FlxSprite();
 		box.makeGraphic(FlxG.width, FlxG.height, 0x80000000);
 		box.scrollFactor.set(0, 0);
+		box.cameras = [camPause];
 		add(box);
 
 		var text = new FlxText(0, 0, 0, "Game Paused");
@@ -1036,6 +1114,7 @@ class PauseSubState extends FlxSubState
 		text.screenCenter(X);
 		text.y = FlxG.height * 0.35;
 		text.alpha = 0;
+		text.cameras = [camPause];
 		add(text);
 
 		var text2 = new FlxText(0, 0, 0, "Press Enter or Space to resume game\nPress Escape or Backspace to exit to menu");
@@ -1045,6 +1124,7 @@ class PauseSubState extends FlxSubState
 		text2.screenCenter(X);
 		text2.y = FlxG.height * 0.5;
 		text2.alpha = 0;
+		text2.cameras = [camPause];
 		add(text2);
 
 		FlxTween.tween(text, {alpha: 1}, 0.6);

@@ -58,10 +58,18 @@ class PopUp extends FlxSprite
 		}
 		else if (type == Wega)
 		{
-			loadGraphic(Paths.image('popups/scream'));
-			if (FlxG.save.data.screenShaking)
-				FlxG.camera.shake(0.03, 0.3);
-			playSound = FlxG.sound.load(Paths.sound("scream"));
+			if (FlxG.save.data.speedMode)
+			{
+				loadGraphic(Paths.image('popups/speed/ninja'));
+				playSound = FlxG.sound.load(Paths.sound("massive"));
+			}
+			else
+			{
+				loadGraphic(Paths.image('popups/scream'));
+				if (FlxG.save.data.screenShaking)
+					FlxG.camera.shake(0.03, 0.3);
+				playSound = FlxG.sound.load(Paths.sound("scream"));
+			}
 			playSound.play();
 		}
     }

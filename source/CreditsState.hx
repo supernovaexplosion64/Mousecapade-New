@@ -44,6 +44,8 @@ class CreditsState extends FlxState
 		camMain.bgColor.alpha = 0;
 		FlxG.cameras.add(camMain, false);
 
+		FlxG.cameras.setDefaultDrawTarget(camMain, true);
+
 		thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason = new FlxCamera();
 		thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason.bgColor.alpha = 0;
 		FlxG.cameras.add(thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason, false);

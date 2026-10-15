@@ -44,14 +44,19 @@ class MainMenuState extends FlxState
 		"go play vs. mouse ultimate",
 		"go play vs. mouse extremely old",
 		"go play vs. mouse: cheesed up (when it releases)",
-		"No generative AI was used during the development of this game.",
 		"IShowerSpeed collab when?",
 		"This game is better than Lobotomy Clicker",
 		"It was all started with a mouse",
 		"Hi Ruvim",
 		"I'm gonna break my phone",
 		"Kill all Friday Night Funkin' fans",
-		"StanleyMOV would have a FEAST playing this game"
+		"StanleyMOV would have a FEAST playing this game",
+		"How it feels to play Bindu n' Dive on September 25, 2026, 8:36 AM EDT:",
+		"This game is pure inside joke slop",
+		"Vs. Mouse fans, assemble",
+		"Not affiliated with Vs. Mouse!",
+		"Yes the same guy who danced to that Jose Juan song created this game",
+		"Go watch Battle for Dream Island it's a good show"
 	];
 
 	var popUpText:FlxText;
@@ -131,7 +136,7 @@ class MainMenuState extends FlxState
 		var randomAngle3:Float = FlxG.random.int(1, 15);
 
 		noteText = new FlxText();
-		noteText.text = 'Play the game.';
+		noteText.text = 'Play the game!';
 		noteText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		noteText.x = button.x + button.width + 24;
 		noteText.y = button.y + (button.height / 2) - (noteText.height / 2);
@@ -139,7 +144,7 @@ class MainMenuState extends FlxState
 		add(noteText);
 
 		noteText2 = new FlxText();
-		noteText2.text = 'Instructions of the game.';
+		noteText2.text = 'Instructions of the game!';
 		noteText2.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		noteText2.x = instruct.x + instruct.width + 24;
 		noteText2.y = instruct.y + (instruct.height / 2) - (noteText2.height / 2);
@@ -147,7 +152,7 @@ class MainMenuState extends FlxState
 		add(noteText2);
 
 		noteText3 = new FlxText();
-		noteText3.text = 'People who worked on the game.';
+		noteText3.text = 'People who worked on the game!';
 		noteText3.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		noteText3.x = credButton.x + credButton.width + 24;
 		noteText3.y = credButton.y + (credButton.height / 2) - (noteText3.height / 2);
@@ -178,7 +183,7 @@ class MainMenuState extends FlxState
         add(credits);
 
 		var randomPopUpLength = randomPopUpNotes.length;
-		var randomPopUpAngle:Float = FlxG.random.int(1, 10);
+		var randomPopUpAngle:Float = FlxG.random.int(1, 6);
 
 		popUpText = new FlxText();
 		popUpText.text = randomPopUpNotes[FlxG.random.int(0, randomPopUpLength - 1)];
@@ -188,7 +193,7 @@ class MainMenuState extends FlxState
 		popUpText.angle = randomPopUpAngle * -1;
 		add(popUpText);
 
-		FlxTween.tween(popUpText, {angle: popUpText.angle + (randomPopUpAngle * 2)}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG});
+		FlxTween.tween(popUpText, {angle: popUpText.angle + (randomPopUpAngle * 2)}, 3.3, {ease: FlxEase.quadInOut, type: PINGPONG});
 
 		FlxG.sound.playMusic(Paths.music("mainmenu"), 1, true);
     }
