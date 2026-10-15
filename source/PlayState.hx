@@ -675,7 +675,8 @@ class PlayState extends FlxState
 		health += itemHealthIncrease;
 		healthText.text = "Health: " + Std.string(health);
 		timerThing = 3;
-		if ((health <= 100 && !ateThePizza) || (health > 100 && ateThePizza))
+		if (((health < 100 && !ateThePizza) || (health > 100 && ateThePizza) || (health <= 100 && ateThePizza))
+			&& !(health >= 100 && !ateThePizza))
 			iAmRunningOutOfNamesToNameMyFunctions();
 	}
 
@@ -690,9 +691,12 @@ class PlayState extends FlxState
 	public function showHealth()
 	{
 		healthTweening = true;
-		FlxTween.tween(healthBar, {y: FlxG.height - healthBar.height}, tweeningTime, {ease: FlxEase.backOut});
-		FlxTween.tween(theOtherBar, {y: FlxG.height - theOtherBar.height}, tweeningTime, {ease: FlxEase.backOut});
-		FlxTween.tween(healthText, {y: FlxG.height - healthBar.height - 36}, tweeningTime, {ease: FlxEase.backOut});
+		if (healthTweening)
+		{
+			FlxTween.tween(healthBar, {y: FlxG.height - healthBar.height}, tweeningTime, {ease: FlxEase.backOut});
+			FlxTween.tween(theOtherBar, {y: FlxG.height - theOtherBar.height}, tweeningTime, {ease: FlxEase.backOut});
+			FlxTween.tween(healthText, {y: FlxG.height - healthBar.height - 36}, tweeningTime, {ease: FlxEase.backOut});
+		}
 	}
 
 	public function healthEasing()
@@ -707,7 +711,8 @@ class PlayState extends FlxState
 			FlxTween.tween(healthText, {y: FlxG.height + healthBar.height + 36}, tweeningTime, {ease: FlxEase.backIn});
 			new FlxTimer().start(tweeningTime, function(tmr:FlxTimer)
 			{
-				healthTweening = false;
+				if (healthTweening)
+					healthTweening = false;
 				stopMyTimer = false;
 			});
 		};

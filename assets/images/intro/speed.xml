@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="speed.png">
+	<!-- Created with Adobe Animate version 24.0.0.305 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="speed instance 10000" x="0" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10001" x="0" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10002" x="0" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10003" x="256" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10004" x="256" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10005" x="256" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10006" x="256" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10007" x="512" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10008" x="512" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10009" x="512" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10010" x="512" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10011" x="768" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10012" x="768" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10013" x="768" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10014" x="768" y="0" width="256" height="314"/>
+	<SubTexture name="speed instance 10015" x="0" y="314" width="256" height="314"/>
+</TextureAtlas>
