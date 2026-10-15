@@ -299,7 +299,12 @@ class PlayState extends FlxState
 			if (FlxG.save.data.speedMode)
 				FlxG.switchState(new SecretDeathState());
 			else
-				openSubState(new GameOverState());
+			{
+				FlxG.camera.bgColor.alpha = 1;
+				camMain.alpha = 1;
+				camHUD.alpha = 1;
+				FlxG.switchState(new GameOverState());
+			}
 		}
 		if (health > 100 && !ateThePizza)
 		{
@@ -361,7 +366,7 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.TWO)
 		{
 			// checkFinalScore();
-			openSubState(new GameOverState());
+			FlxG.switchState(new GameOverState());
 		}
 		if (FlxG.keys.justPressed.SIX)
 		{

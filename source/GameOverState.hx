@@ -4,21 +4,16 @@ import PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.FlxSubState;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 
-class GameOverState extends FlxSubState
+class GameOverState extends FlxState
 {
     var deathSound:FlxSound;
 	public var finalScore:Int;
+	public var gameOverSprite:FlxSprite;
 
 	var scoreText:FlxText;
-
-	public function new()
-	{
-		super();
-	}
 
     override public function create()
     {
@@ -34,6 +29,15 @@ class GameOverState extends FlxSubState
 		scoreText.scrollFactor.set(0, 0);
 		scoreText.screenCenter(X);
 		add(scoreText);
+		gameOverSprite = new FlxSprite();
+		gameOverSprite.loadGraphic(Paths.image('menu/game-over'), true, 256, 258);
+		gameOverSprite.animation.add("idle", [
+			0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
+		], 24, true);
+		gameOverSprite.animation.play("idle");
+		gameOverSprite.screenCenter();
+		gameOverSprite.y += 100;
+		add(gameOverSprite);
     }
 
     override public function update(elapsed:Float)

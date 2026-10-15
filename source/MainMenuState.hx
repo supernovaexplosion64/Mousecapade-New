@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -10,6 +11,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class MainMenuState extends FlxState
 {
@@ -60,10 +62,31 @@ class MainMenuState extends FlxState
 	];
 
 	var popUpText:FlxText;
+	public var camMain:FlxCamera;
+	public var blackScreen:FlxSprite;
 
     override public function create()
     {
     	super.create();
+
+		camMain = new FlxCamera();
+		camMain.bgColor.alpha = 0;
+		FlxG.cameras.add(camMain, false);
+
+		blackScreen = new FlxSprite();
+		blackScreen.alpha = 0;
+		blackScreen.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		if (FlxG.save.data.screenShaking)
+			blackScreen.color = FlxColor.WHITE;
+		blackScreen.scrollFactor.set(0, 0);
+		blackScreen.alpha = 1;
+		blackScreen.cameras = [camMain];
+		add(blackScreen);
+		FlxTween.tween(blackScreen, {alpha: 0}, 1);
+		new FlxTimer().start(1, function(tmr:FlxTimer)
+		{
+			blackScreen.kill();
+		});
 
         bg = new FlxSprite();
 		bg.loadGraphic("assets/images/bg-misery.png");
@@ -194,9 +217,9 @@ class MainMenuState extends FlxState
 		add(popUpText);
 
 		FlxTween.tween(popUpText, {angle: popUpText.angle + (randomPopUpAngle * 2)}, 3.3, {ease: FlxEase.quadInOut, type: PINGPONG});
-
-		FlxG.sound.playMusic(Paths.music("mainmenu"), 1, true);
-    }
+		if (FlxG.sound.music == null)
+			FlxG.sound.playMusic(Paths.music("title-theme"), 1, true);
+	}
 
     override public function update(elapsed:Float)
     {

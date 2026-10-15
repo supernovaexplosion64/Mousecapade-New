@@ -95,7 +95,7 @@ class InfoState extends FlxState
 
             if (FlxG.mouse.justPressed)
             {
-                FlxG.switchState(new MainMenuState());
+				FlxG.switchState(new TitleState());
             }
         }
         else
@@ -134,7 +134,7 @@ class InfoState extends FlxState
 		#if debug
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			FlxG.switchState(new MainMenuState());
+			FlxG.switchState(new TitleState());
 		}
 		#end
     }
