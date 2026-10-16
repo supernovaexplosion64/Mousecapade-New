@@ -49,21 +49,19 @@ class MainMenuState extends FlxState
 		"IShowerSpeed collab when?",
 		"This game is better than Lobotomy Clicker",
 		"It was all started with a mouse",
-		"Hi Ruvim",
 		"I'm gonna break my phone",
-		"Kill all Friday Night Funkin' fans",
 		"StanleyMOV would have a FEAST playing this game",
 		"How it feels to play Bindu n' Dive on September 25, 2026, 8:36 AM EDT:",
 		"This game is pure inside joke slop",
 		"Vs. Mouse fans, assemble",
-		"Not affiliated with Vs. Mouse!",
 		"Yes the same guy who danced to that Jose Juan song created this game",
-		"Go watch Battle for Dream Island it's a good show"
+		"Bro copied Friday Night Funkin'"
 	];
 
 	var popUpText:FlxText;
 	public var camMain:FlxCamera;
 	public var blackScreen:FlxSprite;
+	public static var maiMaiMai:Bool = false;
 
     override public function create()
     {
@@ -94,6 +92,8 @@ class MainMenuState extends FlxState
 		add(bg);
 
 		backdrop = new FlxBackdrop(Paths.image('checker'));
+		backdrop.velocity.x = 50;
+		backdrop.velocity.y = 50;
 		add(backdrop);
 
 		logo = new FlxSprite(Paths.image('menu/logo'));
@@ -136,20 +136,23 @@ class MainMenuState extends FlxState
         buttonText = new FlxText();
 		buttonText.text = 'Play';
 		buttonText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        buttonText.x = button.x + (button.width / 2) - (buttonText.width / 2);
+		buttonText.antialiasing = true;
+		buttonText.x = button.x + (button.width / 2) - (buttonText.width / 2);
         buttonText.y = button.y + (button.height / 2) - (buttonText.height / 2);
         add(buttonText);
 
         instructText = new FlxText();
 		instructText.text = 'Instructions';
 		instructText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        instructText.x = instruct.x + (instruct.width / 2) - (instructText.width / 2);
+		instructText.antialiasing = true;
+		instructText.x = instruct.x + (instruct.width / 2) - (instructText.width / 2);
         instructText.y = instruct.y + (instruct.height / 2) - (instructText.height / 2);
         add(instructText);
 
 		credText = new FlxText();
 		credText.text = 'Credits';
 		credText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credText.antialiasing = true;
 		credText.x = credButton.x + (credButton.width / 2) - (credText.width / 2);
 		credText.y = credButton.y + (credButton.height / 2) - (credText.height / 2);
 		add(credText);
@@ -161,6 +164,7 @@ class MainMenuState extends FlxState
 		noteText = new FlxText();
 		noteText.text = 'Play the game!';
 		noteText.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		noteText.antialiasing = true;
 		noteText.x = button.x + button.width + 24;
 		noteText.y = button.y + (button.height / 2) - (noteText.height / 2);
 		noteText.angle = randomAngle * -1;
@@ -169,6 +173,7 @@ class MainMenuState extends FlxState
 		noteText2 = new FlxText();
 		noteText2.text = 'Instructions of the game!';
 		noteText2.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		noteText2.antialiasing = true;
 		noteText2.x = instruct.x + instruct.width + 24;
 		noteText2.y = instruct.y + (instruct.height / 2) - (noteText2.height / 2);
 		noteText2.angle = randomAngle2 * -1;
@@ -177,6 +182,7 @@ class MainMenuState extends FlxState
 		noteText3 = new FlxText();
 		noteText3.text = 'People who worked on the game!';
 		noteText3.setFormat("Times New Roman", 32, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		noteText3.antialiasing = true;
 		noteText3.x = credButton.x + credButton.width + 24;
 		noteText3.y = credButton.y + (credButton.height / 2) - (noteText3.height / 2);
 		noteText3.angle = randomAngle3 * -1;
@@ -201,6 +207,7 @@ class MainMenuState extends FlxState
         credits = new FlxText();
 		credits.text = 'Game created by Rico W./"supernovaexplosion64"';
 		credits.setFormat("Times New Roman", 24, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credits.antialiasing = true;
 		credits.x = FlxG.width - credits.width - 12;
 		credits.y = 12;
         add(credits);
@@ -211,22 +218,22 @@ class MainMenuState extends FlxState
 		popUpText = new FlxText();
 		popUpText.text = randomPopUpNotes[FlxG.random.int(0, randomPopUpLength - 1)];
 		popUpText.setFormat("Times New Roman", 32, FlxColor.YELLOW, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, 0xFF808000);
+		popUpText.antialiasing = true;
 		popUpText.x = 12;
 		popUpText.y = FlxG.height - popUpText.height - 12;
 		popUpText.angle = randomPopUpAngle * -1;
 		add(popUpText);
 
 		FlxTween.tween(popUpText, {angle: popUpText.angle + (randomPopUpAngle * 2)}, 3.3, {ease: FlxEase.quadInOut, type: PINGPONG});
-		if (FlxG.sound.music == null)
+		if (TitleState.initialized)
 			FlxG.sound.playMusic(Paths.music("title-theme"), 1, true);
+		if (!TitleState.initialized)
+			TitleState.initialized = true;
 	}
 
     override public function update(elapsed:Float)
     {
     	super.update(elapsed);
-
-		backdrop.velocity.x = 50;
-		backdrop.velocity.y = 50;
 
 		if (FlxG.keys.justPressed.SIX && FlxG.save.data.speedUnlocked && FlxG.save.data.speedMode)
 		{

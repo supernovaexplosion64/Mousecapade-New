@@ -73,10 +73,7 @@ class InstructionGuideState extends FlxState
         enemyExample2.y = enemyExample.y;
 		// add(enemyExample2);
 
-        if (FlxG.sound.music == null) // don't restart the music if it's already playing BLUD
-		{
-			FlxG.sound.playMusic(Paths.music("mainmenu"), 1, true);
-		}
+		FlxG.sound.playMusic(Paths.music("instruction"), 1, true);
     }
 
     override public function update(elapsed:Float)

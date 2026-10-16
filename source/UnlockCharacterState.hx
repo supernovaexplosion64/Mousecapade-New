@@ -52,7 +52,7 @@ class UnlockCharacterState extends FlxState
         add(characterImage);
 		for (e in [sprite, text, characterImage])
 		{
-			FlxTween.tween(e, {alpha: 1}, 0.6);
+			FlxTween.tween(e, {alpha: 1}, 0.6, {startDelay: 4});
 		}
     }
 

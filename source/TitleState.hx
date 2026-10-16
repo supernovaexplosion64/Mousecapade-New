@@ -9,22 +9,40 @@ import flixel.util.FlxTimer;
 
 class TitleState extends FlxState
 {
-    public var randomString:Array<String> = [
-		"bfdi is a good show",
+	public var randomString:Array<String> = [
         "THIS IS",
         "hello boy",
         "Hi",
+		"Hi",
+		"Hi",
         "His name isn't IShowSpeed",
-        "erm"
+		"erm",
+		"Dave and Bambi is a good FNF mod",
+		"Battle for Dream Island is a good show",
+		"Not affiliated with",
+		"Kill all",
+		"Obey Weegee",
+		"Hello my baby hello my honey",
+		"Is that a",
+		"Warning:"
     ];
 
-    public var randomString2:Array<String> = [
-		"please don't kill me",
+	public var randomString2:Array<String> = [
         "JOSE JUAN",
-        "please shut up",
+		"what are you doing here",
         "Ruvim",
+		"Mib",
+		"Tapey",
         "GET IT RIGHT",
-        "what the sigma"
+		"what the sigma",
+		"Fight me TikTok",
+		"Fight me Twitter",
+		"Vs. Mouse",
+		"Friday Night Funkin' fans",
+		"Destroy Mario",
+		"Hello my ragtime gal",
+		"Chimptopia reference",
+		"Friday Night Funkin' is in this game"
     ];
 
     public var initialThing:FlxText;
@@ -33,6 +51,8 @@ class TitleState extends FlxState
     public var thingFinal:FlxText;
     public var musicBPM:Float = 167;
     public var curBeat:Int = 0;
+	public static var initialized:Bool = false;
+    
     override public function create():Void
     {
     	super.create();
@@ -40,6 +60,7 @@ class TitleState extends FlxState
         initialThing = new FlxText();
         initialThing.text = '';
         initialThing.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		initialThing.antialiasing = true;
         initialThing.screenCenter(X);
         initialThing.y = 200;
         add(initialThing);
@@ -47,6 +68,7 @@ class TitleState extends FlxState
         thing2 = new FlxText();
         thing2.text = '';
         thing2.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		thing2.antialiasing = true;
         thing2.screenCenter(X);
         thing2.y = 200;
         add(thing2);
@@ -54,6 +76,7 @@ class TitleState extends FlxState
         thing3 = new FlxText();
         thing3.text = '';
         thing3.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		thing3.antialiasing = true;
         thing3.screenCenter(X);
         thing3.y = 200;
         add(thing3);
@@ -61,13 +84,22 @@ class TitleState extends FlxState
         thingFinal = new FlxText();
         thingFinal.text = '';
         thingFinal.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		thingFinal.antialiasing = true;
         thingFinal.screenCenter(X);
         thingFinal.y = 200;
         add(thingFinal);
 
         new FlxTimer().start(1, function(tmr:FlxTimer) // I'M SLENDERMAN, FIND MY NESTED FLXTIMERS
         {
-            FlxG.sound.playMusic(Paths.music("title-theme"), 1, true);
+			if (initialized)
+			{
+				FlxG.sound.playMusic(Paths.music("title-theme"), 1, true);
+			}
+			else
+			{
+				FlxG.sound.playMusic(Paths.music("title-theme"), 0, true);
+				FlxG.sound.music.fadeIn((60 / musicBPM) * 32, 0, 1);
+			}
 
             var randomNumber:Int = FlxG.random.int(0, randomString.length - 1);
 
@@ -123,6 +155,25 @@ class TitleState extends FlxState
                 });
             }
 
+			if (randomNumber == 2)
+			{
+				new FlxTimer().start((60 / musicBPM * 20), function(tmr:FlxTimer)
+				{
+					var ruvim:FlxSprite;
+					ruvim = new FlxSprite();
+					ruvim.loadGraphic(Paths.image('menu/ruvim'));
+					ruvim.setGraphicSize(256, 256);
+					ruvim.updateHitbox();
+					ruvim.screenCenter(X);
+					ruvim.y = thing3.y + 152;
+					add(ruvim);
+					new FlxTimer().start((60 / musicBPM) * 2, function(tmr:FlxTimer)
+					{
+						ruvim.kill();
+					});
+				});
+			}
+
             new FlxTimer().start((60/musicBPM * 32), function(tmr:FlxTimer)
             {
                 FlxG.switchState(new MainMenuState());
@@ -139,6 +190,11 @@ class TitleState extends FlxState
 
     override public function update(elapsed:Float):Void
     {
+		if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+        
     	super.update(elapsed);
     }
 }

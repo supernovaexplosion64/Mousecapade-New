@@ -15,6 +15,7 @@ class StartUpIntro extends FlxState
 
     var _cachedTimestep:Bool;
 	var _cachedAutoPause:Bool;
+	public var soundBPM:Float = 188;
 
     override public function create():Void
     {
@@ -28,12 +29,12 @@ class StartUpIntro extends FlxState
 
         sprite = new FlxSprite();
         sound = new FlxSound();
-        if (FlxG.save.data.speedMode && FlxG.random.bool(5))
+		if (FlxG.save.data.speedMode && FlxG.random.bool(10))
         {
             sprite.loadGraphic(Paths.image('intro/speed'), true, 256, 314);
             sprite.x = (FlxG.width / 2) - (256 / 2);
             sprite.y = (FlxG.height / 2) - (256 / 2);
-            sprite.animation.add('play', [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4], 24, false);
+			sprite.animation.add('play', [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4], 24, false);
             //sprite.animation.play('play');
             add(sprite);
             sound = FlxG.sound.load(Paths.sound('intro/speed'), 1);
@@ -43,20 +44,25 @@ class StartUpIntro extends FlxState
             sprite.loadGraphic(Paths.image('intro/normal'), true, 256, 319);
             sprite.x = (FlxG.width / 2) - (256 / 2);
             sprite.y = (FlxG.height / 2) - (256 / 2);
-            sprite.animation.add('play', [0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4], 24, false);
+			sprite.animation.add('play', [0, 0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4], 24, false);
             //sprite.animation.play('play');
             add(sprite);
             sound = FlxG.sound.load(Paths.sound('intro/normal'), 1);
         }
-        sprite.animation.play('play');
-        sound.play();
+		sound.play();
+		sprite.animation.play('play');
 
         FlxTween.tween(sprite, {alpha: 0}, 3, {startDelay: 0.63});
+
+		if (FlxG.random.bool(30))
+		{
+			FlxTween.tween(sprite, {"scale.x": 5, "scale.y": 5, angle: 360 * 15}, 3, {ease: FlxEase.cubeIn, startDelay: 0.63});
+		}
 
         var timer:FlxTimer = new FlxTimer();
         timer.start(5.1, function(tmr:FlxTimer)
         {
-            FlxG.switchState(new WarningState());
+			switchDaState();
         });
     }
 
@@ -64,8 +70,15 @@ class StartUpIntro extends FlxState
     {
         if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
         {
-            FlxG.switchState(new WarningState());
+			switchDaState();
         }
     	super.update(elapsed);
     }
+	function switchDaState()
+	{
+		if (FlxG.save.data.shakingUnderstood)
+			FlxG.switchState(new TitleState());
+		else
+			FlxG.switchState(new WarningState());
+	}
 }

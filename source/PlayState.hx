@@ -1096,6 +1096,7 @@ class PlayState extends FlxState
 class PauseSubState extends FlxSubState
 {
 	public var camPause:FlxCamera;
+	public var pauseMusic:FlxSound;
 
 	public function new()
 	{
@@ -1139,6 +1140,10 @@ class PauseSubState extends FlxSubState
 
 		FlxTween.tween(text, {alpha: 1}, 0.6);
 		FlxTween.tween(text2, {alpha: 1}, 0.6, {startDelay: 1.2});
+		pauseMusic = new FlxSound();
+		pauseMusic = FlxG.sound.load(Paths.music('groove-shmoove'), 0, true);
+		pauseMusic.play();
+		pauseMusic.fadeIn(4, 0, 1);
 	}
 
 	override public function update(elapsed:Float)
@@ -1146,6 +1151,7 @@ class PauseSubState extends FlxSubState
 		if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
 		{
 			PlayState.paused = !PlayState.paused;
+			pauseMusic.stop();
 			FlxG.sound.music.resume();
 			closeSub();
 		}
