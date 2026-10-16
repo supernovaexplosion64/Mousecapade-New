@@ -354,8 +354,6 @@ class PlayState extends FlxState
 		decreasingMultiplier -= 8 * FlxG.elapsed;
 		if (decreasingMultiplier < 2)
 			decreasingMultiplier = 2;
-		if (healthTweening)
-			healthEasing();
 		player.updateHitbox();
 		FlxG.overlap(player, cheeses, playerTouchItem);
 		FlxG.overlap(player, pizzas, playerTouchPizza);
@@ -363,6 +361,8 @@ class PlayState extends FlxState
 		FlxG.overlap(player, phones, playerTouchPhone);
 		FlxG.overlap(player, screweds, playerTouchScrewed);
 		FlxG.overlap(player, redBars, playerTouchRedBar);
+		if (healthTweening)
+			healthEasing();
 		#if debug
 		if (FlxG.keys.justPressed.SEVEN)
 		{
@@ -442,7 +442,7 @@ class PlayState extends FlxState
 			cheeses.add(cheese);
 			cheese.updateHitbox();
 			itemTimer(cheese);
-			makeObjectActive(cheese);
+			makeObjectActive(cheese, 0.3);
 		}
 	}
 
@@ -460,13 +460,13 @@ class PlayState extends FlxState
 			pizzas.add(pizza);
 			pizza.updateHitbox();
 			itemTimerPizza(pizza);
-			makeObjectActive(pizza);
+			makeObjectActive(pizza, 0.3);
 		}
 	}
 
 	public function addNewPizza()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(0.004, 0.012);
+		var randomChanceToAppear:Float = FlxG.random.float(0.006, 0.018);
 		var chance:Bool = FlxG.random.bool(randomChanceToAppear * theDelta * 60);
 		if (chance)
 		{
@@ -476,7 +476,7 @@ class PlayState extends FlxState
 
 	public function spawnWega()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(1.2, 3);
+		var randomChanceToAppear:Float = FlxG.random.float(2, 4);
 		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 45) * theDelta * 60);
 		if (wegaAppear)
 		{
@@ -488,13 +488,13 @@ class PlayState extends FlxState
 			wega.updateHitbox();
 			itemTimer(wega);
 			wega.active = false;
-			makeObjectActive(wega);
+			makeObjectActive(wega, 0.9);
 		}
 	}
 
 	public function spawnPhone()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(0.32, 0.64);
+		var randomChanceToAppear:Float = FlxG.random.float(0.4, 0.8);
 		var phoneAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 75) * theDelta * 60);
 		if (phoneAppear)
 		{
@@ -505,12 +505,12 @@ class PlayState extends FlxState
 			phones.add(phone);
 			phone.updateHitbox();
 			itemTimer(phone);
-			makeObjectActive(phone);
+			makeObjectActive(phone, 0.9);
 		}
 	}
 	public function spawnScrewed()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(1.8, 3);
+		var randomChanceToAppear:Float = FlxG.random.float(2.2, 3.5);
 		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 90) * theDelta * 60);
 		if (screwedAppear)
 		{
@@ -521,7 +521,7 @@ class PlayState extends FlxState
 			screweds.add(screwed);
 			screwed.updateHitbox();
 			itemTimer(screwed);
-			makeObjectActive(screwed);
+			makeObjectActive(screwed, 0.9);
 		}
 	}
 
@@ -583,9 +583,9 @@ class PlayState extends FlxState
 
 	function spawnBFDI()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(0.6, 0.8);
+		var randomChanceToAppear:Float = FlxG.random.float(0.8, 1);
 		if (FlxG.save.data.speedMode)
-			randomChanceToAppear = FlxG.random.float(0.8, 1);
+			randomChanceToAppear = FlxG.random.float(1, 1.2);
 		var bfdiAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120) * theDelta * 60);
 		if (bfdiAppear)
 		{
@@ -737,7 +737,7 @@ class PlayState extends FlxState
 
 	function playerTouchItem(player:Player, item:Item)
 	{
-		if (player.alive && player.exists && item.alive && item.exists)
+		if (player.alive && player.exists && item.alive && item.active && item.exists)
 		{
 			item.kill();
 			itemScore = item.value;
@@ -754,7 +754,7 @@ class PlayState extends FlxState
 
 	function playerTouchPizza(player:Player, item:Pizza)
 	{
-		if (player.alive && player.exists && item.alive && item.exists)
+		if (player.alive && player.exists && item.alive && item.active && item.exists)
 		{
 			ateThePizza = true;
 			item.kill();
@@ -766,11 +766,11 @@ class PlayState extends FlxState
 
 	function playerTouchWega(player:Player, item:Wega)
 	{
-		if (player.alive && player.exists && item.alive && item.exists)
+		if (player.alive && player.exists && item.alive && item.active && item.exists)
 		{
 			item.kill();
 			updateScore('take');
-			takeAwayHealth();
+			takeAwayHealth(3);
 			if (popUpEnabled)
 				showPopUp(Wega);
 		}
@@ -792,7 +792,7 @@ class PlayState extends FlxState
 
 	function playerTouchPhone(player:Player, item:PickUpThePhone)
 	{
-		if (player.alive && player.exists && item.alive && item.exists)
+		if (player.alive && player.exists && item.alive && item.active && item.exists)
 		{
 			if (FlxG.save.data.speedMode && !stopCloning)
 			{
@@ -837,7 +837,7 @@ class PlayState extends FlxState
 			{
 				if (FlxG.random.bool(0.5))
 				{
-					FlxG.openURL("https://youtu.be/ChnqPMwQIKc");
+					FlxG.openURL("https://youtu.be/TtQZtBAW08E");
 					FlxG.switchState(new MainMenuState());
 				}
 				else
@@ -879,7 +879,7 @@ class PlayState extends FlxState
 	}
 	function playerTouchScrewed(player:Player, item:Screwed)
 	{
-		if (player.alive && player.exists && item.alive && item.exists)
+		if (player.alive && player.exists && item.alive && item.active && item.exists)
 		{
 			item.kill();
 			screwed_healthDecrease = item.healthDecrease;
@@ -901,32 +901,37 @@ class PlayState extends FlxState
 
 	function playerTouchRedBar(player:Player, item:FlxSprite)
 	{
-		if (player.alive && player.exists && item.alive && item.exists)
+		if (player.alive && player.exists && item.alive && item.active && item.exists)
 		{
 			health -= 3 * FlxG.elapsed;
 		}
 	}
 
-	function itemTimer(item:FlxBasic, timeTime:Float = 6)
+	function itemTimer(item:FlxSprite, timeTime:Float = 6, alphaTime:Float = 0.6)
 	{
 		var timerTime:Float = timeTime;
 		var daTimer:FlxTimer = new FlxTimer(timers);
-		/*if (paused)
-			daTimer.active = false;
-		else
-																															daTimer.active = true; */
-		daTimer.start(timerTime, function(tmr:FlxTimer)
+		var alphaTimer:FlxTimer = new FlxTimer(timers);
+		alphaTimer.start(timerTime, function(tmr:FlxTimer)
+		{
+			item.active = false;
+			item.alpha = 0.5;
+		});
+
+		daTimer.start(timerTime + alphaTime, function(tmr:FlxTimer)
 		{
 			item.kill();
 		}, 1);
 	}
 
-	function makeObjectActive(item:FlxBasic, timeTime:Float = 1.5)
+	function makeObjectActive(item:FlxSprite, timeTime:Float = 1.5)
 	{
+		item.alpha = 0.5;
 		item.active = false;
 		var activeTimer:FlxTimer = new FlxTimer(timers);
 		activeTimer.start(timeTime, function(tmr:FlxTimer)
 		{
+			item.alpha = 1;
 			item.active = true;
 		});
 	}

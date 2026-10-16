@@ -61,7 +61,9 @@ class MainMenuState extends FlxState
 		"White people be like: this game is fun and enjoyable",
 		"Took bro two years to create a new semi-original HaxeFlixel game",
 		"Vs. Mouse aura",
-		"I love you Olimac31"
+		"I love you Olimac31",
+		"This game gave me a brain aneurysm",
+		"Press the letter Q to turn flashing lights and screen shaking on or off!"
 	];
 
 	var popUpText:FlxText;
@@ -252,6 +254,32 @@ class MainMenuState extends FlxState
 			routeText.screenCenter(X);
 			routeText.y = 12;
 			routeText.alpha = 0;
+			add(routeText);
+
+			FlxTween.tween(routeText, {alpha: 1}, 0.6);
+			FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
+		}
+
+		if (FlxG.keys.justPressed.Q)
+		{
+			var routeText:FlxText = new FlxText();
+			routeText.text = '';
+			routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			routeText.antialiasing = true;
+			routeText.alpha = 0;
+
+			FlxG.save.data.screenShaking = !FlxG.save.data.screenShaking;
+
+			if (FlxG.save.data.screenShaking)
+			{
+				routeText.text = 'Flashing lights and screen shaking enabled';
+			}
+			else
+			{
+				routeText.text = 'Flashing lights and screen shaking disabled';
+			}
+			routeText.screenCenter(X);
+			routeText.y = 12;
 			add(routeText);
 
 			FlxTween.tween(routeText, {alpha: 1}, 0.6);

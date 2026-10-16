@@ -76,12 +76,12 @@ class WarningState extends FlxState
         buttonText2.y = button2.y + (button2.height / 2) - (buttonText2.height / 2);
         add(buttonText2);
 
-		altWarningText = new FlxText(0, 0, button.width);
-		altWarningText.text = "Note: This will still keep on pop ups or mechanics that are fundamental to the game's design.";
+		altWarningText = new FlxText(0, 0, FlxG.width);
+		altWarningText.text = "Note: You can press the letter Q on your keyboard on the main menu to turn flashing lights and screen shaking on or off!";
 		altWarningText.setFormat("Times New Roman", 24, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
 		altWarningText.antialiasing = true;
-		altWarningText.x = button.x;
-		altWarningText.y = button.y + button.height + 24;
+		altWarningText.screenCenter(X);
+		altWarningText.y = warningText.y + warningText.height + 12;
 		altWarningText.alpha = 0;
 		add(altWarningText);
 
@@ -96,6 +96,7 @@ class WarningState extends FlxState
 
         FlxTween.tween(warningText, {y: 64}, 1.6, {ease: FlxEase.cubeOut, startDelay: delayDelay});
         FlxTween.tween(warningText2, {y: 64 + warningText.height + 12}, 1.6, {ease: FlxEase.cubeOut, startDelay: delayDelay + 2.6});
+		FlxTween.tween(altWarningText, {alpha: 1}, 1.2, {startDelay: delayDelay + 6.6});
     }
 
     override public function update(elapsed:Float)
@@ -108,9 +109,6 @@ class WarningState extends FlxState
             {
 				FlxTween.tween(e, {alpha: 0.6}, e.alpha - 0.6);
             }
-
-			if (altWarningText.alpha < 1)
-				FlxTween.tween(altWarningText, {alpha: 1}, 1 - altWarningText.alpha);
 
             if (FlxG.mouse.justPressed)
             {
@@ -128,9 +126,7 @@ class WarningState extends FlxState
                 {
 					FlxTween.tween(e, {alpha: 1}, 1 - e.alpha);
                 }
-            }
-			if (altWarningText.alpha > 0)
-				FlxTween.tween(altWarningText, {alpha: 0}, altWarningText.alpha);
+			}
         }
 
         if (FlxG.mouse.overlaps(button2))

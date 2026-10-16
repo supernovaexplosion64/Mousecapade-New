@@ -25,7 +25,11 @@ class TitleState extends FlxState
 		"Hello my baby hello my honey",
 		"Is that a",
 		"Warning:",
-		"Nintendo is epic"
+		"Nintendo is epic",
+		"Who's the mouse with the plan that's gonna cook\nyou like a frying pan",
+		"You know",
+		"New niche meme:",
+		"Feed me"
     ];
 
 	public var randomString2:Array<String> = [
@@ -44,7 +48,11 @@ class TitleState extends FlxState
 		"Hello my ragtime gal",
 		"Chimptopia reference",
 		"Friday Night Funkin' is in this game",
-		"PC sucks"
+		"PC sucks",
+		"\nM-I-C-K-E-Y\nM-O-U-S-E",
+		"I like chilling out",
+		"",
+		""
     ];
 
     public var initialThing:FlxText;
@@ -172,6 +180,26 @@ class TitleState extends FlxState
 					new FlxTimer().start((60 / musicBPM) * 2, function(tmr:FlxTimer)
 					{
 						ruvim.kill();
+					});
+				});
+			}
+			else if (randomNumber == 17 || randomNumber == 19)
+			{
+				new FlxTimer().start((60 / musicBPM * 20), function(tmr:FlxTimer)
+				{
+					var image:FlxSprite;
+					image = new FlxSprite();
+					if (randomNumber == 17)
+						image.loadGraphic(Paths.image('menu/chilling'));
+					else
+						image.loadGraphic(Paths.image('player'));
+					image.updateHitbox();
+					image.screenCenter(X);
+					image.y = thing3.y + 152;
+					add(image);
+					new FlxTimer().start((60 / musicBPM) * 2, function(tmr:FlxTimer)
+					{
+						image.kill();
 					});
 				});
 			}
