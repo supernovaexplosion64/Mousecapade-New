@@ -24,7 +24,8 @@ class TitleState extends FlxState
 		"Obey Weegee",
 		"Hello my baby hello my honey",
 		"Is that a",
-		"Warning:"
+		"Warning:",
+		"Nintendo is epic"
     ];
 
 	public var randomString2:Array<String> = [
@@ -42,7 +43,8 @@ class TitleState extends FlxState
 		"Destroy Mario",
 		"Hello my ragtime gal",
 		"Chimptopia reference",
-		"Friday Night Funkin' is in this game"
+		"Friday Night Funkin' is in this game",
+		"PC sucks"
     ];
 
     public var initialThing:FlxText;

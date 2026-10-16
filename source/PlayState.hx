@@ -442,6 +442,7 @@ class PlayState extends FlxState
 			cheeses.add(cheese);
 			cheese.updateHitbox();
 			itemTimer(cheese);
+			makeObjectActive(cheese);
 		}
 	}
 
@@ -459,6 +460,7 @@ class PlayState extends FlxState
 			pizzas.add(pizza);
 			pizza.updateHitbox();
 			itemTimerPizza(pizza);
+			makeObjectActive(pizza);
 		}
 	}
 
@@ -474,7 +476,7 @@ class PlayState extends FlxState
 
 	public function spawnWega()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(2, 5);
+		var randomChanceToAppear:Float = FlxG.random.float(1.2, 3);
 		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 45) * theDelta * 60);
 		if (wegaAppear)
 		{
@@ -485,12 +487,14 @@ class PlayState extends FlxState
 			wegas.add(wega);
 			wega.updateHitbox();
 			itemTimer(wega);
+			wega.active = false;
+			makeObjectActive(wega);
 		}
 	}
 
 	public function spawnPhone()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(0.4, 0.8);
+		var randomChanceToAppear:Float = FlxG.random.float(0.32, 0.64);
 		var phoneAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 75) * theDelta * 60);
 		if (phoneAppear)
 		{
@@ -501,11 +505,12 @@ class PlayState extends FlxState
 			phones.add(phone);
 			phone.updateHitbox();
 			itemTimer(phone);
+			makeObjectActive(phone);
 		}
 	}
 	public function spawnScrewed()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(3, 5);
+		var randomChanceToAppear:Float = FlxG.random.float(1.8, 3);
 		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 90) * theDelta * 60);
 		if (screwedAppear)
 		{
@@ -516,6 +521,7 @@ class PlayState extends FlxState
 			screweds.add(screwed);
 			screwed.updateHitbox();
 			itemTimer(screwed);
+			makeObjectActive(screwed);
 		}
 	}
 
@@ -577,9 +583,9 @@ class PlayState extends FlxState
 
 	function spawnBFDI()
 	{
-		var randomChanceToAppear:Float = FlxG.random.float(1, 1.3);
+		var randomChanceToAppear:Float = FlxG.random.float(0.6, 0.8);
 		if (FlxG.save.data.speedMode)
-			randomChanceToAppear = FlxG.random.float(1.2, 1.5);
+			randomChanceToAppear = FlxG.random.float(0.8, 1);
 		var bfdiAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120) * theDelta * 60);
 		if (bfdiAppear)
 		{
@@ -913,6 +919,16 @@ class PlayState extends FlxState
 		{
 			item.kill();
 		}, 1);
+	}
+
+	function makeObjectActive(item:FlxBasic, timeTime:Float = 1.5)
+	{
+		item.active = false;
+		var activeTimer:FlxTimer = new FlxTimer(timers);
+		activeTimer.start(timeTime, function(tmr:FlxTimer)
+		{
+			item.active = true;
+		});
 	}
 
 	function itemTimerPizza(item:FlxBasic, timeTime:Float = 30)

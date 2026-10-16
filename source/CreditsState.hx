@@ -36,6 +36,12 @@ class CreditsState extends FlxState
 		'Your mom'
 	];
 
+	var credTextDev:FlxText = new FlxText(0, 0, 0, "Developers", 56);
+	var credTextCon:FlxText = new FlxText(0, 0, 0, "Contributors", 56);
+	var credTextThanks:FlxText = new FlxText(0, 0, 0, "Special Thanks", 56);
+	var credTextDesc1:FlxText = new FlxText(0, 0, 0, "supernovaexplosion64", 40);
+	var credTextDesc2:FlxText = new FlxText(0, 0, 0, "sammieGHA", 40);
+
 	override public function create()
     {
     	super.create();
@@ -61,7 +67,8 @@ class CreditsState extends FlxState
 		backdrop.alpha = 0.5;
 		backdrop.velocity.x = 50;
 		backdrop.velocity.y = 50;
-		backdrop.cameras = [camMain];
+		backdrop.scrollFactor.set();
+		// backdrop.cameras = [camMain];
 		add(backdrop);
 
 		credIcon = new FlxSprite();
@@ -80,32 +87,31 @@ class CreditsState extends FlxState
 		credIcon2.y = credIcon.y + (credIcon.height * 1.5);
 		add(credIcon2);
 
-		var credTextDev:FlxText = new FlxText(0, 0, 0, "Developers", 56);
-		credTextDev.setFormat("Times New Roman", 56, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credTextDev.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextDev.antialiasing = true;
 		credTextDev.screenCenter(X);
 		add(credTextDev);
 
-		var credTextCon:FlxText = new FlxText(0, 0, 0, "Contributors", 56);
-		credTextCon.setFormat("Times New Roman", 56, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credTextCon.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextCon.antialiasing = true;
 		credTextCon.screenCenter(X);
 		credTextCon.y = credIcon.y + credIcon.height + 12;
 		add(credTextCon);
 
-		var credTextThanks:FlxText = new FlxText(0, 0, 0, "Special Thanks", 56);
-		credTextThanks.setFormat("Times New Roman", 56, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		credTextThanks.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextThanks.antialiasing = true;
 		credTextThanks.screenCenter(X);
 		credTextThanks.y = credIcon2.y + credIcon2.height + 12;
 		add(credTextThanks);
 
-		var credTextDesc1:FlxText = new FlxText(credIcon.x + credIcon.width + 12, credIcon.y, 0, "supernovaexplosion64", 40);
+		credTextDesc1.x = credIcon.x + credIcon.width + 12;
+		credTextDesc1.y = credIcon.y;
 		credTextDesc1.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextDesc1.antialiasing = true;
 		add(credTextDesc1);
 
-		var credTextDesc2:FlxText = new FlxText(credIcon2.x + credIcon2.width + 12, credIcon2.y, 0, "sammieGHA", 40);
+		credTextDesc2.x = credIcon2.x + credIcon2.width + 12;
+		credTextDesc2.y = credIcon2.y;
 		credTextDesc2.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credTextDesc2.antialiasing = true;
 		add(credTextDesc2);
@@ -126,7 +132,7 @@ class CreditsState extends FlxState
 		add(credText2);
         
 		specialText = new FlxText();
-		specialText.text = "Special Thanks:";
+		specialText.text = '';
 		for (i in 0...specialThanks.length)
 		{
 			if (i == 0)
@@ -134,7 +140,7 @@ class CreditsState extends FlxState
 			else
 				specialText.text += '\n' + specialThanks[i];
 		}
-
+		specialText.antialiasing = true;
 		specialText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		specialText.screenCenter(X);
 		specialText.y = credTextThanks.y + credTextThanks.height + 12;
@@ -154,7 +160,7 @@ class CreditsState extends FlxState
         exitText.y = exit.y + (exit.height / 2) - (exitText.height / 2);
 		exitText.cameras = [thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason];
         add(exitText);
-		for (e in [
+		/*for (e in [
 			credIcon,
 			credIcon2,
 			credTextDev,
@@ -168,23 +174,39 @@ class CreditsState extends FlxState
 		])
 		{
 			e.cameras = [camMain];
-		}
+		}*/
+		var notice:FlxText = new FlxText(0, 0, 0, "Press the arrow keys on your keyboard to scroll up or down!");
+		notice.setFormat("Times New Roman", 18, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		notice.x = FlxG.width - notice.width - 12;
+		notice.y = 12;
+		add(notice);
 		// FlxG.watch.add(camMain, "y");
-		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height * 3);
+		// FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height * 3);
     }
 
     override public function update(elapsed:Float):Void
     {
-		if (camMain.y > 0)
-			camMain.y = 0;
-		if (FlxG.keys.anyPressed([W, UP]))
+		for (e in [
+			credIcon,
+			credIcon2,
+			credTextDev,
+			credTextCon,
+			credTextThanks,
+			credTextDesc1,
+			credTextDesc2,
+			credText,
+			credText2,
+			specialText
+		])
 		{
-			camMain.y += 360 * FlxG.elapsed;
-		}
-
-		if (FlxG.keys.anyPressed([S, DOWN]))
-		{
-			camMain.y -= 360 * FlxG.elapsed;
+			if (FlxG.keys.anyPressed([W, UP]))
+			{
+				e.y += 360 * FlxG.elapsed;
+			}
+			if (FlxG.keys.anyPressed([S, DOWN]))
+			{
+				e.y -= 360 * FlxG.elapsed;
+			}
 		}
 
         if (FlxG.mouse.overlaps(exit))

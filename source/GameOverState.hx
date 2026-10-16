@@ -42,6 +42,16 @@ class GameOverState extends FlxState
 
     override public function update(elapsed:Float)
     {
+		if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
+		{
+			FlxG.switchState(new PlayState());
+		}
+
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+
     	super.update(elapsed);
     }
 }

@@ -45,6 +45,8 @@ class MainMenuState extends FlxState
 		"you want to play but i don't it hurts",
 		"go play vs. mouse ultimate",
 		"go play vs. mouse extremely old",
+		"go play vs. mouse rookies edition",
+		"go play THE BLEEDING HOUR",
 		"go play vs. mouse: cheesed up (when it releases)",
 		"IShowerSpeed collab when?",
 		"Better than Lobotomy Clicker",
