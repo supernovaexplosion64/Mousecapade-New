@@ -47,7 +47,7 @@ class MainMenuState extends FlxState
 		"go play vs. mouse extremely old",
 		"go play vs. mouse: cheesed up (when it releases)",
 		"IShowerSpeed collab when?",
-		"This game is better than Lobotomy Clicker",
+		"Better than Lobotomy Clicker",
 		"It was all started with a mouse",
 		"I'm gonna break my phone",
 		"StanleyMOV would have a FEAST playing this game",
@@ -55,7 +55,11 @@ class MainMenuState extends FlxState
 		"This game is pure inside joke slop",
 		"Vs. Mouse fans, assemble",
 		"Yes the same guy who danced to that Jose Juan song created this game",
-		"Bro copied Friday Night Funkin'"
+		"Bro copied Friday Night Funkin'",
+		"White people be like: this game is fun and enjoyable",
+		"Took bro two years to create a new semi-original HaxeFlixel game",
+		"Vs. Mouse aura",
+		"I love you Olimac31"
 	];
 
 	var popUpText:FlxText;
@@ -242,6 +246,7 @@ class MainMenuState extends FlxState
 			var routeText:FlxText = new FlxText();
 			routeText.text = "Speed Mode disabled";
 			routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			routeText.antialiasing = true;
 			routeText.screenCenter(X);
 			routeText.y = 12;
 			routeText.alpha = 0;
@@ -261,6 +266,7 @@ class MainMenuState extends FlxState
 			var routeText:FlxText = new FlxText();
 			routeText.text = "Speed Mode enabled";
 			routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			routeText.antialiasing = true;
 			routeText.screenCenter(X);
 			routeText.y = routeText.height * -1;
 			add(routeText);

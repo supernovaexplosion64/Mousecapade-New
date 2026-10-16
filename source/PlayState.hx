@@ -108,6 +108,7 @@ class PlayState extends FlxState
 
 	var stopCloning:Bool = false;
 	var numClones:Int = 0;
+	public var musicPath:String = '';
 
 	override public function create()
 	{
@@ -140,7 +141,12 @@ class PlayState extends FlxState
 		camMain.bgColor.alpha = 0;
 		FlxG.cameras.add(camMain, false);
 
-		FlxG.sound.playMusic(Paths.music('maintheme/normal'), 1, true);
+		if (FlxG.save.data.speedMode)
+			musicPath = 'maintheme/alt/';
+		else
+			musicPath = 'maintheme/';
+
+		FlxG.sound.playMusic(Paths.music(musicPath + 'normal'), 1, true);
 		
 		player = new Player();
 		add(player);
@@ -396,7 +402,7 @@ class PlayState extends FlxState
 	{
 		if (health < 20 && !stopFastMusic)
 		{
-			FlxG.sound.playMusic(Paths.music('maintheme/fast'), 1, true);
+			FlxG.sound.playMusic(Paths.music(musicPath + 'fast'), 1, true);
 			stopFastMusic = !stopFastMusic;
 			if (stopMusic)
 				stopMusic = !stopMusic;
@@ -405,7 +411,7 @@ class PlayState extends FlxState
 		}
 		else if (health > 100 && !stopSlowMusic)
 		{
-			FlxG.sound.playMusic(Paths.music('maintheme/slow'), 1, true);
+			FlxG.sound.playMusic(Paths.music(musicPath + 'slow'), 1, true);
 			stopSlowMusic = !stopSlowMusic;
 			if (stopMusic)
 				stopMusic = !stopMusic;
@@ -414,7 +420,7 @@ class PlayState extends FlxState
 		}
 		else if (health >= 20 && health <= 100 && !stopMusic)
 		{
-			FlxG.sound.playMusic(Paths.music('maintheme/normal'), 1, true);
+			FlxG.sound.playMusic(Paths.music(musicPath + 'normal'), 1, true);
 			stopMusic = !stopMusic;
 			if (stopSlowMusic)
 				stopSlowMusic = !stopSlowMusic;
