@@ -233,7 +233,7 @@ class MainMenuState extends FlxState
 		add(popUpText);
 
 		FlxTween.tween(popUpText, {angle: popUpText.angle + (randomPopUpAngle * 2)}, 3.3, {ease: FlxEase.quadInOut, type: PINGPONG});
-		if (TitleState.initialized)
+		if (TitleState.initialized || FlxG.sound.music == null)
 			FlxG.sound.playMusic(Paths.music("title-theme"), 1, true);
 		if (!TitleState.initialized)
 			TitleState.initialized = true;
@@ -372,5 +372,12 @@ class MainMenuState extends FlxState
 				}
 			}
 		}
+		#if debug
+		if (FlxG.keys.justPressed.R)
+		{
+			FlxG.sound.music.stop();
+			FlxG.switchState(new StartUpIntro());
+		}
+		#end
     }
 }

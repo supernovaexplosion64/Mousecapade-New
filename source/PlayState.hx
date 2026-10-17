@@ -301,11 +301,10 @@ class PlayState extends FlxState
 		{
 			FlxG.sound.music.stop();
 			// checkFinalScore();
-			if (score >= 250000 && !FlxG.save.data.speedUnlocked)
-				FlxG.switchState(new UnlockCharacterState());
-
 			if (FlxG.save.data.speedMode)
+			{
 				FlxG.switchState(new SecretDeathState());
+			}
 			else
 			{
 				FlxG.camera.bgColor.alpha = 1;
@@ -385,6 +384,10 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.THREE && !FlxG.save.data.speedUnlocked)
 		{
 			FlxG.save.data.speedUnlocked = true;
+		}
+		if (FlxG.keys.justPressed.FOUR && FlxG.save.data.speedUnlocked)
+		{
+			FlxG.save.data.speedUnlocked = false;
 		}
 		if (FlxG.keys.justPressed.R)
 		{
@@ -996,10 +999,11 @@ class PlayState extends FlxState
 		randomSpeedMulti = screwed_randomMulti;
 		// daPhone.angle += 360 * randomSpeedMulti * FlxG.elapsed;
 		crack.cameras = [camHUD];
-		crack.x = FlxG.random.int(Std.int(crack.width / 2), Std.int(FlxG.width - (crack.width / 2)));
-		crack.y = FlxG.random.int(Std.int(crack.height / 2), Std.int(FlxG.height - (crack.height / 2)));
+		crack.x = FlxG.random.int(Std.int(crack.width * 0.5 * -1), Std.int(FlxG.width - (crack.width / 2)));
+		crack.y = FlxG.random.int(Std.int(crack.height * 0.5 * -1), Std.int(FlxG.height - (crack.height / 2)));
 		daPhone.angle = FlxG.random.int(0, 360);
 		daPhone.scale.set(0.1, 0.1);
+		daPhone.updateHitbox();
 		daPhone.x = crack.x + ((crack.width / 2) - (daPhone.width / 2));
 		daPhone.y = crack.y + ((crack.height / 2) - (daPhone.height / 2));
 		add(daPhone);
@@ -1050,7 +1054,7 @@ class PlayState extends FlxState
 			{
 				var newEnemyText:FlxText = new FlxText();
 				newEnemyText.text = '';
-				newEnemyText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				newEnemyText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
 				newEnemyText.cameras = [camMain];
 				newEnemyText.antialiasing = true;
 				newEnemyText.alpha = 0;
@@ -1154,7 +1158,7 @@ class PauseSubState extends FlxSubState
 
 		var text = new FlxText(0, 0, 0, "Game Paused");
 		text.setFormat("Times New Roman", 80);
-		text.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		text.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
 		text.scrollFactor.set(0, 0);
 		text.screenCenter(X);
 		text.y = FlxG.height * 0.35;
@@ -1162,9 +1166,9 @@ class PauseSubState extends FlxSubState
 		text.cameras = [camPause];
 		add(text);
 
-		var text2 = new FlxText(0, 0, 0, "Press Enter or Space to resume game\nPress Escape or Backspace to exit to main menu");
+		var text2 = new FlxText(0, 0, 0, "Press enter or space to resume game\nPress escape or backspace to exit to main menu");
 		text2.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.CENTER);
-		text2.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		text2.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
 		text2.scrollFactor.set(0, 0);
 		text2.screenCenter(X);
 		text2.y = FlxG.height * 0.5;

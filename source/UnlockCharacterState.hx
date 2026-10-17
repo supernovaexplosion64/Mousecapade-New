@@ -3,9 +3,11 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class UnlockCharacterState extends FlxState
 {
@@ -14,6 +16,7 @@ class UnlockCharacterState extends FlxState
     public var characterImage:FlxSprite;
     public var daString:String;
     public var imageString:String;
+	public var noteText:FlxText;
 
 	override public function create()
     {
@@ -26,38 +29,78 @@ class UnlockCharacterState extends FlxState
                 imageString = 'speed';
         }*/
 
-        FlxG.save.data.speedUnlocked = true;
+		FlxG.save.data.speedUnlocked = true;
 
         daString = 'IShowerSpeed';
         imageString = 'speed';
 
         sprite = new FlxSprite();
-	    sprite.makeGraphic(Std.int(FlxG.width * 0.7), Std.int(FlxG.height * 0.12), FlxColor.BLUE);
+		sprite.makeGraphic(Std.int(FlxG.width * 0.7), Std.int(FlxG.height * 0.12), 0xFF4342F4);
 		sprite.screenCenter();
 		sprite.alpha = 0;
 		add(sprite);
 
-        text = new FlxText(0, 0, sprite.width, 16);
+		text = new FlxText();
         text.text = "You can now play as: " + daString;
+		text.setFormat("Times New Roman", 30, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		text.antialiasing = true;
         text.screenCenter();
+		text.x += 12;
 		text.alpha = 0;
         add(text);
 
         characterImage = new FlxSprite();
         characterImage.loadGraphic(Paths.image(imageString));
         characterImage.setGraphicSize(64, 64);
-        characterImage.x = text.x + text.width;
-        characterImage.y = text.y;
+		characterImage.updateHitbox();
+		characterImage.x = text.x + text.width + 12;
+		characterImage.y = text.y + ((text.height / 2) - (characterImage.height / 2));
 		characterImage.alpha = 0;
         add(characterImage);
-		for (e in [sprite, text, characterImage])
+		noteText = new FlxText(0, 0, FlxG.width);
+		noteText.text = "Press enter or space to restart game\nPress escape or backspace to exit to main menu";
+		noteText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
+		noteText.antialiasing = true;
+		noteText.screenCenter(X);
+		noteText.y = FlxG.height - noteText.height - 12;
+		noteText.alpha = 0;
+		add(noteText);
+
+		new FlxTimer().start(3, function(tmr:FlxTimer)
 		{
-			FlxTween.tween(e, {alpha: 1}, 0.6, {startDelay: 4});
-		}
+			var weirdSoundJingle:FlxSound = new FlxSound();
+			weirdSoundJingle = FlxG.sound.load(Paths.sound('weird-route-jingle'));
+			weirdSoundJingle.play();
+
+			var characterSound:FlxSound = new FlxSound();
+			characterSound = FlxG.sound.load(Paths.sound('bark'));
+			for (i in 0...3)
+			{
+				new FlxTimer().start(i * 0.5, function(tmr:FlxTimer)
+				{
+					characterSound.play();
+				});
+			}
+			for (e in [sprite, text, characterImage])
+			{
+				FlxTween.tween(e, {alpha: 1}, 0.6);
+			}
+			FlxTween.tween(noteText, {alpha: 1}, 1.6, {startDelay: 1.6});
+		});
     }
 
     override public function update(elapsed:Float):Void
     {
+		if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
+		{
+			FlxG.switchState(new PlayState());
+		}
+
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+
     	super.update(elapsed);
     }
 }

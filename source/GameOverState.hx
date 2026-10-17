@@ -118,10 +118,17 @@ class GameOverState extends FlxState
 		camMain.alpha = 0;
 		new FlxTimer().start(3, function(tmr:FlxTimer)
 		{
-			FlxG.sound.playMusic(Paths.music('death-theme'), 1);
-			FlxTween.tween(camMain, {alpha: 1}, 0.4);
-			FlxTween.tween(retryText, {y: retryText.y + 36}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG});
-			FlxTween.tween(noteText, {alpha: 1}, 1.2, {startDelay: 1.6});
+			if (finalScore >= 250000 && !FlxG.save.data.speedUnlocked)
+			{
+				FlxG.switchState(new UnlockCharacterState());
+			}
+			else
+			{
+				FlxG.sound.playMusic(Paths.music('death-theme'), 1);
+				FlxTween.tween(camMain, {alpha: 1}, 0.4);
+				FlxTween.tween(retryText, {y: retryText.y + 36}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG});
+				FlxTween.tween(noteText, {alpha: 1}, 1.2, {startDelay: 1.6});
+			}
 		});
     }
 

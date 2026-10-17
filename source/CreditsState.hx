@@ -41,8 +41,7 @@ class CreditsState extends FlxState
 		'Dillon Howland',
 		'sammieGHA',
 		'IShowerSpeed',
-		'Five Nights at Treasure Island',
-		'Your mom'
+		'Five Nights at Treasure Island'
 	];
 
 	var credTextDev:FlxText = new FlxText(0, 0, 0, "Developers", 48);
@@ -201,6 +200,10 @@ class CreditsState extends FlxState
 			else
 				specialText.text += '\n' + specialThanks[i];
 		}
+		if (FlxG.random.bool(10))
+		{
+			specialText.text += '\nYour mom lol';
+		}
 		specialText.antialiasing = true;
 		specialText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		specialText.screenCenter(X);
@@ -243,7 +246,8 @@ class CreditsState extends FlxState
 		}
 		var notice:FlxText = new FlxText(0, 0, FlxG.width - (credTextDev.x + credTextDev.width),
 			"Press the arrow keys on your keyboard to scroll up or down!\nClick on the icons to see the person's social page!");
-		notice.setFormat("Times New Roman", 24, 0xFFC0C0C0, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
+		notice.setFormat("Times New Roman", 24, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
+		notice.alpha = 0.6;
 		notice.antialiasing = true;
 		notice.x = FlxG.width - notice.width - 12;
 		notice.y = 12;
