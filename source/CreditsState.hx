@@ -241,7 +241,8 @@ class CreditsState extends FlxState
 		{
 			e.cameras = [camMain];
 		}
-		var notice:FlxText = new FlxText(0, 0, FlxG.width - (credTextDev.x + credTextDev.width), "Press the arrow keys on your keyboard to scroll up or down!");
+		var notice:FlxText = new FlxText(0, 0, FlxG.width - (credTextDev.x + credTextDev.width),
+			"Press the arrow keys on your keyboard to scroll up or down!\nClick on the icons to see the person's social page!");
 		notice.setFormat("Times New Roman", 24, 0xFFC0C0C0, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
 		notice.antialiasing = true;
 		notice.x = FlxG.width - notice.width - 12;
@@ -321,6 +322,10 @@ class CreditsState extends FlxState
 			{
 				FlxG.openURL("https://www.youtube.com/channel/UCATxC1MqK60fdBZ0R8pycGw");
 			}
+		}
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		{
+			FlxG.switchState(new MainMenuState());
 		}
     	super.update(elapsed);
     }

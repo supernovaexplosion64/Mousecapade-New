@@ -28,7 +28,19 @@ class GameOverState extends FlxState
 	var timeText:FlxText;
 	var retryText:FlxText;
 
-	public var messages:Array<String> = ['Never come back again.', "You mickey'd your last mousecapade"];
+	public var messages:Array<String> = [
+		'Never come back again.',
+		"You mickey'd your last mousecapade",
+		"Blud said Thick of It was a good song",
+		"Better luck next time!",
+		"Markus, you are now ELIMINATED!",
+		"He didn't get fed",
+		"You died. Now go play an actual good video game",
+		"This piece of music was composed by Layer09!",
+		"Good bye everyone I'm taking a shower",
+		"One, two, three, four, who do we, not adore? Markus!",
+		"You didn't pick up the phone"
+	];
 
     override public function create()
     {
@@ -42,6 +54,10 @@ class GameOverState extends FlxState
         deathSound = new FlxSound();
         deathSound = FlxG.sound.load(Paths.sound("death"));
         deathSound.play();
+		new FlxTimer().start(1.5, function(tmr:FlxTimer)
+		{
+			deathSound.fadeOut(0.5, 0);
+		});
 
 		scoreText = new FlxText();
 		scoreText.text = 'Score: ' + finalScore;
@@ -53,7 +69,7 @@ class GameOverState extends FlxState
 		add(scoreText);
 		timeText = new FlxText();
 		timeText.text = 'Time: ' + Std.string(FlxStringUtil.formatTime(finalTime, true));
-		timeText.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
+		timeText.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
 		timeText.antialiasing = true;
 		timeText.cameras = [camMain];
 		timeText.x = FlxG.width - timeText.width - 72;
@@ -77,7 +93,7 @@ class GameOverState extends FlxState
 		retryText.antialiasing = true;
 		retryText.cameras = [camMain];
 		retryText.screenCenter(X);
-		retryText.y = 200;
+		retryText.y = 175;
 		add(retryText);
 		gameOverSprite = new FlxSprite();
 		gameOverSprite.loadGraphic(Paths.image('menu/game-over'), true, 382, 274);
@@ -119,7 +135,7 @@ class GameOverState extends FlxState
 			deathConfirm();
 		}
 
-		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]))
+		if (FlxG.keys.anyJustPressed([ESCAPE, BACKSPACE]) && !deathConfirmed)
 		{
 			FlxG.switchState(new MainMenuState());
 		}
@@ -138,9 +154,13 @@ class GameOverState extends FlxState
 		retryText.updateHitbox();
 		retryText.screenCenter(X);
 		FlxTween.tween(camMain, {alpha: 0}, 3, {startDelay: 0.6});
-		new FlxTimer().start(7, function(tmr:FlxTimer)
+		new FlxTimer().start(6, function(tmr:FlxTimer)
 		{
 			FlxG.switchState(new PlayState());
 		});
+		if (FlxG.random.bool(15))
+		{
+			FlxTween.tween(camMain, {angle: 360 * 8}, 2.4, {ease: FlxEase.cubeIn, startDelay: 1.2});
+		}
 	}
 }

@@ -107,6 +107,7 @@ class PlayState extends FlxState
 	var randomAppear5:Float = FlxG.random.float(120, 240);
 
 	var stopCloning:Bool = false;
+	var numOfTimes:Int = 0;
 	var numClones:Int = 0;
 	public var musicPath:String = '';
 
@@ -300,7 +301,7 @@ class PlayState extends FlxState
 		{
 			FlxG.sound.music.stop();
 			// checkFinalScore();
-			if (score >= 85000 && !FlxG.save.data.speedUnlocked)
+			if (score >= 250000 && !FlxG.save.data.speedUnlocked)
 				FlxG.switchState(new UnlockCharacterState());
 
 			if (FlxG.save.data.speedMode)
@@ -310,7 +311,6 @@ class PlayState extends FlxState
 				FlxG.camera.bgColor.alpha = 1;
 				camMain.alpha = 1;
 				camHUD.alpha = 1;
-				FlxG.sound.music.stop();
 				FlxG.switchState(new GameOverState());
 			}
 		}
@@ -710,6 +710,7 @@ class PlayState extends FlxState
 
 	public function showHealth()
 	{
+		timerThing = 3;
 		healthTweening = true;
 		if (healthTweening)
 		{
@@ -799,11 +800,14 @@ class PlayState extends FlxState
 		{
 			if (FlxG.save.data.speedMode && !stopCloning)
 			{
+				numOfTimes += 1;
+				if (numOfTimes > 25)
+					numOfTimes = 25;
 				item.kill();
 				numClones += 1;
 				if (numClones >= 25)
 					stopCloning = true;
-				var randomSpawned:Int = FlxG.random.int(1, 25);
+				var randomSpawned:Int = FlxG.random.int(numOfTimes, 25);
 				for (i in 0...randomSpawned)
 				{
 					var callingTimer:FlxTimer = new FlxTimer(timers);

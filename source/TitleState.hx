@@ -29,7 +29,8 @@ class TitleState extends FlxState
 		"Who's the mouse with the plan that's gonna cook\nyou like a frying pan",
 		"You know",
 		"New niche meme:",
-		"Feed me"
+		"Feed me",
+		"This isn't a"
     ];
 
 	public var randomString2:Array<String> = [
@@ -52,7 +53,8 @@ class TitleState extends FlxState
 		"\nM-I-C-K-E-Y\nM-O-U-S-E",
 		"I like chilling out",
 		"",
-		""
+		"",
+		"Friday Night Funkin' mod"
     ];
 
     public var initialThing:FlxText;

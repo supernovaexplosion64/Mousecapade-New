@@ -63,7 +63,9 @@ class MainMenuState extends FlxState
 		"Vs. Mouse aura",
 		"I love you Olimac31",
 		"This game gave me a brain aneurysm",
-		"Press the letter Q to turn flashing lights and screen shaking on or off!"
+		"Press the letter Q to turn flashing lights and screen shaking on or off!",
+		"Do you wanna learn about the Pythagorean theorem?",
+		"This game goes great with fish sticks and mustard"
 	];
 
 	var popUpText:FlxText;
@@ -82,8 +84,6 @@ class MainMenuState extends FlxState
 		blackScreen = new FlxSprite();
 		blackScreen.alpha = 0;
 		blackScreen.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		if (FlxG.save.data.screenShaking)
-			blackScreen.color = FlxColor.WHITE;
 		blackScreen.scrollFactor.set(0, 0);
 		blackScreen.alpha = 1;
 		blackScreen.cameras = [camMain];
