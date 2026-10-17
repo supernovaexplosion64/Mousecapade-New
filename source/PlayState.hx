@@ -58,7 +58,7 @@ class PlayState extends FlxState
 	public var screwed_randomMulti:Float;
 	public var screwed_alphaAlpha:Float;
 
-	public var time:Float = 0;
+	public static var time:Float = 0;
 	public var timeText:FlxText;
 
 	var popUpEnabled:Bool = true;
@@ -113,6 +113,7 @@ class PlayState extends FlxState
 	override public function create()
 	{
 		score = 0;
+		time = 0;
 		blackScreen = new FlxSprite();
 		blackScreen.alpha = 0;
 		FlxTween.globalManager.active = true;
@@ -309,6 +310,7 @@ class PlayState extends FlxState
 				FlxG.camera.bgColor.alpha = 1;
 				camMain.alpha = 1;
 				camHUD.alpha = 1;
+				FlxG.sound.music.stop();
 				FlxG.switchState(new GameOverState());
 			}
 		}
@@ -372,6 +374,7 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.TWO)
 		{
 			// checkFinalScore();
+			FlxG.sound.music.stop();
 			FlxG.switchState(new GameOverState());
 		}
 		if (FlxG.keys.justPressed.SIX)
@@ -1155,7 +1158,7 @@ class PauseSubState extends FlxSubState
 		text.cameras = [camPause];
 		add(text);
 
-		var text2 = new FlxText(0, 0, 0, "Press Enter or Space to resume game\nPress Escape or Backspace to exit to menu");
+		var text2 = new FlxText(0, 0, 0, "Press Enter or Space to resume game\nPress Escape or Backspace to exit to main menu");
 		text2.setFormat("Times New Roman", 64, FlxColor.WHITE, FlxTextAlign.CENTER);
 		text2.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		text2.scrollFactor.set(0, 0);

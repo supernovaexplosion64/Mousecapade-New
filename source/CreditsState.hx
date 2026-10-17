@@ -110,7 +110,7 @@ class CreditsState extends FlxState
 		credIcon3.setGraphicSize(256, 256);
 		credIcon3.updateHitbox();
 		credIcon3.x = 12;
-		credIcon3.y = credIcon2.y + credIcon.height + 12;
+		credIcon3.y = credIcon2.y + credIcon2.height + 12;
 		add(credIcon3);
 
 		credTextDev.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -165,7 +165,7 @@ class CreditsState extends FlxState
 		credText2.y = credTextDesc2.y + credTextDesc2.height + 12;
 		add(credText2);
 		credText3 = new FlxText();
-		credText3.text = 'Composed the credits menu theme';
+		credText3.text = 'Composed the credits menu and game over theme';
 		credText3.setFormat("Times New Roman", 30, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		credText3.antialiasing = true;
 		credText3.x = credIcon3.x + credIcon3.width + 12;
@@ -216,7 +216,7 @@ class CreditsState extends FlxState
 
         exitText = new FlxText();
         exitText.text = 'EXIT';
-        exitText.size = 18;
+		exitText.setFormat("Times New Roman", 18, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         exitText.x = exit.x + (exit.width / 2) - (exitText.width / 2);
         exitText.y = exit.y + (exit.height / 2) - (exitText.height / 2);
 		exitText.cameras = [thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason];
@@ -242,7 +242,7 @@ class CreditsState extends FlxState
 			e.cameras = [camMain];
 		}
 		var notice:FlxText = new FlxText(0, 0, FlxG.width - (credTextDev.x + credTextDev.width), "Press the arrow keys on your keyboard to scroll up or down!");
-		notice.setFormat("Times New Roman", 24, FlxColor.GRAY, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		notice.setFormat("Times New Roman", 24, 0xFFC0C0C0, FlxTextAlign.RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
 		notice.antialiasing = true;
 		notice.x = FlxG.width - notice.width - 12;
 		notice.y = 12;
@@ -272,6 +272,11 @@ class CreditsState extends FlxState
 		if (camMain.y < maxCameraPos * -1)
 			camMain.y = maxCameraPos * -1;
 
+		for (e in [credIcon, credIcon2, credIcon3])
+		{
+			e.updateHitbox();
+		}
+
         if (FlxG.mouse.overlaps(exit))
         {
             for (e in [exit, exitText])
@@ -295,7 +300,7 @@ class CreditsState extends FlxState
 			}
 		}
 
-		if (FlxG.mouse.overlaps(credIcon))
+		if (FlxG.mouse.overlaps(credIcon, camMain))
 		{
 			if (FlxG.mouse.justPressed)
 			{
@@ -303,14 +308,14 @@ class CreditsState extends FlxState
 			}
 		}
 
-		if (FlxG.mouse.overlaps(credIcon2))
+		if (FlxG.mouse.overlaps(credIcon2, camMain))
 		{
 			if (FlxG.mouse.justPressed)
 			{
 				FlxG.openURL("https://x.com/defokobreasts");
 			}
 		}
-		if (FlxG.mouse.overlaps(credIcon3))
+		if (FlxG.mouse.overlaps(credIcon3, camMain))
 		{
 			if (FlxG.mouse.justPressed)
 			{
