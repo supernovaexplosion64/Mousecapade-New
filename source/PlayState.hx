@@ -101,10 +101,10 @@ class PlayState extends FlxState
 	public var blackScreen:FlxSprite;
 
 	var randomAppear:Float = FlxG.random.float(15, 30);
-	var randomAppear2:Float = FlxG.random.float(30, 60);
-	var randomAppear3:Float = FlxG.random.float(60, 120);
-	var randomAppear4:Float = FlxG.random.float(90, 180);
-	var randomAppear5:Float = FlxG.random.float(120, 240);
+	var randomAppear2:Float = FlxG.random.float(45, 90);
+	var randomAppear3:Float = FlxG.random.float(75, 150);
+	var randomAppear4:Float = FlxG.random.float(120, 240);
+	var randomAppear5:Float = FlxG.random.float(180, 360);
 
 	var stopCloning:Bool = false;
 	var numOfTimes:Int = 0;
@@ -117,7 +117,6 @@ class PlayState extends FlxState
 		time = 0;
 		blackScreen = new FlxSprite();
 		blackScreen.alpha = 0;
-		FlxTween.globalManager.active = true;
 		paused = false;
 		if (gameJustStarted)
 		{
@@ -234,11 +233,11 @@ class PlayState extends FlxState
 		blackScreen.alpha = 1;
 		blackScreen.cameras = [camWindow];
 		add(blackScreen);
-		FlxTween.tween(blackScreen, {alpha: 0}, 1);
+		tweens.tween(blackScreen, {alpha: 0}, 1);
 
 		new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
-			FlxTween.tween(levelText, {y: levelText.y * -1}, 1, {ease: FlxEase.backIn});
+			tweens.tween(levelText, {y: levelText.y * -1}, 1, {ease: FlxEase.backIn});
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				remove(levelText);
@@ -267,8 +266,11 @@ class PlayState extends FlxState
 				if (tmr.active == true)
 					tmr.active = false;
 			});
-			if (FlxTween.globalManager.active == true)
-				FlxTween.globalManager.active = false;
+			tweens.forEach(function(tween:FlxTween)
+			{
+				if (tween.active == true)
+					tween.active = false;
+			});
 		}
 
 		if (!paused)
@@ -278,8 +280,11 @@ class PlayState extends FlxState
 				if (tmr.active == false)
 					tmr.active = true;
 			});
-			if (FlxTween.globalManager.active == false)
-				FlxTween.globalManager.active = true;
+			tweens.forEach(function(tween:FlxTween)
+			{
+				if (tween.active == false)
+					tween.active = true;
+			});
 		}
 		updateTime();
 		FlxG.worldBounds.set(player.x - 100, player.y - 100, 1280, 720);
@@ -350,7 +355,7 @@ class PlayState extends FlxState
 		// spawnRedBars();
 		/*if (health <= 100 && theOtherBar.alpha > 0)
 			{
-				FlxTween.tween(theOtherBar, {alpha: 0}, 1 / theOtherBar.alpha);
+				tweens.tween(theOtherBar, {alpha: 0}, 1 / theOtherBar.alpha);
 		}*/
 		decreasingMultiplier -= 8 * FlxG.elapsed;
 		if (decreasingMultiplier < 2)
@@ -392,6 +397,7 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.R)
 		{
 			score = 0;
+			time = 0;
 			FlxG.resetState();
 		}
 		#end
@@ -465,7 +471,7 @@ class PlayState extends FlxState
 			// itemScore = cheese.value;
 			pizzas.add(pizza);
 			pizza.updateHitbox();
-			itemTimerPizza(pizza);
+			itemTimerPizza(pizza, 4.5);
 			makeObjectActive(pizza, 0.3);
 		}
 	}
@@ -483,7 +489,7 @@ class PlayState extends FlxState
 	public function spawnWega()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(2, 4);
-		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 45) * theDelta * 60);
+		var wegaAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / (randomAppear * 2)) * theDelta * 60);
 		if (wegaAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -492,7 +498,7 @@ class PlayState extends FlxState
 			// cheese.cameras = [camGame];
 			wegas.add(wega);
 			wega.updateHitbox();
-			itemTimer(wega);
+			itemTimer(wega, 9);
 			wega.active = false;
 			makeObjectActive(wega, 0.9);
 		}
@@ -501,7 +507,7 @@ class PlayState extends FlxState
 	public function spawnPhone()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(0.4, 0.8);
-		var phoneAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 75) * theDelta * 60);
+		var phoneAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / (randomAppear5 * 0.6)) * theDelta * 60);
 		if (phoneAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -510,14 +516,14 @@ class PlayState extends FlxState
 			// cheese.cameras = [camGame];
 			phones.add(phone);
 			phone.updateHitbox();
-			itemTimer(phone);
+			itemTimer(phone, 11.5);
 			makeObjectActive(phone, 0.9);
 		}
 	}
 	public function spawnScrewed()
 	{
 		var randomChanceToAppear:Float = FlxG.random.float(2.2, 3.5);
-		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 90) * theDelta * 60);
+		var screwedAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / (randomAppear3 * 0.6)) * theDelta * 60);
 		if (screwedAppear)
 		{
 			var positionX = player.x + FlxG.random.int(-1280, 1280);
@@ -526,7 +532,7 @@ class PlayState extends FlxState
 			// cheese.cameras = [camGame];
 			screweds.add(screwed);
 			screwed.updateHitbox();
-			itemTimer(screwed);
+			itemTimer(screwed, 13);
 			makeObjectActive(screwed, 0.9);
 		}
 	}
@@ -545,7 +551,7 @@ class PlayState extends FlxState
 			window.alpha = 0;
 			window.cameras = [camHUD];
 			windows.add(window);
-			FlxTween.tween(window, {alpha: 1}, 0.3);
+			tweens.tween(window, {alpha: 1}, 0.3);
 			itemTimer(window);
 		}
 	}
@@ -563,19 +569,19 @@ class PlayState extends FlxState
 			redBar.y = positionY;
 			redBar.alpha = 0.5;
 			redBar.active = false;
-			FlxTween.tween(redBar, {alpha: 1}, 1.5, {ease: FlxEase.cubeIn});
-			FlxTween.tween(redBar.scale, {y: 2.2}, 1.5, {ease: FlxEase.cubeIn});
+			tweens.tween(redBar, {alpha: 1}, 1.5, {ease: FlxEase.cubeIn});
+			tweens.tween(redBar.scale, {y: 2.2}, 1.5, {ease: FlxEase.cubeIn});
 			var redBarTimer:FlxTimer = new FlxTimer(timers);
 			var redBarTimer2:FlxTimer = new FlxTimer(timers);
 			var redBarTimer3:FlxTimer = new FlxTimer(timers);
 			redBarTimer.start(1.5, function(tmr:FlxTimer)
 			{
-				FlxTween.tween(redBar.scale, {y: 1.5}, 0.6, {ease: FlxEase.cubeOut});
+				tweens.tween(redBar.scale, {y: 1.5}, 0.6, {ease: FlxEase.cubeOut});
 				redBar.active = true;
 			});
 			redBarTimer2.start(4.5, function(tmr:FlxTimer)
 			{
-				FlxTween.tween(redBar.scale, {y: 0}, 2, {ease: FlxEase.cubeIn});
+				tweens.tween(redBar.scale, {y: 0}, 2, {ease: FlxEase.cubeIn});
 			});
 			redBarTimer3.start(6.5, function(tmr:FlxTimer)
 			{
@@ -592,7 +598,7 @@ class PlayState extends FlxState
 		var randomChanceToAppear:Float = FlxG.random.float(0.8, 1);
 		if (FlxG.save.data.speedMode)
 			randomChanceToAppear = FlxG.random.float(1, 1.2);
-		var bfdiAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / 120) * theDelta * 60);
+		var bfdiAppear:Bool = FlxG.random.bool(randomChanceToAppear * (time / (randomAppear4 * 0.6)) * theDelta * 60);
 		if (bfdiAppear)
 		{
 			var bfdiPopUp:FlxSprite;
@@ -672,8 +678,8 @@ class PlayState extends FlxState
 			comboAddText.x = scoreText.x + scoreText.width + 24;
 			comboAddText.y = comboText.y + comboText.height + 12;
 			add(comboAddText);
-			FlxTween.tween(comboText, {alpha: 0}, 0.6);
-			FlxTween.tween(comboAddText, {alpha: 0}, 0.6);
+			tweens.tween(comboText, {alpha: 0}, 0.6);
+			tweens.tween(comboAddText, {alpha: 0}, 0.6);
 
 			#if debug trace("Score addition: " + Std.string(addScore()) + ", Decreasing Multiplier: " + Std.string(decreasingMultiplier)); #end
 			decreasingMultiplier = 100 - (2 * wegaTimes);
@@ -717,9 +723,9 @@ class PlayState extends FlxState
 		healthTweening = true;
 		if (healthTweening)
 		{
-			FlxTween.tween(healthBar, {y: FlxG.height - healthBar.height}, tweeningTime, {ease: FlxEase.backOut});
-			FlxTween.tween(theOtherBar, {y: FlxG.height - theOtherBar.height}, tweeningTime, {ease: FlxEase.backOut});
-			FlxTween.tween(healthText, {y: FlxG.height - healthBar.height - 36}, tweeningTime, {ease: FlxEase.backOut});
+			tweens.tween(healthBar, {y: FlxG.height - healthBar.height}, tweeningTime, {ease: FlxEase.backOut});
+			tweens.tween(theOtherBar, {y: FlxG.height - theOtherBar.height}, tweeningTime, {ease: FlxEase.backOut});
+			tweens.tween(healthText, {y: FlxG.height - healthBar.height - 36}, tweeningTime, {ease: FlxEase.backOut});
 		}
 	}
 
@@ -730,9 +736,9 @@ class PlayState extends FlxState
 		if (timerThing <= 0 && !stopMyTimer)
 		{
 			stopMyTimer = true;
-			FlxTween.tween(healthBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
-			FlxTween.tween(theOtherBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
-			FlxTween.tween(healthText, {y: FlxG.height + healthBar.height + 36}, tweeningTime, {ease: FlxEase.backIn});
+			tweens.tween(healthBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
+			tweens.tween(theOtherBar, {y: FlxG.height}, tweeningTime, {ease: FlxEase.backIn});
+			tweens.tween(healthText, {y: FlxG.height + healthBar.height + 36}, tweeningTime, {ease: FlxEase.backIn});
 			new FlxTimer().start(tweeningTime, function(tmr:FlxTimer)
 			{
 				if (healthTweening)
@@ -828,7 +834,7 @@ class PlayState extends FlxState
 						var callingTimer2:FlxTimer = new FlxTimer(timers);
 						callingTimer2.start(3, function(tmr:FlxTimer)
 						{
-							FlxTween.tween(johnPorkIsCalling, {alpha: 0}, 0.6);
+							tweens.tween(johnPorkIsCalling, {alpha: 0}, 0.6);
 							var callingTimer3:FlxTimer = new FlxTimer(timers);
 							callingTimer3.start(0.6, function(tmr:FlxTimer)
 							{
@@ -972,7 +978,7 @@ class PlayState extends FlxState
 		popUp.cameras = [camHUD];
 		if (FlxG.save.data.screenShaking)
 			add(popUp);
-		FlxTween.tween(popUp, {alpha: 0}, fallTime);
+		tweens.tween(popUp, {alpha: 0}, fallTime);
 		var popUpTimer:FlxTimer = new FlxTimer(timers);
 		popUpTimer.start(0.3, function(tmr:FlxTimer)
 		{
@@ -989,7 +995,14 @@ class PlayState extends FlxState
 		var randomSpeedMulti:Float;
 		var crack:FlxSprite;
 		daPhone = new FlxSprite();
-		daPhone.loadGraphic(Paths.image("phone/phone"));
+		if (FlxG.save.data.speedMode)
+		{
+			daPhone.loadGraphic(Paths.image("phone/phone-speed"));
+		}
+		else
+		{
+			daPhone.loadGraphic(Paths.image("phone/phone"));
+		}
 		daPhone.cameras = [camHUD];
 
 		crack = new FlxSprite();
@@ -1012,20 +1025,20 @@ class PlayState extends FlxState
 		var randomTurn = FlxG.random.int(0, 90);
 		var breakSound:FlxSound = new FlxSound();
 		breakSound = FlxG.sound.load(Paths.sound("phone-break"));
-		FlxTween.tween(daPhone.scale, {x: randomSpeedMulti * 0.6, y: randomSpeedMulti * 0.6}, 0.6, {ease: FlxEase.cubeIn});
-		FlxTween.tween(daPhone, {angle: daPhone.angle + 1440}, 0.6, {ease: FlxEase.quadIn});
+		tweens.tween(daPhone.scale, {x: randomSpeedMulti * 0.6, y: randomSpeedMulti * 0.6}, 0.6, {ease: FlxEase.cubeIn});
+		tweens.tween(daPhone, {angle: daPhone.angle + 1440}, 0.6, {ease: FlxEase.quadIn});
 		daPhoneTimer.start(0.6, function(tmr:FlxTimer)
 		{
 			add(crack);
 			breakSound.play();
 			if (FlxG.save.data.screenShaking)
 				FlxG.camera.shake(screwed_daShake, screwed_daShake);
-			FlxTween.tween(daPhone, {y: daPhone.y + (FlxG.height - daPhone.y)}, 4, {ease: FlxEase.cubeIn});
-			FlxTween.tween(daPhone, {angle: daPhone.angle + randomTurn}, 4, {ease: FlxEase.cubeIn});
+			tweens.tween(daPhone, {y: daPhone.y + (FlxG.height - daPhone.y)}, 4, {ease: FlxEase.cubeIn});
+			tweens.tween(daPhone, {angle: daPhone.angle + randomTurn}, 4, {ease: FlxEase.cubeIn});
 		});
 		daPhoneTimer2.start(4, function(tmr:FlxTimer)
 		{
-			FlxTween.tween(daPhone, {alpha: 0}, 0.6);
+			tweens.tween(daPhone, {alpha: 0}, 0.6);
 		});
 	}
 	function showNewEnemyText()
@@ -1054,7 +1067,7 @@ class PlayState extends FlxState
 			{
 				var newEnemyText:FlxText = new FlxText();
 				newEnemyText.text = '';
-				newEnemyText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
+				newEnemyText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 				newEnemyText.cameras = [camMain];
 				newEnemyText.antialiasing = true;
 				newEnemyText.alpha = 0;
@@ -1067,13 +1080,13 @@ class PlayState extends FlxState
 				newEnemyText.y = 0;
 				newEnemyText.angle = 0;
 				add(newEnemyText);
-				FlxTween.tween(newEnemyText, {alpha: 1}, 0.3);
-				FlxTween.tween(newEnemyText.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
+				tweens.tween(newEnemyText, {alpha: 1}, 0.3);
+				tweens.tween(newEnemyText.scale, {x: 1, y: 1}, 0.3, {ease: FlxEase.backOut});
 				var enemyTextTween:FlxTimer = new FlxTimer(timers);
 				enemyTextTween.start(3, function(tmr:FlxTimer)
 				{
-					FlxTween.tween(newEnemyText, {angle: 3600}, 5, {ease: FlxEase.cubeIn});
-					FlxTween.tween(newEnemyText, {y: FlxG.height * 4}, 5, {ease: FlxEase.cubeIn});
+					tweens.tween(newEnemyText, {angle: 3600}, 5, {ease: FlxEase.cubeIn});
+					tweens.tween(newEnemyText, {y: FlxG.height * 4}, 5, {ease: FlxEase.cubeIn});
 				});
 				var appearSound:FlxSound = new FlxSound();
 				if (FlxG.save.data.speedMode)
@@ -1094,15 +1107,17 @@ class PlayState extends FlxState
 	}
 	function spawnFunny()
 	{
-		var daChance:Float = FlxG.random.float(0.025, 0.1);
+		var daChance:Float = FlxG.random.float(0.0125, 0.05);
 		var thingThing:String = 'dave';
 		var thingThingSound:String = 'dave';
+		var disappearTime:Float = 1.25;
 		if (FlxG.save.data.speedMode)
 		{
+			disappearTime = 0.8;
 			thingThing = 'popups/speed/ben';
 			thingThingSound = 'ben';
 		}
-		if (FlxG.random.bool(daChance * theDelta * 60 * (time / 120)))
+		if (FlxG.random.bool(daChance * theDelta * 60 * (time / (randomAppear2 * 0.6))))
 		{
 			var funny:FlxSprite = new FlxSprite();
 			funny.loadGraphic(Paths.image(thingThing));
@@ -1112,9 +1127,9 @@ class PlayState extends FlxState
 			var funnySound:FlxSound = new FlxSound();
 			funnySound = FlxG.sound.load(Paths.sound(thingThingSound));
 			funnySound.play();
-			FlxTween.tween(funny, {alpha: 0}, 0, {startDelay: 1.25});
+			tweens.tween(funny, {alpha: 0}, 0, {startDelay: disappearTime});
 			var funnyTimer:FlxTimer = new FlxTimer(timers);
-			funnyTimer.start(1.25, function(tmr:FlxTimer)
+			funnyTimer.start(disappearTime, function(tmr:FlxTimer)
 			{
 				funny.alpha = 0;
 				funny.kill();

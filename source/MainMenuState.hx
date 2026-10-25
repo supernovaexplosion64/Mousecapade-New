@@ -95,7 +95,7 @@ class MainMenuState extends FlxState
 		});
 
         bg = new FlxSprite();
-		bg.loadGraphic("assets/images/bg-misery.png");
+		bg.loadGraphic(Paths.image("bg-misery"));
 		bg.screenCenter();
 		add(bg);
 
@@ -243,21 +243,42 @@ class MainMenuState extends FlxState
     {
     	super.update(elapsed);
 
-		if (FlxG.keys.justPressed.SIX && FlxG.save.data.speedUnlocked && FlxG.save.data.speedMode)
+		if (FlxG.keys.justPressed.SEVEN && FlxG.save.data.speedUnlocked)
 		{
-			FlxG.save.data.speedMode = false;
+			if (FlxG.save.data.speedMode)
+			{
+				FlxG.save.data.speedMode = false;
 
-			var routeText:FlxText = new FlxText();
-			routeText.text = "Speed Mode disabled";
-			routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			routeText.antialiasing = true;
-			routeText.screenCenter(X);
-			routeText.y = 12;
-			routeText.alpha = 0;
-			add(routeText);
+				var routeText:FlxText = new FlxText();
+				routeText.text = "Speed Mode disabled";
+				routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				routeText.antialiasing = true;
+				routeText.screenCenter(X);
+				routeText.y = 12;
+				routeText.alpha = 0;
+				add(routeText);
 
-			FlxTween.tween(routeText, {alpha: 1}, 0.6);
-			FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
+				FlxTween.tween(routeText, {alpha: 1}, 0.6);
+				FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
+			}
+			else
+			{
+				FlxG.save.data.speedMode = true;
+				var weirdSoundJingle:FlxSound = new FlxSound();
+				weirdSoundJingle = FlxG.sound.load(Paths.sound('weird-route-jingle'));
+				weirdSoundJingle.play();
+
+				var routeText:FlxText = new FlxText();
+				routeText.text = "Speed Mode enabled";
+				routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				routeText.antialiasing = true;
+				routeText.screenCenter(X);
+				routeText.y = routeText.height * -1;
+				add(routeText);
+
+				FlxTween.tween(routeText, {y: 12}, 0.6, {ease: FlxEase.backOut});
+				FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
+			}
 		}
 
 		if (FlxG.keys.justPressed.Q)
@@ -283,25 +304,6 @@ class MainMenuState extends FlxState
 			add(routeText);
 
 			FlxTween.tween(routeText, {alpha: 1}, 0.6);
-			FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
-		}
-
-		if (FlxG.keys.justPressed.SEVEN && FlxG.save.data.speedUnlocked && !FlxG.save.data.speedMode)
-		{
-			FlxG.save.data.speedMode = true;
-			var weirdSoundJingle:FlxSound = new FlxSound();
-			weirdSoundJingle = FlxG.sound.load(Paths.sound('weird-route-jingle'));
-			weirdSoundJingle.play();
-
-			var routeText:FlxText = new FlxText();
-			routeText.text = "Speed Mode enabled";
-			routeText.setFormat("Times New Roman", 40, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			routeText.antialiasing = true;
-			routeText.screenCenter(X);
-			routeText.y = routeText.height * -1;
-			add(routeText);
-
-			FlxTween.tween(routeText, {y: 12}, 0.6, {ease: FlxEase.backOut});
 			FlxTween.tween(routeText, {alpha: 0}, 1.8, {startDelay: 2.2});
 		}
 

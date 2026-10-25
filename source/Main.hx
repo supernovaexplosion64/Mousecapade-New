@@ -14,7 +14,7 @@ class Main extends Sprite
 		super();
 		addChild(new FlxGame(0, 0, StartUpIntro, 144, 144, true));
 		#if !mobile
-		fps = new FPS(10, 10, 0xFFFFFFFF);
+		fps = new FPS(0, 0, 0xFFFFFFFF);
 		addChild(fps);
 		#end
 	}

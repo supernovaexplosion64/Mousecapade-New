@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxBackdrop;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -24,6 +25,7 @@ class InstructionGuideState extends FlxState
 	public var types:Array<String> = ['cheeses', 'pizza'];
 
 	public var typesAlt:Array<String> = ['Lunchlies', 'KSI', 'DanTDM'];
+	var backdrop:FlxBackdrop;
 
     override public function create()
     {
@@ -34,6 +36,13 @@ class InstructionGuideState extends FlxState
 		bg.screenCenter();
 		add(bg);
 
+		backdrop = new FlxBackdrop(Paths.image("menu/alt-backdrop"));
+		backdrop.alpha = 0.5;
+		backdrop.velocity.x = 50;
+		backdrop.velocity.y = 50;
+		backdrop.scrollFactor.set(0, 0);
+		add(backdrop);
+
         text = new FlxText();
 		text.text = 'How to play:';
 		text.setFormat("Times New Roman", 48, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -41,10 +50,19 @@ class InstructionGuideState extends FlxState
         text.y = 12;
         add(text);
 
-		moreText = new FlxText(0, 0, FlxG.width - 12);
-		moreText.text = "Grab the cheeses to earn points, grab the pizza to gain health, dodge everything else";
-		moreText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		moreText.screenCenter(X);
+		moreText = new FlxText(0, 0, FlxG.width - 24);
+		if (FlxG.save.data.speedMode)
+		{
+			moreText.text = "Press arrow keys or WASD to move the player around\nGrab the Lunchlies to earn points, grab the Feastables to gain health\nDodge enemies (i.e. Ninjas, KSIs, & John Porks)\nThere will be pop ups during this game!\nThe game will get progressively harder over time.";
+		}
+		else
+		{
+			moreText.text = "Press arrow keys or WASD to move the player around\nGrab the cheeses to earn points, grab the pizza to gain health\nDodge enemies (i.e. Wegas, Screwedians, & FNATIs)\nThere will be pop ups during this game!\nThe game will get progressively harder over time.";
+			if (!FlxG.save.data.speedUnlocked)
+				moreText.text += "\n\nIf you get a score of 250,000 or higher, then you'll unlock a SECRET mode!";
+		}
+		moreText.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		moreText.x = 12;
 		moreText.y = text.y + text.height + 12;
 		add(moreText);
 
@@ -56,8 +74,9 @@ class InstructionGuideState extends FlxState
 
         exitText = new FlxText();
         exitText.text = 'EXIT';
-        exitText.size = 18;
-        exitText.x = exit.x + (exit.width / 2) - (exitText.width / 2);
+		exitText.setFormat("Times New Roman", 18, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		exitText.antialiasing = true;
+		exitText.x = exit.x + (exit.width / 2) - (exitText.width / 2);
         exitText.y = exit.y + (exit.height / 2) - (exitText.height / 2);
         add(exitText);
 

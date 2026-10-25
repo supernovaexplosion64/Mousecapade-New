@@ -11,9 +11,9 @@ class PickUpThePhone extends FlxSprite
 		switch (getType())
 		{
 			case Default:
-				loadGraphic("assets/images/enemies/fnati.png");
+				loadGraphic(Paths.enemy("fnati"));
 			case John:
-				loadGraphic("assets/images/enemies/john-pork.png");
+				loadGraphic(Paths.enemy("john-pork"));
 		}
 	}
 

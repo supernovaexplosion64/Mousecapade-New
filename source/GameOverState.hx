@@ -24,9 +24,12 @@ class GameOverState extends FlxState
 	public var quoteText:FlxText;
 	public var deathConfirmed:Bool = false;
 
+	public var shadowSprite:FlxSprite;
+
 	var scoreText:FlxText;
 	var timeText:FlxText;
 	var retryText:FlxText;
+	public var songBPM:Float = 140;
 
 	public var messages:Array<String> = [
 		'Never come back again.',
@@ -51,6 +54,13 @@ class GameOverState extends FlxState
 		
 		finalScore = PlayState.score;
 		finalTime = PlayState.time;
+		shadowSprite = new FlxSprite();
+		shadowSprite.loadGraphic(Paths.image('menu/shadow'));
+		shadowSprite.screenCenter(X);
+		shadowSprite.y = (FlxG.height - shadowSprite.height) - 35;
+		shadowSprite.cameras = [camMain];
+		add(shadowSprite);
+
         deathSound = new FlxSound();
         deathSound = FlxG.sound.load(Paths.sound("death"));
         deathSound.play();
@@ -125,9 +135,9 @@ class GameOverState extends FlxState
 			else
 			{
 				FlxG.sound.playMusic(Paths.music('death-theme'), 1);
-				FlxTween.tween(camMain, {alpha: 1}, 0.4);
-				FlxTween.tween(retryText, {y: retryText.y + 36}, 1.1, {ease: FlxEase.quadInOut, type: PINGPONG});
-				FlxTween.tween(noteText, {alpha: 1}, 1.2, {startDelay: 1.6});
+				FlxTween.tween(camMain, {alpha: 1}, (60 / songBPM));
+				FlxTween.tween(retryText, {y: retryText.y + 36}, (60 / songBPM) * 2, {ease: FlxEase.quadInOut, type: PINGPONG});
+				FlxTween.tween(noteText, {alpha: 1}, (60 / songBPM) * 4, {startDelay: (60 / songBPM) * 4});
 			}
 		});
     }

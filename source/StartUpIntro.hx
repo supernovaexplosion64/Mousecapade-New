@@ -16,6 +16,7 @@ class StartUpIntro extends FlxState
     var _cachedTimestep:Bool;
 	var _cachedAutoPause:Bool;
 	public var soundBPM:Float = 188;
+	var stopAnim:Bool = false;
 
     override public function create():Void
     {
@@ -50,24 +51,15 @@ class StartUpIntro extends FlxState
             sound = FlxG.sound.load(Paths.sound('intro/normal'), 1);
         }
 		sound.play();
-		sprite.animation.play('play');
+	}
 
-        FlxTween.tween(sprite, {alpha: 0}, 3, {startDelay: 0.63});
-
-		if (FlxG.random.bool(30))
+	override public function update(elapsed:Float):Void
+	{
+		if (sound != null && !stopAnim)
 		{
-			FlxTween.tween(sprite, {"scale.x": 5, "scale.y": 5, angle: 360 * 15}, 3, {ease: FlxEase.cubeIn, startDelay: 0.63});
+			stopAnim = true;
+			startAnim();
 		}
-
-        var timer:FlxTimer = new FlxTimer();
-        timer.start(5.1, function(tmr:FlxTimer)
-        {
-			switchDaState();
-        });
-    }
-
-    override public function update(elapsed:Float):Void
-    {
         if (FlxG.keys.anyJustPressed([ENTER, SPACE]))
         {
 			switchDaState();
@@ -80,5 +72,22 @@ class StartUpIntro extends FlxState
 			FlxG.switchState(new TitleState());
 		else
 			FlxG.switchState(new WarningState());
+	}
+	function startAnim()
+	{
+		sprite.animation.play('play');
+
+		FlxTween.tween(sprite, {alpha: 0}, 3, {startDelay: 0.63});
+
+		if (FlxG.random.bool(30))
+		{
+			FlxTween.tween(sprite, {"scale.x": 5, "scale.y": 5, angle: 360 * 15}, 3, {ease: FlxEase.cubeIn, startDelay: 0.63});
+		}
+
+		var timer:FlxTimer = new FlxTimer();
+		timer.start(5.1, function(tmr:FlxTimer)
+		{
+			switchDaState();
+		});
 	}
 }

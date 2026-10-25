@@ -17,6 +17,7 @@ class UnlockCharacterState extends FlxState
     public var daString:String;
     public var imageString:String;
 	public var noteText:FlxText;
+	public var noteText2:FlxText;
 
 	override public function create()
     {
@@ -66,6 +67,15 @@ class UnlockCharacterState extends FlxState
 		noteText.alpha = 0;
 		add(noteText);
 
+		noteText2 = new FlxText(0, 0, FlxG.width);
+		noteText2.text = "Press the number 7 on the main menu to enable/disable speed mode!";
+		noteText2.setFormat("Times New Roman", 36, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.GRAY);
+		noteText2.antialiasing = true;
+		noteText2.screenCenter(X);
+		noteText2.y = 12;
+		noteText2.alpha = 0;
+		add(noteText2);
+
 		new FlxTimer().start(3, function(tmr:FlxTimer)
 		{
 			var weirdSoundJingle:FlxSound = new FlxSound();
@@ -86,6 +96,7 @@ class UnlockCharacterState extends FlxState
 				FlxTween.tween(e, {alpha: 1}, 0.6);
 			}
 			FlxTween.tween(noteText, {alpha: 1}, 1.6, {startDelay: 1.6});
+			FlxTween.tween(noteText, {alpha: 1}, 1.6, {startDelay: 2.4});
 		});
     }
 

@@ -31,16 +31,19 @@ class CreditsState extends FlxState
 
 	public var playtesters:Array<String> = ['Tapey_7778', 'NatsukiFan98', 'Layer09', 'JoaquinCualquiera123'];
 	public var specialThanks:Array<String> = [
+		'NatuskiFan98 (for letting me use the "OMG" image)',
+		'Dillon Howland',
+		'sammieGHA',
+		'Nori/Unoriginal_Character (for a secret pop up video)',
+		'IShowerSpeed',
 		'Developers of Vs. Mouse',
 		'Drunk Rat Studios',
 		'Rookies Team',
 		'Developers of Vs. Mouse: Cheesed Up',
 		'The Ancient Mice Dev Team',
-		'NatuskiFan98 (for letting me use the OMG image)',
+		'Dave and Bambi',
+		"Friday Night Funkin'",
 		'Battle for Dream Island',
-		'Dillon Howland',
-		'sammieGHA',
-		'IShowerSpeed',
 		'Five Nights at Treasure Island'
 	];
 
@@ -52,7 +55,8 @@ class CreditsState extends FlxState
 	var credTextDesc2:FlxText = new FlxText(0, 0, 0, "sammieGHA", 40);
 	var credTextDesc3:FlxText = new FlxText(0, 0, 0, "Layer09", 40);
 
-	var maxCameraPos:Int = Std.int(FlxG.height * 3);
+	var maxCameraPos:Int = Std.int(FlxG.height * 2.5);
+	var daSpeed:Float = 3;
 
 	override public function create()
     {
@@ -73,7 +77,7 @@ class CreditsState extends FlxState
 		FlxG.cameras.add(thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason, false);
 
 		bg = new FlxSprite();
-		bg.loadGraphic(Paths.image("bg-misery"));
+		bg.loadGraphic(Paths.image("bg-experiment"));
 		// bg.alpha = 0;
 		bg.screenCenter();
 		bg.cameras = [camBack];
@@ -220,10 +224,14 @@ class CreditsState extends FlxState
         exitText = new FlxText();
         exitText.text = 'EXIT';
 		exitText.setFormat("Times New Roman", 18, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-        exitText.x = exit.x + (exit.width / 2) - (exitText.width / 2);
+		exitText.antialiasing = true;
+		exitText.x = exit.x + (exit.width / 2) - (exitText.width / 2);
         exitText.y = exit.y + (exit.height / 2) - (exitText.height / 2);
 		exitText.cameras = [thatOneCameraThatWasSolelyMadeForTheExitButtonForSomeReason];
         add(exitText);
+		maxCameraPos = Std.int(specialText.y + specialText.height + 12);
+		camMain.height = maxCameraPos;
+
 		for (e in [
 			credIcon,
 			credIcon2,
@@ -262,13 +270,27 @@ class CreditsState extends FlxState
 	{
 		if (camMain.y <= 0 && camMain.y >= maxCameraPos * -1)
 		{
-			if (FlxG.keys.anyPressed([W, UP]))
+			if (FlxG.keys.anyPressed([W, UP]) || FlxG.mouse.wheel > 0)
 			{
-				camMain.y += 360 * FlxG.elapsed;
+				if (FlxG.keys.anyPressed([W, UP]))
+				{
+					camMain.y += 360 * FlxG.elapsed;
+				}
+				else if (FlxG.mouse.wheel > 0)
+				{
+					camMain.y += 360 * FlxG.elapsed * daSpeed;
+				}
 			}
-			if (FlxG.keys.anyPressed([S, DOWN]))
+			if (FlxG.keys.anyPressed([S, DOWN]) || FlxG.mouse.wheel < 0)
 			{
-				camMain.y -= 360 * FlxG.elapsed;
+				if (FlxG.keys.anyPressed([S, DOWN]))
+				{
+					camMain.y -= 360 * FlxG.elapsed;
+				}
+				else if (FlxG.mouse.wheel < 0)
+				{
+					camMain.y -= 360 * FlxG.elapsed * daSpeed;
+				}
 			}
 		}
 
@@ -309,7 +331,7 @@ class CreditsState extends FlxState
 		{
 			if (FlxG.mouse.justPressed)
 			{
-				FlxG.openURL("https://www.youtube.com/@SuperNovaExplosion64");
+				FlxG.openURL("https://www.youtube.com/channel/UCjnmKeHKTMlVUfNQPrgEjpA");
 			}
 		}
 
